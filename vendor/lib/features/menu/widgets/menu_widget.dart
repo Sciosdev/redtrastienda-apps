@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sixvalley_vendor_app/features/addProduct/screens/add_product_tab_view_screen.dart';
 import 'package:sixvalley_vendor_app/features/auction/screens/auction_menu_screen.dart';
 import 'package:sixvalley_vendor_app/features/clearance_sale/screens/clearance_sale_screen.dart';
+import 'package:sixvalley_vendor_app/features/opportunity_request/screens/received_requests_screen.dart';
 import 'package:sixvalley_vendor_app/features/restock/screens/restock_list_screen.dart';
 import 'package:sixvalley_vendor_app/features/splash/domain/models/business_pages_model.dart';
 import 'package:sixvalley_vendor_app/features/splash/domain/models/config_model.dart';
@@ -88,6 +89,10 @@ class MenuBottomSheetWidget extends StatelessWidget {
 
           CustomBottomSheetWidget(image: Images.restockIcon, title: getTranslated('restock', context),
             onTap: () => _handleMenuTap(context, const RestockListScreen()),
+          ),
+
+          CustomBottomSheetWidget(image: Images.restockIcon, title: getTranslated('received_requests', context) ?? 'Solicitudes recibidas',
+            onTap: () => _handleMenuTap(context, const ReceivedRequestsScreen()),
           ),
 
 

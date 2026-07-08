@@ -125,6 +125,8 @@ import 'package:flutter_sixvalley_ecommerce/common/enums/local_caches_type_enum.
   static const String productRestockRequest = '/api/v1/cart/product-restock-request';
   static const String productRestockList = '/api/v1/customer/restock-requests/list?';
   static const String productRestockDelete = '/api/v1/customer/restock-requests/delete';
+  static const String opportunityRequestStore = '/api/v1/customer/opportunity-requests/store';
+  static const String opportunityRequestList = '/api/v1/customer/opportunity-requests/list?';
   static const String clearanceAllProductUri = '/api/v1/products/clearance-sale';
   static const String clearanceShopProductUri = '/api/v1/seller/';
   static const String clearanceShopSearchProductUri = '/api/v1/seller/';

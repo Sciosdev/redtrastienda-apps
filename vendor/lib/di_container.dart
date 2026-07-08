@@ -93,6 +93,11 @@ import 'package:sixvalley_vendor_app/features/profile/domain/services/profile_se
 import 'package:sixvalley_vendor_app/features/refund/domain/repositories/refund_repository_interface.dart';
 import 'package:sixvalley_vendor_app/features/refund/domain/services/refund_service.dart';
 import 'package:sixvalley_vendor_app/features/refund/domain/services/refund_service_interface.dart';
+import 'package:sixvalley_vendor_app/features/opportunity_request/controllers/opportunity_request_controller.dart';
+import 'package:sixvalley_vendor_app/features/opportunity_request/domain/repositories/opportunity_request_repository.dart';
+import 'package:sixvalley_vendor_app/features/opportunity_request/domain/repositories/opportunity_request_repository_interface.dart';
+import 'package:sixvalley_vendor_app/features/opportunity_request/domain/services/opportunity_request_service.dart';
+import 'package:sixvalley_vendor_app/features/opportunity_request/domain/services/opportunity_request_service_interface.dart';
 import 'package:sixvalley_vendor_app/features/restock/controllers/restock_controller.dart';
 import 'package:sixvalley_vendor_app/features/restock/domain/repositories/restock_repository.dart';
 import 'package:sixvalley_vendor_app/features/restock/domain/repositories/restock_repository_interface.dart';
@@ -252,6 +257,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => barcodeRepositoryInterface);
   RestockRepositoryInterface restockRepositoryInterface = RestockRepository(dioClient: sl());
   sl.registerLazySingleton(() => restockRepositoryInterface);
+  OpportunityRequestRepositoryInterface opportunityRequestRepositoryInterface = OpportunityRequestRepository(dioClient: sl());
+  sl.registerLazySingleton(() => opportunityRequestRepositoryInterface);
   ClearanceSaleRepositoryInterface clearanceSaleRepositoryInterface = ClearanceSaleRepository(dioClient: sl());
   sl.registerLazySingleton(() => clearanceSaleRepositoryInterface);
   CategoryRepositoryInterface categoryRepositoryInterface = CategoryRepository(dioClient: sl(), sharedPreferences: sl());
@@ -320,6 +327,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => barcodeServiceInterface);
   RestockServiceInterface restockServiceInterface = RestockService(restockRepositoryInterface: sl());
   sl.registerLazySingleton(() => restockServiceInterface);
+  OpportunityRequestServiceInterface opportunityRequestServiceInterface = OpportunityRequestService(opportunityRequestRepositoryInterface: sl());
+  sl.registerLazySingleton(() => opportunityRequestServiceInterface);
   ClearanceSaleServiceInterface clearanceSaleServiceInterface = ClearanceSaleService(clearanceSaleRepositoryInterface: sl());
   sl.registerLazySingleton(() => clearanceSaleServiceInterface);
   CategoryServiceInterface categoryServiceInterface = CategoryService(categoryRepositoryInterface: sl());
@@ -402,6 +411,7 @@ Future<void> init() async {
   sl.registerFactory(() => LocationController(locationServiceInterface: sl()));
   sl.registerFactory(() => BarcodeController(barcodeServiceInterface: sl()));
   sl.registerFactory(() => RestockController(restockServiceInterface: sl()));
+  sl.registerFactory(() => OpportunityRequestController(opportunityRequestServiceInterface: sl()));
   sl.registerFactory(() => ClearanceSaleController(chatServiceInterface: sl()));
   sl.registerFactory(() => CustomerController(cartServiceInterface: sl()));
   sl.registerFactory(() => CouponDiscountController(cartServiceInterface: sl()));

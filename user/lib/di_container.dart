@@ -186,6 +186,11 @@ import 'package:flutter_sixvalley_ecommerce/features/reorder/domain/repositories
 import 'package:flutter_sixvalley_ecommerce/features/reorder/domain/repositories/re_order_repository_interface.dart';
 import 'package:flutter_sixvalley_ecommerce/features/reorder/domain/services/re_order_service.dart';
 import 'package:flutter_sixvalley_ecommerce/features/reorder/domain/services/re_order_service_interface.dart';
+import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/controllers/opportunity_request_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/domain/repositories/opportunity_request_repository.dart';
+import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/domain/repositories/opportunity_request_repository_interface.dart';
+import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/domain/services/opportunity_request_service.dart';
+import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/domain/services/opportunity_request_service_interface.dart';
 import 'package:flutter_sixvalley_ecommerce/features/restock/controllers/restock_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/restock/domain/repositories/restock_repository.dart';
 import 'package:flutter_sixvalley_ecommerce/features/restock/domain/repositories/restock_repository_interface.dart';
@@ -365,6 +370,7 @@ Future<void> init() async {
   sl.registerFactory(() => RefundController(refundServiceInterface: sl()));
   sl.registerFactory(() => ReOrderController(reOrderServiceInterface: sl()));
   sl.registerFactory(() => RestockController(restockServiceInterface: sl()));
+  sl.registerFactory(() => OpportunityRequestController(opportunityRequestServiceInterface: sl()));
   sl.registerFactory(() => AuctionCategoryController(auctionCategoryServiceInterface: sl()));
   sl.registerFactory(() => AuctionHomeController(auctionHomeServiceInterface: sl()));
 
@@ -551,6 +557,11 @@ Future<void> init() async {
   sl.registerLazySingleton(() => restockRepositoryInterface);
   RestockServiceInterface restockServiceInterface = RestockService(restockRepositoryInterface: sl());
   sl.registerLazySingleton(() => restockServiceInterface);
+
+  OpportunityRequestRepositoryInterface opportunityRequestRepositoryInterface = OpportunityRequestRepository(dioClient: sl());
+  sl.registerLazySingleton(() => opportunityRequestRepositoryInterface);
+  OpportunityRequestServiceInterface opportunityRequestServiceInterface = OpportunityRequestService(opportunityRequestRepositoryInterface: sl());
+  sl.registerLazySingleton(() => opportunityRequestServiceInterface);
 
   // DataSyncRepoInterface dataSyncRepoInterface = DataSyncRepo(dioClient: sl(), sharedPreferences: sl());
   // sl.registerLazySingleton(() => dataSyncRepoInterface);

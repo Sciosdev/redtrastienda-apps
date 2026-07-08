@@ -132,6 +132,8 @@ class AppConstants {
   static const String restockUpdateProductQuantity = '/api/v3/seller/products/restock-request-stock-update';
   static const String restockBrandListUri = '/api/v3/seller/products/restock-request-brands-list';
   static const String restockRequestDelete = '/api/v3/seller/products/restock-request-delete?id=';
+  static const String opportunityRequestListUri = '/api/v3/seller/opportunity-requests/list?';
+  static const String opportunityRequestUpdateStatusUri = '/api/v3/seller/opportunity-requests/update-status';
   static const String clearanceSaleProductList = '/api/v3/seller/clearance-sale/product-list';
   static const String clearanceSaleDeleteProduct = '/api/v3/seller/clearance-sale/product-delete?product_id=';
   static const String clearanceSaleDeleteAllProduct = '/api/v3/seller/clearance-sale/all-product-delete';

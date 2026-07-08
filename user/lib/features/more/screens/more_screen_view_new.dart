@@ -13,6 +13,7 @@ import 'package:flutter_sixvalley_ecommerce/features/splash/domain/models/busine
 import 'package:flutter_sixvalley_ecommerce/features/wallet/controllers/wallet_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/helper/price_converter.dart';
 import 'package:flutter_sixvalley_ecommerce/helper/route_healper.dart';
+import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/screens/my_opportunity_requests_screen.dart';
 import 'package:flutter_sixvalley_ecommerce/localization/language_constrants.dart';
 import 'package:flutter_sixvalley_ecommerce/theme/controllers/theme_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/custom_themes.dart';
@@ -568,6 +569,13 @@ class _MoreScreenViewState extends State<MoreScreenView> {
                         iconImage: Images.restockRequestSvg,
                         label: getTranslated('restock_requests', context)!,
                         onTap: () => RouterHelper.getRestockListRoute(action: RouteAction.push),
+                      ),
+
+                    if (authController.isLoggedIn())
+                      MenuItem(
+                        iconImage: Images.restockRequestSvg,
+                        label: getTranslated('my_requests', context) ?? 'Mis solicitudes',
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MyOpportunityRequestsScreen())),
                       ),
 
                     if (splashController.configModel?.blogUrl?.isNotEmpty ?? false)

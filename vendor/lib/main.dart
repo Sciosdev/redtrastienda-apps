@@ -33,6 +33,7 @@ import 'package:sixvalley_vendor_app/features/pos/controllers/customer_controlle
 import 'package:sixvalley_vendor_app/features/product/controllers/category_controller.dart';
 import 'package:sixvalley_vendor_app/features/product/widgets/cookies_widget.dart';
 import 'package:sixvalley_vendor_app/features/product_details/controllers/product_details_controller.dart';
+import 'package:sixvalley_vendor_app/features/opportunity_request/controllers/opportunity_request_controller.dart';
 import 'package:sixvalley_vendor_app/features/restock/controllers/restock_controller.dart';
 import 'package:sixvalley_vendor_app/features/vat_management/controllers/vat_controller.dart';
 import 'package:sixvalley_vendor_app/features/wallet/controllers/wallet_controller.dart';
@@ -153,6 +154,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => di.sl<ProductDetailsController>()),
       ChangeNotifierProvider(create: (context) => di.sl<BarcodeController>()),
       ChangeNotifierProvider(create: (context) => di.sl<RestockController>()),
+      ChangeNotifierProvider(create: (context) => di.sl<OpportunityRequestController>()),
       ChangeNotifierProvider(create: (context) => di.sl<ClearanceSaleController>()),
       ChangeNotifierProvider(create: (context) => di.sl<CustomerController>()),
       ChangeNotifierProvider(create: (context) => di.sl<CouponDiscountController>()),

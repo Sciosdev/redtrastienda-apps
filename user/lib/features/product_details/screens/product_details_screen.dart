@@ -5,6 +5,7 @@ import 'package:flutter_sixvalley_ecommerce/features/product/controllers/product
 import 'package:flutter_sixvalley_ecommerce/features/product/controllers/seller_product_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/product_details/controllers/product_details_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/product_details/widgets/bottom_cart_widget.dart';
+import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/widgets/request_contact_button_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/product_details/widgets/product_carousel_image_viewer_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/product_details/widgets/product_specification_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/product_details/widgets/product_title_widget.dart';
@@ -296,8 +297,20 @@ class _ProductDetailsState extends State<ProductDetails> {
 
         bottomNavigationBar: Consumer<ProductDetailsController>(
           builder: (context, details, child) {
-            return !details.isDetails && details.productDetailsModel?.userId != null ?
-            BottomCartWidget(product: details.productDetailsModel):const SizedBox();
+            if (details.isDetails || details.productDetailsModel?.userId == null) {
+              return const SizedBox();
+            }
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (details.productDetailsModel?.id != null)
+                  RequestContactButtonWidget(
+                    productId: details.productDetailsModel!.id!,
+                    opportunityTitle: details.productDetailsModel?.name,
+                  ),
+                BottomCartWidget(product: details.productDetailsModel),
+              ],
+            );
           }
         ),
       ),
