@@ -1,0 +1,29 @@
+# Repo-wide ignores for both Flutter apps (user/ and vendor/)
+# Catch build artifacts at any depth (the per-app .gitignore only anchors /build/ at app root)
+
+**/build/
+**/.dart_tool/
+**/.gradle/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/generated_plugin_registrant.*
+
+# iOS / CocoaPods build output
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/Flutter.framework/
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/ephemeral/
+
+# Android
+**/android/.gradle/
+**/android/local.properties
+**/android/key.properties
+**/*.keystore
+**/*.jks
+
+# IDE / OS
+.idea/
+*.iml
+.DS_Store
+*.log
