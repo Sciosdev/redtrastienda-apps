@@ -97,10 +97,21 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   drift_dev: ^2.33.0
   build_runner: ^2.15.0
+  flutter_launcher_icons: ^0.14.4
 
   flutter_test:
     sdk: flutter
 
+
+# ANPEC Red Trastienda — launcher icon (rojo #A1262B + storefront blanco)
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/launcher/launcher_icon.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#A1262B"
+  adaptive_icon_foreground: "assets/launcher/launcher_foreground.png"
+  remove_alpha_ios: true
 
 
 flutter:

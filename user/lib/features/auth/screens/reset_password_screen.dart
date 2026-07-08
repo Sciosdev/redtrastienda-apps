@@ -58,7 +58,7 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
               const SizedBox(height: Dimensions.paddingSizeOverLarge),
 
               Padding(padding: const EdgeInsets.all(50),
-                child: Image.asset(Images.logoWithNameImage, height: 50, width: 140),),
+                child: Image.asset(Images.logoWithNameImage, height: 50, width: 140, fit: BoxFit.contain),),
 
               Padding(padding: const EdgeInsets.all(Dimensions.marginSizeLarge),
                 child: Text(getTranslated('password_reset', context)!, style: titilliumSemiBold)),

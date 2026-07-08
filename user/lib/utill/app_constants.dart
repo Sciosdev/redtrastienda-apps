@@ -3,8 +3,8 @@ import 'package:flutter_sixvalley_ecommerce/common/enums/local_caches_type_enum.
   import 'package:flutter_sixvalley_ecommerce/utill/images.dart';
 
   class AppConstants {
-  static const String appName = '6valley';
-  static const String slogan = 'E-Commerce Marketplace';
+  static const String appName = 'Red Trastienda';
+  static const String slogan = 'Comunidad de tiendas afiliadas ANPEC';
   static const String appVersion = '16.3'; ///Flutter SDK 3.44.2
   static const bool demo = false;
 
@@ -293,11 +293,11 @@ import 'package:flutter_sixvalley_ecommerce/common/enums/local_caches_type_enum.
   static const String userAddress = 'user_address';
 
   static List<LanguageModel> languages = [
+    LanguageModel(imageUrl: Images.es, languageName: 'Español', countryCode: 'ES', languageCode: 'es'),
     LanguageModel(imageUrl: Images.en, languageName: 'English', countryCode: 'US', languageCode: 'en'),
     LanguageModel(imageUrl: Images.ar, languageName: 'Arabic', countryCode: 'SA', languageCode: 'ar'),
     LanguageModel(imageUrl: Images.hi, languageName: 'Hindi', countryCode: 'IN', languageCode: 'hi'),
     LanguageModel(imageUrl: Images.bn, languageName: 'Bangla', countryCode: 'BD', languageCode: 'bn'),
-    LanguageModel(imageUrl: Images.es, languageName: 'Spanish', countryCode: 'ES', languageCode: 'es'),
   ];
 
 

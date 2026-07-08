@@ -28,7 +28,7 @@
 
 
    <application
-       android:label="6Valley Vendor"
+       android:label="RT Proveedores"
        android:name="${applicationName}"
        android:extractNativeLibs="true"
        android:icon="@mipmap/ic_launcher"

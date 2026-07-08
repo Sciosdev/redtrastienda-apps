@@ -91,7 +91,7 @@ class ResetPasswordWidgetState extends State<ResetPasswordWidget> {
                         padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall), children: [
                         Padding(
                           padding: const EdgeInsets.all(50),
-                          child: Image.asset(Images.logoWithAppName, height: 100, width: 150),
+                          child: Image.asset(Images.logoWithAppName, height: 100, width: 150, fit: BoxFit.contain),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
