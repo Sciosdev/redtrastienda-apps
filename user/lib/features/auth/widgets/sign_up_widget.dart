@@ -1,6 +1,8 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/domain/models/register_model.dart';
+import 'package:flutter_sixvalley_ecommerce/features/more/widgets/anpec_contact_sheet_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/widgets/condition_check_box_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/profile/controllers/profile_contrroller.dart';
 import 'package:flutter_sixvalley_ecommerce/helper/velidate_check.dart';
@@ -50,6 +52,14 @@ class SignUpWidgetState extends State<SignUpWidget> {
 
   RegisterModel register = RegisterModel();
   final GlobalKey<FormState> signUpFormKey = GlobalKey<FormState>();
+
+  // R-ANP: el prefijo "ANP" es fijo en la UI; el afiliado teclea solo los
+  // dígitos (y letra final si su número la tiene). Aquí se antepone el prefijo
+  // antes de validar contra el backend y de registrar.
+  String get _fullNumeroAnp {
+    final String typed = _numeroAnpController.text.trim();
+    return typed.isEmpty ? '' : 'ANP$typed';
+  }
 
 
 
@@ -109,11 +119,8 @@ class SignUpWidgetState extends State<SignUpWidget> {
     // Pre-validación del número ANP al perder el foco (UX): consulta el backend
     // y muestra feedback verde/rojo sin bloquear el resto del formulario.
     _numeroAnpFocus.addListener(() {
-      if (!_numeroAnpFocus.hasFocus) {
-        final anp = _numeroAnpController.text.trim();
-        if (anp.isNotEmpty) {
-          authController.checkNumeroAnp(anp);
-        }
+      if (!_numeroAnpFocus.hasFocus && _numeroAnpController.text.trim().isNotEmpty) {
+        authController.checkNumeroAnp(_fullNumeroAnp);
       }
     });
 
@@ -158,6 +165,43 @@ class SignUpWidgetState extends State<SignUpWidget> {
         const SizedBox(width: Dimensions.paddingSizeSmall),
         Expanded(child: Text(message, style: textRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: color))),
       ]),
+    );
+  }
+
+  // Aviso "¿No conoces tu número ANPEC?": abre el canal de contacto de F5
+  // (WhatsApp/Llamar con company_phone del config). Oculto si no hay número.
+  Widget _buildAnpHelp(BuildContext context) {
+    final String phone = (Provider.of<SplashController>(context, listen: false).configModel?.companyPhone ?? '').trim();
+    if (phone.isEmpty || phone.toLowerCase() == 'null') {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(left: Dimensions.marginSizeDefault, right: Dimensions.marginSizeDefault, top: Dimensions.paddingSizeExtraSmall),
+      child: InkWell(
+        onTap: () => showModalBottomSheet(
+          context: context,
+          backgroundColor: Theme.of(context).cardColor,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(Dimensions.radiusLarge)),
+          ),
+          builder: (_) => AnpecContactSheetWidget(rawPhone: phone),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraSmall),
+          child: Row(children: [
+            Icon(Icons.help_outline, size: 16, color: Theme.of(context).hintColor),
+            const SizedBox(width: Dimensions.paddingSizeSmall),
+            Expanded(child: Text.rich(TextSpan(children: [
+              TextSpan(text: '${getTranslated('anp_help_question', context) ?? '¿No conoces tu número ANPEC?'} '),
+              TextSpan(
+                text: getTranslated('anp_help_action', context) ?? 'Llámanos o escríbenos',
+                style: textMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor),
+              ),
+            ]), style: textRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).textTheme.bodyLarge?.color))),
+          ]),
+        ),
+      ),
     );
   }
 
@@ -217,6 +261,8 @@ class SignUpWidgetState extends State<SignUpWidget> {
                               controller: _numeroAnpController,
                               capitalization: TextCapitalization.characters,
                               prefixIcon: Images.username,
+                              prefixText: 'ANP',
+                              inputFormatters: [NumeroAnpInputFormatter()],
                               onChanged: (value) {
                                 // Al editar reiniciamos el feedback previo.
                                 if (authProvider.anpCheckStatus != AnpCheckStatus.idle) {
@@ -226,6 +272,7 @@ class SignUpWidgetState extends State<SignUpWidget> {
                               validator: (value)  => ValidateCheck.validateEmptyText(value, "numero_anp_field_is_required"))),
 
                       _buildAnpFeedback(context, authProvider),
+                      _buildAnpHelp(context),
 
                       // ANPEC: Nombre del negocio (requerido).
                       Container(margin: const EdgeInsets.only(left: Dimensions.marginSizeDefault, right: Dimensions.marginSizeDefault,
@@ -344,7 +391,7 @@ class SignUpWidgetState extends State<SignUpWidget> {
                             String email = _emailController.text.trim();
                             String phoneNumber = authProvider.countryDialCode +_phoneController.text.trim();
                             String password = _passwordController.text.trim();
-                            String numeroAnp = _numeroAnpController.text.trim();
+                            String numeroAnp = _fullNumeroAnp;
                             String nombreNegocio = _nombreNegocioController.text.trim();
 
                             if (signUpFormKey.currentState?.validate() ?? false) {
@@ -405,5 +452,17 @@ class SignUpWidgetState extends State<SignUpWidget> {
           }
       ),
     ]);
+  }
+}
+
+/// R-ANP: estructura de lo que teclea el afiliado SIN el prefijo fijo "ANP":
+/// dígitos y opcionalmente UNA letra al final. Es el formato real de la base
+/// ANPEC (ej. 12268, 0102, 14873A). Cualquier otra edición se rechaza.
+class NumeroAnpInputFormatter extends TextInputFormatter {
+  static final RegExp _pattern = RegExp(r'^\d*[a-zA-Z]?$');
+
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    return _pattern.hasMatch(newValue.text) ? newValue : oldValue;
   }
 }

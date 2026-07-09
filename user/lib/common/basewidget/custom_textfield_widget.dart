@@ -37,6 +37,7 @@ class CustomTextFieldWidget extends StatefulWidget {
   final TextCapitalization capitalization;
   final double borderRadius;
   final String? prefixIcon;
+  final String? prefixText;
   final String? suffixIcon;
   final String? suffixIcon2;
   final double suffixIconSize;
@@ -75,6 +76,7 @@ class CustomTextFieldWidget extends StatefulWidget {
     this.onChanged,
     this.onTap,
     this.prefixIcon,
+    this.prefixText,
     this.suffixIcon,
     this.suffixIconSize= 12,
     this.capitalization = TextCapitalization.none,
@@ -215,6 +217,8 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
             ])) : null,
             hintText : widget.hintText,
             hintStyle: widget.hintTextStyle ?? (widget.showLabelText ? textRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).hintColor) : textRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).hintColor)),
+            prefixText: widget.prefixText,
+            prefixStyle: textMedium.copyWith(fontSize: widget.fontSize ?? Dimensions.fontSizeLarge, color: Theme.of(context).textTheme.bodyLarge!.color),
             prefixIcon: widget.prefixIcon != null ? InkWell(
               onTap: widget.prefixOnTap,
               child: Container(
