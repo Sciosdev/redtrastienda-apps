@@ -20,10 +20,15 @@ class OrderDetailsRepository implements OrderDetailsRepositoryInterface{
     try {
       List<String> addressTypeList = [];
       if(type == 'inhouse_shipping'){
+        // ANPEC: el proveedor maneja todo el ciclo del pedido (contra entrega, sin repartidor).
+        // Se agregan delivered/canceled/failed y se omiten out_for_delivery/returned (no aplican al flujo ANPEC).
         addressTypeList = [
           'pending',
           'confirmed',
-          'processing'
+          'processing',
+          'delivered',
+          'canceled',
+          'failed',
         ];
       }else{
         addressTypeList = [

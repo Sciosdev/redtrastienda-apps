@@ -43,7 +43,7 @@ class _OrderScreenState extends State<OrderScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).canvasColor,
       appBar: CustomAppBarWidget(
-        title: getTranslated('my_order', context),
+        title: getTranslated('received_orders', context),
         isBackButtonExist: widget.isBacButtonExist,
         isAction: true, isFilter: true,
 
@@ -111,13 +111,9 @@ class _OrderScreenState extends State<OrderScreen> {
                     const SizedBox(width: 5),
                     OrderTypeButton(text: getTranslated('delivered', context), index: 3),
                     const SizedBox(width: 5),
-                    OrderTypeButton(text: getTranslated('returned', context), index: 4),
-                    const SizedBox(width: 5),
                     OrderTypeButton(text: getTranslated('failed', context), index: 5),
                     const SizedBox(width: 5),
                     OrderTypeButton(text: getTranslated('cancelled', context), index: 6),
-                    const SizedBox(width: 5),
-                    OrderTypeButton(text: getTranslated('out_for_delivery', context), index: 8),
                   ],
                 ),
               ),

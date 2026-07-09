@@ -16,6 +16,7 @@ import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/auth_contr
 import 'package:flutter_sixvalley_ecommerce/features/cart/controllers/cart_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/splash/controllers/splash_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/theme/controllers/theme_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/utill/app_constants.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/custom_themes.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/dimensions.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/images.dart';
@@ -402,7 +403,7 @@ class CartScreenState extends State<CartScreen> {
                                     _scrollToSeller(requiredShippingCartModel?.sellerIndex);
                                     await Future.delayed(const Duration(milliseconds: 900));
                                     changeColor();
-                                  } else if(shippingController.chosenShippingList.isEmpty &&
+                                  } else if(!AppConstants.anpecPedidoFlow && shippingController.chosenShippingList.isEmpty &&
                                       configProvider.configModel!.shippingMethod !='sellerwise_shipping' &&
                                       configProvider.configModel!.inhouseSelectedShippingType =='order_wise' && !onlyDigital) {
                                     showCustomSnackBarWidget(getTranslated('select_shipping_method', context), Get.context!, snackBarType: SnackBarType.warning);
@@ -830,7 +831,7 @@ class CartScreenState extends State<CartScreen> {
                                   },
                                 ),
 
-                                (!onlyDigital && configProvider.configModel!.shippingMethod != 'sellerwise_shipping' && configProvider.configModel!.inhouseSelectedShippingType =='order_wise') ?
+                                (!AppConstants.anpecPedidoFlow && !onlyDigital && configProvider.configModel!.shippingMethod != 'sellerwise_shipping' && configProvider.configModel!.inhouseSelectedShippingType =='order_wise') ?
                                 InkWell(onTap: () {
                                   showModalBottomSheet(
                                       context: context, isScrollControlled: true, backgroundColor: Colors.transparent,

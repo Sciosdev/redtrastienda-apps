@@ -17,6 +17,7 @@ import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/auth_contr
 import 'package:flutter_sixvalley_ecommerce/features/cart/controllers/cart_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/coupon/controllers/coupon_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/splash/controllers/splash_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/utill/app_constants.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/custom_themes.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/dimensions.dart';
 import 'package:flutter_sixvalley_ecommerce/common/basewidget/amount_widget.dart';
@@ -78,6 +79,10 @@ class CheckoutScreenState extends State<CheckoutScreen> {
     Provider.of<CouponController>(context, listen: false).removePrevCouponData();
     Provider.of<CartController>(context, listen: false).getCartData(context);
     Provider.of<CheckoutController>(context, listen: false).resetPaymentMethod();
+    if(AppConstants.anpecPedidoFlow) {
+      // ANPEC: pedido a proveedor = pago contra entrega forzado (sin pasarelas).
+      Provider.of<CheckoutController>(context, listen: false).forceCashOnDelivery();
+    }
     Provider.of<ShippingController>(context, listen: false).getChosenShippingMethod(context);
     if(splashController.configModel != null &&
         splashController.configModel!.offlinePayment != null)
@@ -89,7 +94,12 @@ class CheckoutScreenState extends State<CheckoutScreen> {
       Provider.of<CouponController>(context, listen: false).getAvailableCouponList();
     }
 
-    if(Provider.of<CheckoutController>(context, listen: false).isAcceptTerms){
+    if(AppConstants.anpecPedidoFlow) {
+      // ANPEC: términos auto-aceptados para no frenar el pedido.
+      if(!Provider.of<CheckoutController>(context, listen: false).isAcceptTerms){
+        Provider.of<CheckoutController>(context, listen: false).toggleTermsCheck(isUpdate: false);
+      }
+    } else if(Provider.of<CheckoutController>(context, listen: false).isAcceptTerms){
       Provider.of<CheckoutController>(context, listen: false).toggleTermsCheck(isUpdate: false);
     }
 
@@ -133,10 +143,24 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
 
+                                if(!AppConstants.anpecPedidoFlow)
                                 const CheckoutConditionCheckBox(),
+                                if(!AppConstants.anpecPedidoFlow)
                                 const SizedBox(height: Dimensions.paddingSizeSmall),
 
                                 CustomButton(onTap: (orderProvider.isLoading || !orderProvider.isAcceptTerms) ? null : () async {
+                                  if(AppConstants.anpecPedidoFlow) {
+                                    // ANPEC: crea el pedido contra entrega, sin dirección/envío/pasarela.
+                                    orderProvider.placeOrder(
+                                      callback: _callback,
+                                      addressID: '',
+                                      couponCode: '',
+                                      couponAmount: '0',
+                                      billingAddressId: '',
+                                      orderNote: orderProvider.orderNoteController.text.trim(),
+                                    );
+                                    return;
+                                  }
                                   if(orderProvider.addressIndex == null && widget.hasPhysical) {
                                     RouterHelper.getSavedAddressListRoute(fromGuest: !Provider.of<AuthController>(context, listen: false).isLoggedIn());
                                     showCustomSnackBarWidget(getTranslated('select_a_shipping_address', context), Get.context!, snackBarType: SnackBarType.warning);
@@ -247,6 +271,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                       children: [
                         SizedBox(height: Dimensions.paddingSizeSmall),
 
+                        if(!AppConstants.anpecPedidoFlow)
                         Padding(
                           padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
                           child: ShippingDetailsWidget(
@@ -257,7 +282,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                         ),
 
 
-                        if (Provider.of<AuthController>(context, listen: false).isLoggedIn())
+                        if (!AppConstants.anpecPedidoFlow && Provider.of<AuthController>(context, listen: false).isLoggedIn())
                           Padding(
                             padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
                             child: CouponApplyWidget(
@@ -267,6 +292,7 @@ class CheckoutScreenState extends State<CheckoutScreen> {
                           ),
 
 
+                        if(!AppConstants.anpecPedidoFlow)
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 0),
                           child: ChoosePaymentWidget(onlyDigital: widget.onlyDigital),

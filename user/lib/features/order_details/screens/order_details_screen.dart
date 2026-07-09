@@ -241,7 +241,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                           style: textRegular.copyWith(color: Theme.of(context).textTheme.titleMedium?.color)
                                         ),
 
-                                        Text(orderProvider.orders!.paymentMethod!.replaceAll('_', ' ').capitalize(),
+                                        Text(getTranslated(orderProvider.orders!.paymentMethod, context) ?? orderProvider.orders!.paymentMethod!.replaceAll('_', ' ').capitalize(),
                                           style: textMedium.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).primaryColor)
                                         )
                                       ],

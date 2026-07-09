@@ -8,6 +8,10 @@ import 'package:flutter_sixvalley_ecommerce/common/enums/local_caches_type_enum.
   static const String appVersion = '16.3'; ///Flutter SDK 3.44.2
   static const bool demo = false;
 
+  // ANPEC F6 (pedidos): fuerza pago contra entrega y omite la selección de envío
+  // en carrito/checkout. El pedido a proveedor no tiene pasarelas ni fricción de envío.
+  static const bool anpecPedidoFlow = true;
+
   static const int imageQuality = 100;
   static const LocalCachesTypeEnum cachesType = LocalCachesTypeEnum.all;
 

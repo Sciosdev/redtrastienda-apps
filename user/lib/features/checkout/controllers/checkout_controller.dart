@@ -145,6 +145,15 @@ class CheckoutController with ChangeNotifier {
     isOfflineChecked = false;
   }
 
+  /// ANPEC: preselecciona pago contra entrega (COD) para el flujo de pedido a
+  /// proveedor, ocultando cualquier selección de pasarela/pago en línea.
+  void forceCashOnDelivery(){
+    _paymentMethodIndex = -1;
+    isCODChecked = true;
+    isWalletChecked = false;
+    isOfflineChecked = false;
+  }
+
 
   void shippingAddressNull(){
     _addressIndex = null;
