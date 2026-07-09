@@ -1418,5 +1418,9 @@
   "no_digital_card_subtitle": "Regístrate con tu número ANP para obtener tu tarjeta de afiliado.",
   "share_card": "Compartir",
   "could_not_load_card": "No se pudo cargar tu tarjeta digital",
-  "try_again": "Reintentar"
+  "try_again": "Reintentar",
+  "whatsapp_anpec": "WhatsApp ANPEC",
+  "call_anpec": "Llamar",
+  "anpec_contact_title": "Contacto ANPEC",
+  "anpec_whatsapp_prefill": "Hola, soy afiliado de Red Trastienda."
 }

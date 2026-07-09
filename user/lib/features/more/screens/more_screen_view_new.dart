@@ -5,6 +5,7 @@ import 'package:flutter_sixvalley_ecommerce/common/basewidget/not_logged_in_bott
 import 'package:flutter_sixvalley_ecommerce/features/auction_dashboard_summary/controllers/auction_dashboard_summary_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/auth_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/more/widgets/logout_confirm_bottom_sheet_widget.dart';
+import 'package:flutter_sixvalley_ecommerce/features/more/widgets/anpec_contact_sheet_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/notification/controllers/notification_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/notification/domain/models/notification_model.dart';
 import 'package:flutter_sixvalley_ecommerce/features/profile/controllers/profile_contrroller.dart';
@@ -569,6 +570,25 @@ class _MoreScreenViewState extends State<MoreScreenView> {
                         iconImage: Images.restockRequestSvg,
                         label: getTranslated('my_digital_card', context) ?? 'Mi Tarjeta Digital',
                         onTap: () => RouterHelper.getDigitalCardRoute(action: RouteAction.push),
+                      ),
+
+                    // F5: canal de contacto directo con ANPEC (WhatsApp/Llamar).
+                    // Se oculta si el config no trae company_phone; nunca hardcodea el número.
+                    if ((splashController.configModel?.companyPhone ?? '').trim().isNotEmpty &&
+                        (splashController.configModel?.companyPhone ?? '').trim().toLowerCase() != 'null')
+                      MenuItem(
+                        iconImage: Images.chats,
+                        label: getTranslated('whatsapp_anpec', context) ?? 'WhatsApp ANPEC',
+                        onTap: () => showModalBottomSheet(
+                          context: context,
+                          backgroundColor: Theme.of(context).cardColor,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(Dimensions.radiusLarge)),
+                          ),
+                          builder: (_) => AnpecContactSheetWidget(
+                            rawPhone: splashController.configModel!.companyPhone!,
+                          ),
+                        ),
                       ),
 
                     if (authController.isLoggedIn())

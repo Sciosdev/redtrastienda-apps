@@ -1418,5 +1418,9 @@
   "no_digital_card_subtitle": "Sign up with your ANP number to get your affiliate card.",
   "share_card": "Share",
   "could_not_load_card": "Could not load your digital card",
-  "try_again": "Try again"
+  "try_again": "Try again",
+  "whatsapp_anpec": "WhatsApp ANPEC",
+  "call_anpec": "Call",
+  "anpec_contact_title": "Contact ANPEC",
+  "anpec_whatsapp_prefill": "Hello, I'm a Red Trastienda affiliate."
 }
