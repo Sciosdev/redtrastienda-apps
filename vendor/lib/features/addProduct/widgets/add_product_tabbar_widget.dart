@@ -5,8 +5,8 @@ import '../../../main.dart';
 
 List<Tab> _productTabs = <Tab>[
   Tab(text: getTranslated('general_info', Get.context!) ?? 'General Info'),
-  Tab(text: getTranslated('variations', Get.context!) ?? 'Variations'),
-  Tab(text: getTranslated('seo', Get.context!) ??  'SEO'),
+  Tab(text: getTranslated('price_and_variations', Get.context!) ?? 'Precio y variaciones'),
+  Tab(text: getTranslated('finish', Get.context!) ??  'Finalizar'),
 ];
 
 

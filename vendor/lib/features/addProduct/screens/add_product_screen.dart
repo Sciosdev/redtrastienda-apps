@@ -269,41 +269,10 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
                                       ),
                                       child: Column(
                                         children: [
+                                          // ANPEC: idioma único (español); se oculta el selector English/Español
                                           Padding(
                                             padding: const EdgeInsets.only(top: Dimensions.paddingSizeSmall),
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(top: Dimensions.paddingSizeMedium, left: Dimensions.paddingEye, bottom: Dimensions.paddingEye),
-                                              child: SizedBox(width: MediaQuery.of(context).size.width,
-                                                child: TabBar(
-                                                  indicatorSize: TabBarIndicatorSize.tab,
-                                                  tabAlignment: TabAlignment.start,
-                                                  isScrollable: true,
-                                                  dividerColor: Theme.of(context).hintColor,
-                                                  controller: _tabController,
-                                                  indicatorColor: Theme.of(context).primaryColor,
-                                                  indicatorWeight: 12,
-                                                  labelColor: Theme.of(context).primaryColor,
-                                                  indicator: UnderlineTabIndicator(
-                                                    borderSide: BorderSide(width: 2.0, color: Theme.of(context).primaryColor),
-                                                    insets: EdgeInsets.zero, // no inset — covers full tab
-                                                  ),
-                                                  indicatorPadding: const EdgeInsets.symmetric(horizontal: 0),
-                                                  unselectedLabelStyle: robotoRegular.copyWith(color: Theme.of(context).hintColor,),
-                                                  labelStyle: robotoBold.copyWith(fontSize: Dimensions.fontSizeLarge,
-                                                    color: Theme.of(context).disabledColor,),
-                                                  tabs: _generateTabChildren(),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-
-                                          SizedBox(height: 235,
-                                            child: AnimatedBuilder(
-                                              animation: _tabController!,
-                                              builder: (BuildContext context, Widget? child) {
-                                                return TabBarView(controller: _tabController, children: _generateTabPage(resProvider, _tabController));
-                                              },
-                                            )
+                                            child: TitleAndDescriptionWidget(resProvider: resProvider, index: 0, langCode: 'es'),
                                           ),
                                         ],
                                       ),
@@ -1092,26 +1061,7 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
                             const SizedBox(height: Dimensions.paddingSizeDefault),
 
 
-                            AddProductSectionWidget(
-                              title: getTranslated('product_video_link', context)!,
-                              subTitle: getTranslated('add_the_youtube_video_link_here', context)!,
-                              childrens: <Widget>[
-                                const SizedBox(height: Dimensions.paddingSizeSmall),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
-                                  child: CustomTextFieldWidget(
-                                    border: true,
-                                    maxLine: 1,
-                                    textInputType: TextInputType.text,
-                                    controller: resProvider.youtubeLinkController,
-                                    textInputAction: TextInputAction.done,
-                                    hintText: getTranslated('youtube_video_link', context)!,
-                                  ),
-                                ),
-                                const SizedBox(height: Dimensions.paddingSizeDefault),
-                              ],
-                            ),
-                            const SizedBox(height: Dimensions.paddingSizeDefault),
+                            // ANPEC: sección "Enlace de video del producto" oculta
                           ]),
                         ),
                       )),
@@ -1299,23 +1249,6 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
     return sku;
   }
 
-  List<Widget> _generateTabChildren() {
-    List<Widget> tabs = [];
-    for(int index=0; index < Provider.of<SplashController>(context, listen: false).configModel!.languageList!.length; index++) {
-      tabs.add(Text(Provider.of<SplashController>(context, listen: false).configModel!.languageList![index].name!.capitalize(),
-          style: robotoBold.copyWith()));
-    }
-    return tabs;
-  }
-
-  List<Widget> _generateTabPage(AddProductController resProvider, TabController? tabIndex) {
-    List<Widget> tabView = [];
-    for(int index=0; index < Provider.of<SplashController>(context, listen: false).configModel!.languageList!.length; index++) {
-      tabView.add(TitleAndDescriptionWidget(resProvider: resProvider, index: index, langCode:  Provider.of<SplashController>(context, listen: false).configModel?.languageList?[tabIndex?.index ?? 0].code ?? 'en',));
-    }
-    return tabView;
-  }
-
   void _onChangeOptionHeight(String value, List<String> list) {
     setState(() {
       if (value.isEmpty) {
@@ -1344,6 +1277,7 @@ class AddProductScreenState extends State<AddProductScreen> with TickerProviderS
 }
 
 
+// Extensión compartida por otros widgets (payment_status, change_log, refund_pricing).
 extension StringExtension on String {
   String capitalize() {
     return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";

@@ -384,6 +384,8 @@ class AddProductSeoScreenState extends State<AddProductSeoScreen>  with Automati
                                 ),
                                 const SizedBox(height: Dimensions.paddingSizeDefault),
 
+                                // ANPEC: secciones de SEO ocultas (meta título/descripción/imagen y ajustes SEO)
+                                /*
                                 AddProductSectionWidget(
                                   childrenPadding:Dimensions.paddingSizeMedium,
                                   title: getTranslated('product_seo', context)!,
@@ -593,6 +595,7 @@ class AddProductSeoScreenState extends State<AddProductSeoScreen>  with Automati
                                     );
                                   }
                                 ),
+                                */
                               ],),
                             ),
                             const SizedBox(height: Dimensions.paddingSizeExtraLarge),

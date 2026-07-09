@@ -3,14 +3,10 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sixvalley_vendor_app/common/basewidgets/custom_asset_image_widget.dart';
 import 'package:sixvalley_vendor_app/common/basewidgets/textfeild/custom_pass_textfeild_widget.dart';
 import 'package:sixvalley_vendor_app/common/basewidgets/textfeild/custom_text_feild_widget.dart';
 import 'package:sixvalley_vendor_app/features/auth/widgets/pass_view.dart';
-import 'package:sixvalley_vendor_app/features/shop/controllers/shop_controller.dart';
-import 'package:sixvalley_vendor_app/features/shop/screens/vacation_mode_setup_screen.dart';
 import 'package:sixvalley_vendor_app/features/splash/domain/models/business_pages_model.dart';
-import 'package:sixvalley_vendor_app/helper/date_converter.dart';
 import 'package:sixvalley_vendor_app/localization/language_constrants.dart';
 import 'package:sixvalley_vendor_app/features/auth/controllers/auth_controller.dart';
 import 'package:sixvalley_vendor_app/features/splash/controllers/splash_controller.dart';
@@ -41,10 +37,9 @@ class _InfoFieldVIewWidgetState extends State<InfoFieldVIewWidget> {
 
     final authController = Provider.of<AuthController>(context, listen: false);
 
-      _countryDialCode = CountryCode.fromCountryCode(Provider.of<SplashController>(context, listen: false).configModel!.countryCode!).dialCode;
-      if (authController.countryDialCode != _countryDialCode) {
-        _countryDialCode = authController.countryDialCode;
-      }
+      // ANPEC: los proveedores solo operan en México (+52)
+      _countryDialCode = '+52';
+      authController.setCountryDialCode(_countryDialCode);
 
     authController.validPassCheck(authController.passwordController.text, isUpdate: false);
     if(authController.passwordController.text.isEmpty && authController.showPassView){
@@ -125,6 +120,7 @@ class _InfoFieldVIewWidgetState extends State<InfoFieldVIewWidget> {
                               },
                               initialSelection: _countryDialCode,
                               favorite: [authProvider.countryDialCode!],
+                              countryFilter: const ['MX'],
                               showDropDownButton: true,
                               padding: EdgeInsets.zero,
                               showFlagMain: true,
@@ -729,6 +725,8 @@ class _InfoFieldVIewWidgetState extends State<InfoFieldVIewWidget> {
                       ) : const SizedBox(),
 
 
+                      // ANPEC: sección TIN (número de identificación / certificado) oculta — no aplica a proveedores
+                      /*
                       Consumer<ShopController>(
                         builder: (context, shopController, child) {
                             return Padding(
@@ -874,13 +872,12 @@ class _InfoFieldVIewWidgetState extends State<InfoFieldVIewWidget> {
                             );
                           }
                       ),
-
-
+                      */
 
                       Container(
                         margin: const EdgeInsets.only(right: Dimensions.paddingSizeSmall),
-                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [Row(children: [
+                        child: Row(
+                          children: [
                             Consumer<AuthController>(
                               builder: (context, authProvider, child) => Checkbox(
                                 checkColor: Theme.of(context).colorScheme.secondaryContainer,
@@ -888,21 +885,22 @@ class _InfoFieldVIewWidgetState extends State<InfoFieldVIewWidget> {
                                 value: authProvider.isTermsAndCondition,
                                 onChanged: authProvider.updateTermsAndCondition)),
 
-                            Consumer<SplashController>(
-                              builder: (context, splashController, _) {
-                                return InkWell(onTap: (){
-                                  Navigator.push(context, MaterialPageRoute(builder: (_) => HtmlViewScreen(
-                                    page : getPageBySlug('terms-and-conditions', splashController.defaultBusinessPages),
-                                  )));
-                                },
-                                    child: Row(children: [
-                                      Text(getTranslated('i_agree_to_your', context)!, style: robotoRegular.copyWith(color: Theme.of(context).textTheme.bodyLarge?.color),),
-                                      const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-                                      Text(getTranslated('terms_and_condition', context)!,style: robotoMedium),
-                                    ]));
-                              }
+                            Expanded(
+                              child: Consumer<SplashController>(
+                                builder: (context, splashController, _) {
+                                  return InkWell(onTap: (){
+                                    Navigator.push(context, MaterialPageRoute(builder: (_) => HtmlViewScreen(
+                                      page : getPageBySlug('terms-and-conditions', splashController.defaultBusinessPages),
+                                    )));
+                                  },
+                                      child: Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
+                                        Text(getTranslated('i_agree_to_your', context)!, style: robotoRegular.copyWith(color: Theme.of(context).textTheme.bodyLarge?.color),),
+                                        const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                                        Text(getTranslated('terms_and_condition', context)!,style: robotoMedium),
+                                      ]));
+                                }
+                              ),
                             ),
-                          ],),
                           ],
                         ),
                       ),

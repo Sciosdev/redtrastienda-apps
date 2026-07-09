@@ -69,11 +69,13 @@ class ApiErrorHandler {
                     print("==Responce=405=>>${error.response!.data}");
                   }
                 case 404:
-                  if(error.response!.data['errors'] != null){
+                  if(error.response!.data is Map && error.response!.data['errors'] != null){
                     ErrorResponse errorResponse = ErrorResponse.fromJson(error.response?.data);
                     errorDescription = errorResponse.errors?[0].message;
-                  }else{
+                  }else if(error.response!.data is Map){
                     errorDescription = error.response!.data['message'];
+                  }else{
+                    errorDescription = error.response!.data?.toString();
                   }
                   break;
                 case 500:

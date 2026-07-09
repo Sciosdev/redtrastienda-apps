@@ -1058,39 +1058,7 @@ class _TitleAndDescriptionWidgetState extends State<TitleAndDescriptionWidget> w
           ),
           const SizedBox(height: Dimensions.paddingSizeSmall),
 
-          Container(
-            height: 40,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                  width: 1,
-                ),
-              ),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              isScrollable: true,
-              tabAlignment: TabAlignment.start,
-              indicatorColor: Theme.of(context).primaryColor,
-              labelColor: Theme.of(context).primaryColor,
-              unselectedLabelColor: Theme.of(context).hintColor,
-              labelStyle: robotoBold.copyWith(fontSize: Dimensions.fontSizeDefault),
-              unselectedLabelStyle: robotoRegular.copyWith(fontSize: Dimensions.fontSizeDefault),
-              indicatorSize: TabBarIndicatorSize.tab,
-              dividerColor: Colors.transparent,
-              tabs: widget.languageList.map((lang) => Tab(text: '${lang.name} (${lang.code})')).toList(),
-              onTap: (index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
-            ),
-          ),
-
-          const SizedBox(height: Dimensions.paddingSizeDefault),
-
+          // ANPEC: selector de idioma oculto; se muestra solo el contenido en español
           _buildContent(widget.languageList[_selectedIndex]),
         ]
       ),
