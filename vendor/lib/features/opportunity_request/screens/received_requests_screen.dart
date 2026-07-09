@@ -33,21 +33,24 @@ class _ReceivedRequestsScreenState extends State<ReceivedRequestsScreen> {
         builder: (context, controller, child) {
           final List<OpportunityRequest> requests = controller.opportunityRequestModel?.data ?? [];
 
-          if (controller.isLoading && requests.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (requests.isEmpty) {
-            return NoDataScreen(title: getTranslated('no_request_found', context) ?? 'Sin solicitudes');
-          }
-
-          return RefreshIndicator(
-            onRefresh: () => controller.getReceivedRequests(1),
-            child: ListView.builder(
-              padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-              itemCount: requests.length,
-              itemBuilder: (context, index) => _RequestCard(request: requests[index]),
-            ),
+          return Column(
+            children: [
+              _StatusFilterBar(controller: controller),
+              Expanded(
+                child: (controller.isLoading && requests.isEmpty)
+                    ? const Center(child: CircularProgressIndicator())
+                    : requests.isEmpty
+                        ? NoDataScreen(title: getTranslated('no_request_found', context) ?? 'Sin solicitudes')
+                        : RefreshIndicator(
+                            onRefresh: () => controller.getReceivedRequests(1),
+                            child: ListView.builder(
+                              padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                              itemCount: requests.length,
+                              itemBuilder: (context, index) => _RequestCard(request: requests[index]),
+                            ),
+                          ),
+              ),
+            ],
           );
         },
       ),
@@ -122,6 +125,40 @@ class _RequestCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _StatusFilterBar extends StatelessWidget {
+  final OpportunityRequestController controller;
+  const _StatusFilterBar({required this.controller});
+
+  static const List<String?> filters = [null, 'new', 'in_review', 'contacted', 'served', 'rejected'];
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 48,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall),
+        itemCount: filters.length,
+        separatorBuilder: (_, __) => const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+        itemBuilder: (context, index) {
+          final String? status = filters[index];
+          final bool selected = controller.statusFilter == status;
+          final String label = status == null
+              ? (getTranslated('status_all', context) ?? 'Todas')
+              : (getTranslated('status_$status', context) ?? status);
+          return Center(
+            child: ChoiceChip(
+              label: Text(label),
+              selected: selected,
+              onSelected: (_) => controller.setStatusFilter(status),
+            ),
+          );
+        },
       ),
     );
   }

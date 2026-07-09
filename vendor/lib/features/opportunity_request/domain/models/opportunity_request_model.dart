@@ -16,8 +16,8 @@ class OpportunityRequestModel {
       });
     }
     totalSize = json['total_size'];
-    limit = json['limit'];
-    offset = json['offset'];
+    limit = json['limit']?.toString();
+    offset = json['offset']?.toString();
   }
 }
 
