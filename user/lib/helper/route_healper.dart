@@ -60,6 +60,7 @@ import 'package:flutter_sixvalley_ecommerce/features/product_details/screens/pro
 import 'package:flutter_sixvalley_ecommerce/features/product_details/screens/specification_screen.dart';
 import 'package:flutter_sixvalley_ecommerce/features/refer_and_earn/screens/refer_and_earn_screen.dart';
 import 'package:flutter_sixvalley_ecommerce/features/restock/screens/restock_list_screen.dart';
+import 'package:flutter_sixvalley_ecommerce/features/affiliate_profile/screens/digital_card_screen.dart';
 import 'package:flutter_sixvalley_ecommerce/features/review/domain/models/review_model.dart';
 import 'package:flutter_sixvalley_ecommerce/features/review/screens/review_screen.dart';
 import 'package:flutter_sixvalley_ecommerce/features/search_product/screens/search_product_screen.dart';
@@ -160,6 +161,7 @@ class RouterHelper {
   static const String maintenanceScreen = '/maintenance';
   static const String referAndEarnScreen = '/refer-and-earn';
   static const String restockListScreen = '/restock-list';
+  static const String digitalCardScreen = '/digital-card';
   static const String settingsScreen = '/settings';
   static const String notificationScreen = '/notification';
   static const String guestTrackOrderScreen = '/guest-track-order';
@@ -686,6 +688,10 @@ class RouterHelper {
 
   static String getRestockListRoute({RouteAction? action}) {
     return _navigateRoute(restockListScreen, route: action);
+  }
+
+  static String getDigitalCardRoute({RouteAction? action}) {
+    return _navigateRoute(digitalCardScreen, route: action);
   }
 
   static String getSettingsRoute({RouteAction? action}) {
@@ -1559,6 +1565,11 @@ class RouterHelper {
       GoRoute(
         path: restockListScreen,
         builder: (context, state) => const RestockListScreen(),
+      ),
+
+      GoRoute(
+        path: digitalCardScreen,
+        builder: (context, state) => const DigitalCardScreen(),
       ),
 
       GoRoute(

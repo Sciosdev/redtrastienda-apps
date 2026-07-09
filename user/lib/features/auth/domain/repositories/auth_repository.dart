@@ -413,6 +413,16 @@ class AuthRepository implements AuthRepoInterface{
   }
 
   @override
+  Future<ApiResponseModel> checkNumeroAnp(String numeroAnp) async {
+    try {
+      Response response = await dioClient!.post(AppConstants.checkNumeroAnpUri, data: {"numero_anp": numeroAnp});
+      return ApiResponseModel.withSuccess(response);
+    } catch (e) {
+      return ApiResponseModel.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+
+  @override
   Future<void> setAppleLoginEmail(String email) async {
     try {
       await sharedPreferences!.setString(AppConstants.appleLoginEmail, email);

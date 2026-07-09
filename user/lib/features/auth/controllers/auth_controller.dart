@@ -36,6 +36,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+/// Estados de la pre-validación del número ANP en el registro de afiliados.
+enum AnpCheckStatus { idle, checking, valid, invalid }
+
 class AuthController with ChangeNotifier {
   final AuthServiceInterface authServiceInterface;
   AuthController( {required this.authServiceInterface});
@@ -226,6 +229,62 @@ class AuthController with ChangeNotifier {
     notifyListeners();
   }
 
+
+  // ---------------- ANPEC: verificación de número de afiliado (ANP) ----------------
+  // Estado de la pre-validación del número ANP en el formulario de registro.
+  // idle: sin verificar | checking: consultando | valid: existe y disponible | invalid: no existe / no disponible
+  AnpCheckStatus _anpCheckStatus = AnpCheckStatus.idle;
+  AnpCheckStatus get anpCheckStatus => _anpCheckStatus;
+
+  String? _anpCheckMessage;
+  String? get anpCheckMessage => _anpCheckMessage;
+
+  String _lastCheckedAnp = '';
+
+  void resetAnpCheck() {
+    _anpCheckStatus = AnpCheckStatus.idle;
+    _anpCheckMessage = null;
+    _lastCheckedAnp = '';
+    notifyListeners();
+  }
+
+  /// Consulta check-numero-anp y actualiza el estado para dar feedback en el form.
+  /// Devuelve true si el número existe y está disponible.
+  Future<bool> checkNumeroAnp(String numeroAnp) async {
+    final String value = numeroAnp.trim();
+    if (value.isEmpty) {
+      _anpCheckStatus = AnpCheckStatus.idle;
+      _anpCheckMessage = null;
+      notifyListeners();
+      return false;
+    }
+
+    _lastCheckedAnp = value;
+    _anpCheckStatus = AnpCheckStatus.checking;
+    _anpCheckMessage = null;
+    notifyListeners();
+
+    ApiResponseModel apiResponse = await authServiceInterface.checkNumeroAnp(value);
+
+    // Evita condiciones de carrera si el usuario siguió escribiendo.
+    if (_lastCheckedAnp != value) return _anpCheckStatus == AnpCheckStatus.valid;
+
+    bool isAvailable = false;
+    if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
+      final Map data = apiResponse.response!.data;
+      final bool existe = data['existe'] == true;
+      final bool disponible = data['disponible'] == true;
+      isAvailable = existe && disponible;
+      _anpCheckStatus = isAvailable ? AnpCheckStatus.valid : AnpCheckStatus.invalid;
+      _anpCheckMessage = data['message']?.toString();
+    } else {
+      _anpCheckStatus = AnpCheckStatus.invalid;
+      _anpCheckMessage = apiResponse.error?.toString();
+    }
+    notifyListeners();
+    return isAvailable;
+  }
+  // ---------------------------------------------------------------------------------
 
   Future logOut() async {
     ApiResponseModel apiResponse = await authServiceInterface.logout();

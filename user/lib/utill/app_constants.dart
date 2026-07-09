@@ -24,6 +24,9 @@ import 'package:flutter_sixvalley_ecommerce/common/enums/local_caches_type_enum.
   static const String categoryProductUri = '/api/v1/categories/products/';
   static const String registrationUri = '/api/v1/auth/register';
   static const String loginUri = '/api/v1/auth/login';
+  // ANPEC afiliados
+  static const String checkNumeroAnpUri = '/api/v1/auth/check-numero-anp';
+  static const String affiliateProfileUri = '/api/v1/customer/affiliate-profile';
 
   static const String logOut = '/api/v1/auth/logout';
   static const String latestProductUri = '/api/v1/products/latest?guest_id=1&limit=10&&offset=';

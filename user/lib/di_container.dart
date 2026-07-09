@@ -191,6 +191,11 @@ import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/domain/
 import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/domain/repositories/opportunity_request_repository_interface.dart';
 import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/domain/services/opportunity_request_service.dart';
 import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/domain/services/opportunity_request_service_interface.dart';
+import 'package:flutter_sixvalley_ecommerce/features/affiliate_profile/controllers/affiliate_profile_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/features/affiliate_profile/domain/repositories/affiliate_profile_repository.dart';
+import 'package:flutter_sixvalley_ecommerce/features/affiliate_profile/domain/repositories/affiliate_profile_repository_interface.dart';
+import 'package:flutter_sixvalley_ecommerce/features/affiliate_profile/domain/services/affiliate_profile_service.dart';
+import 'package:flutter_sixvalley_ecommerce/features/affiliate_profile/domain/services/affiliate_profile_service_interface.dart';
 import 'package:flutter_sixvalley_ecommerce/features/restock/controllers/restock_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/restock/domain/repositories/restock_repository.dart';
 import 'package:flutter_sixvalley_ecommerce/features/restock/domain/repositories/restock_repository_interface.dart';
@@ -371,6 +376,7 @@ Future<void> init() async {
   sl.registerFactory(() => ReOrderController(reOrderServiceInterface: sl()));
   sl.registerFactory(() => RestockController(restockServiceInterface: sl()));
   sl.registerFactory(() => OpportunityRequestController(opportunityRequestServiceInterface: sl()));
+  sl.registerFactory(() => AffiliateProfileController(affiliateProfileServiceInterface: sl()));
   sl.registerFactory(() => AuctionCategoryController(auctionCategoryServiceInterface: sl()));
   sl.registerFactory(() => AuctionHomeController(auctionHomeServiceInterface: sl()));
 
@@ -562,6 +568,11 @@ Future<void> init() async {
   sl.registerLazySingleton(() => opportunityRequestRepositoryInterface);
   OpportunityRequestServiceInterface opportunityRequestServiceInterface = OpportunityRequestService(opportunityRequestRepositoryInterface: sl());
   sl.registerLazySingleton(() => opportunityRequestServiceInterface);
+
+  AffiliateProfileRepositoryInterface affiliateProfileRepositoryInterface = AffiliateProfileRepository(dioClient: sl());
+  sl.registerLazySingleton(() => affiliateProfileRepositoryInterface);
+  AffiliateProfileServiceInterface affiliateProfileServiceInterface = AffiliateProfileService(affiliateProfileRepositoryInterface: sl());
+  sl.registerLazySingleton(() => affiliateProfileServiceInterface);
 
   // DataSyncRepoInterface dataSyncRepoInterface = DataSyncRepo(dioClient: sl(), sharedPreferences: sl());
   // sl.registerLazySingleton(() => dataSyncRepoInterface);

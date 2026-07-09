@@ -156,6 +156,11 @@ class AuthService implements AuthServiceInterface{
   }
 
   @override
+  Future checkNumeroAnp(String numeroAnp) {
+    return authRepoInterface.checkNumeroAnp(numeroAnp);
+  }
+
+  @override
   Future firebaseAuthVerify({required String phoneNumber, required String session, required String otp, required bool isForgetPassword}){
     return authRepoInterface.firebaseAuthVerify(phoneNumber: phoneNumber, session: session, otp: otp, isForgetPassword: isForgetPassword);
   }

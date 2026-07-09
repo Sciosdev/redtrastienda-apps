@@ -567,6 +567,13 @@ class _MoreScreenViewState extends State<MoreScreenView> {
                     if (authController.isLoggedIn())
                       MenuItem(
                         iconImage: Images.restockRequestSvg,
+                        label: getTranslated('my_digital_card', context) ?? 'Mi Tarjeta Digital',
+                        onTap: () => RouterHelper.getDigitalCardRoute(action: RouteAction.push),
+                      ),
+
+                    if (authController.isLoggedIn())
+                      MenuItem(
+                        iconImage: Images.restockRequestSvg,
                         label: getTranslated('restock_requests', context)!,
                         onTap: () => RouterHelper.getRestockListRoute(action: RouteAction.push),
                       ),

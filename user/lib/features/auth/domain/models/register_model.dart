@@ -7,8 +7,11 @@ class RegisterModel {
   String? socialId;
   String? loginMedium;
   String? referCode;
+  // ANPEC: número de afiliado y nombre de negocio (registro de afiliados).
+  String? numeroAnp;
+  String? nombreNegocio;
 
-  RegisterModel({this.email, this.password, this.fName, this.lName, this.socialId,this.loginMedium, this.referCode});
+  RegisterModel({this.email, this.password, this.fName, this.lName, this.socialId,this.loginMedium, this.referCode, this.numeroAnp, this.nombreNegocio});
 
   RegisterModel.fromJson(Map<String, dynamic> json) {
     email = json['email'];
@@ -19,6 +22,8 @@ class RegisterModel {
     socialId = json['social_id'];
     loginMedium = json['login_medium'];
     referCode = json['referral_code'];
+    numeroAnp = json['numero_anp'];
+    nombreNegocio = json['nombre_negocio'];
   }
 
   Map<String, dynamic> toJson() {
@@ -31,6 +36,14 @@ class RegisterModel {
     data['social_id'] = socialId;
     data['login_medium'] = loginMedium;
     data['referral_code'] = referCode;
+    // Solo enviamos los campos de afiliado si vienen informados, para no
+    // alterar otros flujos de registro (social/OTP) que reutilizan este modelo.
+    if (numeroAnp != null && numeroAnp!.isNotEmpty) {
+      data['numero_anp'] = numeroAnp;
+    }
+    if (nombreNegocio != null && nombreNegocio!.isNotEmpty) {
+      data['nombre_negocio'] = nombreNegocio;
+    }
     return data;
   }
 }

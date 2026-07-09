@@ -60,6 +60,8 @@ abstract class AuthServiceInterface{
 
   Future<dynamic> checkPhone(String checkPhone);
 
+  Future<dynamic> checkNumeroAnp(String numeroAnp);
+
   Future<dynamic> firebaseAuthVerify({required String phoneNumber, required String session, required String otp, required bool isForgetPassword});
 
   Future<dynamic> registerWithOtp(String name, {String? email, required String phone});

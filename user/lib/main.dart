@@ -41,6 +41,7 @@ import 'package:flutter_sixvalley_ecommerce/features/profile/controllers/profile
 import 'package:flutter_sixvalley_ecommerce/features/refund/controllers/refund_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/reorder/controllers/re_order_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/controllers/opportunity_request_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/features/affiliate_profile/controllers/affiliate_profile_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/restock/controllers/restock_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/review/controllers/review_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/shipping/controllers/shipping_controller.dart';
@@ -172,6 +173,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => di.sl<SellerProductController>()),
       ChangeNotifierProvider(create: (context) => di.sl<RestockController>()),
       ChangeNotifierProvider(create: (context) => di.sl<OpportunityRequestController>()),
+      ChangeNotifierProvider(create: (context) => di.sl<AffiliateProfileController>()),
       ChangeNotifierProvider(create: (context) => di.sl<AddAuctionProductMediaController>()),
       ChangeNotifierProvider(create: (context) => di.sl<AddAuctionProductController>()),
       ChangeNotifierProvider(create: (context) => di.sl<AuctionCategoryController>()),

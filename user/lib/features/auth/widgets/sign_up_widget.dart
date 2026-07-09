@@ -34,6 +34,9 @@ class SignUpWidgetState extends State<SignUpWidget> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _referController = TextEditingController();
+  // ANPEC: número de afiliado y nombre de negocio.
+  final TextEditingController _numeroAnpController = TextEditingController();
+  final TextEditingController _nombreNegocioController = TextEditingController();
 
   final FocusNode _fNameFocus = FocusNode();
   final FocusNode _lNameFocus = FocusNode();
@@ -42,6 +45,8 @@ class SignUpWidgetState extends State<SignUpWidget> {
   final FocusNode _passwordFocus = FocusNode();
   final FocusNode _confirmPasswordFocus = FocusNode();
   final FocusNode _referFocus = FocusNode();
+  final FocusNode _numeroAnpFocus = FocusNode();
+  final FocusNode _nombreNegocioFocus = FocusNode();
 
   RegisterModel register = RegisterModel();
   final GlobalKey<FormState> signUpFormKey = GlobalKey<FormState>();
@@ -94,11 +99,66 @@ class SignUpWidgetState extends State<SignUpWidget> {
   @override
   void initState() {
     super.initState();
-    Provider.of<AuthController>(context, listen: false).setCountryCode(CountryCode.fromCountryCode(Provider.of<SplashController>(context, listen: false).configModel!.countryCode!).dialCode!, notify: false);
+    final authController = Provider.of<AuthController>(context, listen: false);
+    authController.setCountryCode(CountryCode.fromCountryCode(Provider.of<SplashController>(context, listen: false).configModel!.countryCode!).dialCode!, notify: false);
 
     if(widget.referCode != null) {
       _referController.text = widget.referCode ?? '';
     }
+
+    // Pre-validación del número ANP al perder el foco (UX): consulta el backend
+    // y muestra feedback verde/rojo sin bloquear el resto del formulario.
+    _numeroAnpFocus.addListener(() {
+      if (!_numeroAnpFocus.hasFocus) {
+        final anp = _numeroAnpController.text.trim();
+        if (anp.isNotEmpty) {
+          authController.checkNumeroAnp(anp);
+        }
+      }
+    });
+
+    // Empezamos con el estado de verificación limpio.
+    WidgetsBinding.instance.addPostFrameCallback((_) => authController.resetAnpCheck());
+  }
+
+  @override
+  void dispose() {
+    _numeroAnpFocus.dispose();
+    _nombreNegocioFocus.dispose();
+    super.dispose();
+  }
+
+  // Feedback visual de la pre-validación del número ANP (verde/rojo).
+  Widget _buildAnpFeedback(BuildContext context, AuthController authProvider) {
+    if (authProvider.anpCheckStatus == AnpCheckStatus.idle) {
+      return const SizedBox.shrink();
+    }
+
+    if (authProvider.anpCheckStatus == AnpCheckStatus.checking) {
+      return Padding(
+        padding: const EdgeInsets.only(left: Dimensions.marginSizeDefault, right: Dimensions.marginSizeDefault, top: Dimensions.paddingSizeExtraSmall),
+        child: Row(children: [
+          const SizedBox(height: 14, width: 14, child: CircularProgressIndicator(strokeWidth: 2)),
+          const SizedBox(width: Dimensions.paddingSizeSmall),
+          Text(getTranslated('checking_numero_anp', context) ?? '',
+              style: textRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).hintColor)),
+        ]),
+      );
+    }
+
+    final bool isValid = authProvider.anpCheckStatus == AnpCheckStatus.valid;
+    final Color color = isValid ? const Color(0xFF2E7D32) : Theme.of(context).colorScheme.error;
+    final String message = authProvider.anpCheckMessage ??
+        getTranslated(isValid ? 'numero_anp_available' : 'numero_anp_invalid', context) ?? '';
+
+    return Padding(
+      padding: const EdgeInsets.only(left: Dimensions.marginSizeDefault, right: Dimensions.marginSizeDefault, top: Dimensions.paddingSizeExtraSmall),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Icon(isValid ? Icons.check_circle : Icons.error, size: 16, color: color),
+        const SizedBox(width: Dimensions.paddingSizeSmall),
+        Expanded(child: Text(message, style: textRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: color))),
+      ]),
+    );
   }
 
   @override
@@ -142,6 +202,46 @@ class SignUpWidgetState extends State<SignUpWidget> {
                               capitalization: TextCapitalization.words,
                               controller: _lastNameController,
                               validator: (value)  => ValidateCheck.validateEmptyText(value, "last_name_field_is_required"))),
+
+                      // ANPEC: Número ANP (requerido) + feedback de disponibilidad.
+                      Container(margin: const EdgeInsets.only(left: Dimensions.marginSizeDefault, right: Dimensions.marginSizeDefault,
+                          top: Dimensions.marginSizeSmall),
+                          child: CustomTextFieldWidget(
+                              hintText: getTranslated('enter_numero_anp', context),
+                              labelText: getTranslated('numero_anp', context),
+                              labelTextStyle: textRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).textTheme.bodyLarge!.color),
+                              focusNode: _numeroAnpFocus,
+                              nextFocus: _nombreNegocioFocus,
+                              required: true,
+                              inputType: TextInputType.text,
+                              controller: _numeroAnpController,
+                              capitalization: TextCapitalization.characters,
+                              prefixIcon: Images.username,
+                              onChanged: (value) {
+                                // Al editar reiniciamos el feedback previo.
+                                if (authProvider.anpCheckStatus != AnpCheckStatus.idle) {
+                                  authProvider.resetAnpCheck();
+                                }
+                              },
+                              validator: (value)  => ValidateCheck.validateEmptyText(value, "numero_anp_field_is_required"))),
+
+                      _buildAnpFeedback(context, authProvider),
+
+                      // ANPEC: Nombre del negocio (requerido).
+                      Container(margin: const EdgeInsets.only(left: Dimensions.marginSizeDefault, right: Dimensions.marginSizeDefault,
+                          top: Dimensions.marginSizeSmall),
+                          child: CustomTextFieldWidget(
+                              hintText: getTranslated('enter_nombre_negocio', context),
+                              labelText: getTranslated('nombre_negocio', context),
+                              labelTextStyle: textRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).textTheme.bodyLarge!.color),
+                              focusNode: _nombreNegocioFocus,
+                              nextFocus: _emailFocus,
+                              required: true,
+                              inputType: TextInputType.text,
+                              controller: _nombreNegocioController,
+                              capitalization: TextCapitalization.words,
+                              prefixIcon: Images.username,
+                              validator: (value)  => ValidateCheck.validateEmptyText(value, "nombre_negocio_field_is_required"))),
 
                       Container(margin: const EdgeInsets.only(left: Dimensions.marginSizeDefault, right: Dimensions.marginSizeDefault,
                           top: Dimensions.marginSizeSmall),
@@ -238,20 +338,38 @@ class SignUpWidgetState extends State<SignUpWidget> {
                         tag: 'onTap',
                         child: CustomButton(
                           isLoading: authProvider.isLoading,
-                          onTap: authProvider.isAcceptTerms ?  () {
+                          onTap: authProvider.isAcceptTerms ?  () async {
                             String firstName = _firstNameController.text.trim();
                             String lastName = _lastNameController.text.trim();
                             String email = _emailController.text.trim();
                             String phoneNumber = authProvider.countryDialCode +_phoneController.text.trim();
                             String password = _passwordController.text.trim();
+                            String numeroAnp = _numeroAnpController.text.trim();
+                            String nombreNegocio = _nombreNegocioController.text.trim();
 
                             if (signUpFormKey.currentState?.validate() ?? false) {
+                              // Aseguramos que el número ANP sea válido antes de continuar.
+                              // Si aún no se validó (o se editó), lo comprobamos ahora.
+                              bool anpOk = authProvider.anpCheckStatus == AnpCheckStatus.valid;
+                              if (!anpOk) {
+                                anpOk = await authProvider.checkNumeroAnp(numeroAnp);
+                              }
+                              if (!context.mounted) return;
+                              if (!anpOk) {
+                                showCustomSnackBarWidget(
+                                  authProvider.anpCheckMessage ?? getTranslated('numero_anp_invalid', context),
+                                  context, snackBarType: SnackBarType.error);
+                                return;
+                              }
+
                               register.fName = firstName;
                               register.lName = lastName;
                               register.email = email;
                               register.phone = phoneNumber;
                               register.password = password;
                               register.referCode = _referController.text.trim();
+                              register.numeroAnp = numeroAnp;
+                              register.nombreNegocio = nombreNegocio;
                               authProvider.registration(register, route, config!, widget.fromPage, widget.onLoginSuccess);
                             }
 
