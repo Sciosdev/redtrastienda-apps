@@ -73,7 +73,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
 
                           Image.asset(Images.logoWithNameImageWhite, width: 130, height: 80, fit: BoxFit.contain)]),
 
-                        Text(getTranslated('sign_up', context)!, style: titilliumRegular.copyWith(
+                        Text(getTranslated('quiero_afiliarme', context)!, style: titilliumRegular.copyWith(
                           color: Theme.of(context).highlightColor,
                           fontSize: Dimensions.fontSizeLarge,
                         )),

@@ -13,6 +13,10 @@ class AffiliateProfileModel {
   String? approvedAt;
   String? approvedBy;
   String? createdAt;
+  // R-Afiliación (aditivo, tolerante a backend viejo): estado de activación e
+  // invitación a completar los campos vacíos del perfil.
+  bool reclamada = false;
+  List<String> camposFaltantes = [];
 
   AffiliateProfileModel({
     this.id,
@@ -29,6 +33,8 @@ class AffiliateProfileModel {
     this.approvedAt,
     this.approvedBy,
     this.createdAt,
+    this.reclamada = false,
+    this.camposFaltantes = const [],
   });
 
   AffiliateProfileModel.fromJson(Map<String, dynamic> json) {
@@ -46,5 +52,9 @@ class AffiliateProfileModel {
     approvedAt = json['approved_at']?.toString();
     approvedBy = json['approved_by']?.toString();
     createdAt = json['created_at']?.toString();
+    reclamada = json['reclamada'] == true || json['reclamada'] == 1;
+    camposFaltantes = json['campos_faltantes'] is List
+        ? (json['campos_faltantes'] as List).map((campo) => campo.toString()).toList()
+        : [];
   }
 }

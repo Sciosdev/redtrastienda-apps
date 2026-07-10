@@ -10,8 +10,11 @@ class RegisterModel {
   // ANPEC: número de afiliado y nombre de negocio (registro de afiliados).
   String? numeroAnp;
   String? nombreNegocio;
+  // R-Afiliación: registro de LEAD (interesado sin número ANP). El backend crea
+  // una cuenta pendiente que no puede iniciar sesión hasta que ANPEC lo afilie.
+  bool esLead = false;
 
-  RegisterModel({this.email, this.password, this.fName, this.lName, this.socialId,this.loginMedium, this.referCode, this.numeroAnp, this.nombreNegocio});
+  RegisterModel({this.email, this.password, this.fName, this.lName, this.socialId,this.loginMedium, this.referCode, this.numeroAnp, this.nombreNegocio, this.esLead = false});
 
   RegisterModel.fromJson(Map<String, dynamic> json) {
     email = json['email'];
@@ -43,6 +46,9 @@ class RegisterModel {
     }
     if (nombreNegocio != null && nombreNegocio!.isNotEmpty) {
       data['nombre_negocio'] = nombreNegocio;
+    }
+    if (esLead) {
+      data['es_lead'] = true;
     }
     return data;
   }

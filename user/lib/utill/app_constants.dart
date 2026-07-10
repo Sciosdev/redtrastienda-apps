@@ -31,6 +31,9 @@ import 'package:flutter_sixvalley_ecommerce/common/enums/local_caches_type_enum.
   // ANPEC afiliados
   static const String checkNumeroAnpUri = '/api/v1/auth/check-numero-anp';
   static const String affiliateProfileUri = '/api/v1/customer/affiliate-profile';
+  // R-Afiliación: activación de cuentas precargadas (claim).
+  static const String verificarIdentidadAnpUri = '/api/v1/auth/anp/verificar-identidad';
+  static const String activarCuentaAnpUri = '/api/v1/auth/anp/activar-cuenta';
 
   static const String logOut = '/api/v1/auth/logout';
   static const String latestProductUri = '/api/v1/products/latest?guest_id=1&limit=10&&offset=';

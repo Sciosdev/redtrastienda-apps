@@ -61,6 +61,10 @@ class AuthController with ChangeNotifier {
   String? _loginErrorMessage = '';
   String? get loginErrorMessage => _loginErrorMessage;
 
+  // R-Afiliación: code del último error de login (cuenta_sin_activar / lead_pendiente).
+  String? _loginErrorCode;
+  String? get loginErrorCode => _loginErrorCode;
+
   set setIsLoading(bool value)=> _isLoading = value;
   set setIsPhoneVerificationButttonLoading(bool value) => _isPhoneNumberVerificationButtonLoading = value;
 
@@ -193,6 +197,15 @@ class AuthController with ChangeNotifier {
       Map map = apiResponse.response!.data;
       String? tempToken = '', token = '', message = '';
 
+      // R-Lead: el registro de un interesado NO inicia sesión; la pantalla
+      // muestra el mensaje de éxito y regresa al home como invitado.
+      if (map['lead'] == true) {
+        _leadRegistrado = true;
+        _leadMensaje = map['message']?.toString();
+        notifyListeners();
+        return;
+      }
+
       if (map.containsKey('temporary_token')) {
         tempToken = map["temporary_token"];
       } else if(map.containsKey('token')) {
@@ -286,6 +299,152 @@ class AuthController with ChangeNotifier {
   }
   // ---------------------------------------------------------------------------------
 
+  // ---------------- R-Afiliación: activación de cuenta precargada (claim) ----------------
+  // Paso 1: consultar el número (check-numero-anp extendido) → decide el camino.
+  // Paso 2: verificar identidad (teléfono/nombre) → claim_token.
+  // Paso 3: correo real + contraseña → activar-cuenta → sesión iniciada.
+
+  bool _activacionLoading = false;
+  bool get activacionLoading => _activacionLoading;
+
+  // Respuesta extendida de check-numero-anp para el wizard.
+  bool _anpExiste = false;
+  bool get anpExiste => _anpExiste;
+  bool _anpPrecargado = false;
+  bool get anpPrecargado => _anpPrecargado;
+  bool _anpReclamada = false;
+  bool get anpReclamada => _anpReclamada;
+  String? _anpFactor;
+  String? get anpFactor => _anpFactor;
+
+  String? _claimToken;
+  String? _activacionMensaje;
+  String? get activacionMensaje => _activacionMensaje;
+  bool _activacionRequiereManual = false;
+  bool get activacionRequiereManual => _activacionRequiereManual;
+
+  void resetActivacion() {
+    _activacionLoading = false;
+    _anpExiste = false;
+    _anpPrecargado = false;
+    _anpReclamada = false;
+    _anpFactor = null;
+    _claimToken = null;
+    _activacionMensaje = null;
+    _activacionRequiereManual = false;
+    notifyListeners();
+  }
+
+  /// Paso 1 del wizard: consulta check-numero-anp y guarda precargado/reclamada/factor.
+  /// Devuelve true si la cuenta existe precargada y sigue sin activar.
+  Future<bool> consultarNumeroParaActivacion(String numeroAnp) async {
+    _activacionLoading = true;
+    _activacionMensaje = null;
+    notifyListeners();
+
+    ApiResponseModel apiResponse = await authServiceInterface.checkNumeroAnp(numeroAnp.trim());
+
+    bool activable = false;
+    if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
+      final Map data = apiResponse.response!.data;
+      _anpExiste = data['existe'] == true;
+      _anpPrecargado = data['precargado'] == true;
+      _anpReclamada = data['reclamada'] == true;
+      _anpFactor = data['factor']?.toString();
+      activable = _anpPrecargado && !_anpReclamada;
+    } else {
+      _anpExiste = false;
+      _anpPrecargado = false;
+      _activacionMensaje = apiResponse.error?.toString();
+    }
+
+    _activacionLoading = false;
+    notifyListeners();
+    return activable;
+  }
+
+  /// Paso 2: verifica identidad. Devuelve true si se obtuvo claim_token (o si
+  /// quedó registrada la solicitud manual, con [activacionRequiereManual] true).
+  Future<bool> verificarIdentidadAnp({required String numeroAnp, String? telefono, String? nombre, String? correoContacto}) async {
+    _activacionLoading = true;
+    _activacionMensaje = null;
+    _activacionRequiereManual = false;
+    notifyListeners();
+
+    ApiResponseModel apiResponse = await authServiceInterface.verificarIdentidadAnp(
+      numeroAnp.trim(),
+      telefono: telefono?.trim(),
+      nombre: nombre?.trim(),
+      correoContacto: correoContacto?.trim(),
+    );
+
+    bool ok = false;
+    if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
+      final Map data = apiResponse.response!.data;
+      _activacionMensaje = data['message']?.toString();
+      if (data['requiere_verificacion_manual'] == true) {
+        _activacionRequiereManual = true;
+        ok = true;
+      } else if (data['claim_token'] != null) {
+        _claimToken = data['claim_token'].toString();
+        ok = true;
+      }
+    } else {
+      _activacionMensaje = apiResponse.error?.toString();
+    }
+
+    _activacionLoading = false;
+    notifyListeners();
+    return ok;
+  }
+
+  /// Paso 3: crea correo real + contraseña. En éxito guarda el token de sesión
+  /// (mismo mecanismo que login) y deja al afiliado dentro.
+  Future<bool> activarCuentaAnp({required String correoReal, required String password, required String confirmPassword}) async {
+    if (_claimToken == null || _claimToken!.isEmpty) {
+      _activacionMensaje = null;
+      return false;
+    }
+    _activacionLoading = true;
+    _activacionMensaje = null;
+    notifyListeners();
+
+    ApiResponseModel apiResponse = await authServiceInterface.activarCuentaAnp(_claimToken!, correoReal.trim(), password, confirmPassword);
+
+    bool ok = false;
+    if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
+      final Map data = apiResponse.response!.data;
+      final String? token = data['token']?.toString();
+      if (token != null && token.isNotEmpty) {
+        authServiceInterface.saveUserToken(token);
+        await authServiceInterface.updateDeviceToken();
+        await clearGuestId();
+        _claimToken = null;
+        ok = true;
+      }
+      _activacionMensaje = data['message']?.toString();
+    } else {
+      _activacionMensaje = apiResponse.error?.toString();
+    }
+
+    _activacionLoading = false;
+    notifyListeners();
+    return ok;
+  }
+  // ---------------------------------------------------------------------------------
+
+  // ---------------- R-Lead: registro de interesado sin número ANP ----------------
+  bool _leadRegistrado = false;
+  bool get leadRegistrado => _leadRegistrado;
+  String? _leadMensaje;
+  String? get leadMensaje => _leadMensaje;
+
+  void resetLeadRegistro() {
+    _leadRegistrado = false;
+    _leadMensaje = null;
+  }
+  // ---------------------------------------------------------------------------------
+
   Future logOut() async {
     ApiResponseModel apiResponse = await authServiceInterface.logout();
     if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
@@ -329,6 +488,7 @@ class AuthController with ChangeNotifier {
   Future<ResponseModel> login (String? userInput, String? password, String? type, FromPage? fromPage, {String? toNavigateScreen, VoidCallback? onLoginSuccess}) async {
     _isLoading = true;
     _loginErrorMessage = '';
+    _loginErrorCode = null;
     notifyListeners();
 
     String? type0 = type;
@@ -399,6 +559,14 @@ class AuthController with ChangeNotifier {
       // callback(true, token, temporaryToken, message);
       notifyListeners();
     } else {
+      // R-Afiliación: el code del error decide el CTA (cuenta_sin_activar →
+      // wizard de activación; lead_pendiente → mensaje de afiliación en proceso).
+      try {
+        final errors = ApiChecker.getError(apiResponse).errors;
+        if (errors != null && errors.isNotEmpty) {
+          _loginErrorCode = errors[0].code;
+        }
+      } catch (_) {}
       notifyListeners();
       responseModel = ResponseModel(apiResponse.error, false);
       ApiChecker.checkApi(apiResponse);

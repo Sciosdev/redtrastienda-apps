@@ -66,6 +66,11 @@ abstract class AuthRepoInterface<T> implements RepositoryInterface{
   // ANPEC: pre-valida un número de afiliado antes del registro.
   Future<ApiResponseModel> checkNumeroAnp(String numeroAnp);
 
+  // R-Afiliación: activación de cuentas precargadas (claim).
+  Future<ApiResponseModel> verificarIdentidadAnp(String numeroAnp, {String? telefono, String? nombre, String? correoContacto});
+
+  Future<ApiResponseModel> activarCuentaAnp(String claimToken, String correoReal, String password, String confirmPassword);
+
   Future<ApiResponseModel> firebaseAuthVerify({required String phoneNumber, required String session, required String otp, required bool isForgetPassword});
 
   Future<ApiResponseModel> registerWithOtp(String name, {String? email, required String phone});

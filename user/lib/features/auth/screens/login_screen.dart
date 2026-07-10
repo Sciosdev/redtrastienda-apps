@@ -6,6 +6,7 @@ import 'package:flutter_sixvalley_ecommerce/common/basewidget/show_custom_snakba
 import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/auth_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/domain/models/user_log_data.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/enums/from_page.dart';
+import 'package:flutter_sixvalley_ecommerce/features/auth/screens/activate_account_screen.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/widgets/only_social_login_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/widgets/social_login_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/home/screens/aster_theme_home_screen.dart';
@@ -78,6 +79,32 @@ class _LoginScreenState extends State<LoginScreen> {
     _emailPhoneController!.dispose();
     _passwordController!.dispose();
     super.dispose();
+  }
+
+  // R-Afiliación: la cuenta precargada existe pero sigue sin activar → llevar
+  // al afiliado directo al wizard de activación.
+  void _mostrarDialogoActivacion() {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge)),
+        title: Text(getTranslated('activa_tu_cuenta', dialogContext) ?? '', style: textBold),
+        content: Text(getTranslated('tu_cuenta_aun_no_esta_activada_deseas_activarla_ahora', dialogContext) ?? ''),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(getTranslated('ahora_no', dialogContext) ?? ''),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const ActivateAccountScreen()));
+            },
+            child: Text(getTranslated('activar_mi_cuenta', dialogContext) ?? ''),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -228,7 +255,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                         nextFocus: _passwordFocus,
                                         controller: _emailPhoneController,
                                         inputType: TextInputType.name,
-                                        labelText: getTranslated('email/phone', context),
+                                        // R-Afiliación: el login también acepta el número ANP.
+                                        labelText: getTranslated('correo_telefono_o_numero_anp', context),
                                         required: true,
                                       );
                                     },
@@ -341,6 +369,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                           toNavigateScreen: widget.fromPage,
                                           onLoginSuccess: widget.onLoginSuccess
                                         ).then((status) async {
+                                          // R-Afiliación: cuenta precargada sin activar → CTA
+                                          // directo al wizard de activación.
+                                          if (!status.isSuccess && authProvider.loginErrorCode == 'cuenta_sin_activar') {
+                                            _mostrarDialogoActivacion();
+                                            return;
+                                          }
                                           if (status.isSuccess) {
                                             if (authProvider.isActiveRememberMe) {
                                               authProvider.saveUserEmailAndPassword(UserLogData(
@@ -449,8 +483,31 @@ class _LoginScreenState extends State<LoginScreen> {
                                     Center(child: SocialLoginWidget(fromPage:  widget.fromPage, onLoginSuccess: widget.onLoginSuccess)),
                                   const SizedBox(height: Dimensions.paddingSizeLarge),
 
+                                  // R-Afiliación: tres caminos claros. Camino 2:
+                                  // afiliado precargado que activa su cuenta.
+                                  Center(
+                                    child: InkWell(
+                                      onTap: () {
+                                        Navigator.push(context, MaterialPageRoute(builder: (_) => const ActivateAccountScreen()));
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+                                        child: Text(getTranslated('ya_soy_afiliado_activa_tu_cuenta', context)!,
+                                          style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                                            fontSize: Dimensions.fontSizeDefault,
+                                            decoration: TextDecoration.underline,
+                                            decorationColor: Theme.of(context).primaryColor,
+                                            color: Theme.of(context).primaryColor,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: Dimensions.paddingSizeSmall),
+
+                                  // Camino 3: interesado sin número ANP (lead).
                                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                    Text(getTranslated('create_an_account', context)!,
+                                    Text(getTranslated('aun_no_eres_afiliado', context)!,
                                       style: Theme.of(context).textTheme.displayMedium!.copyWith(
                                         fontSize: Dimensions.fontSizeDefault,
                                         color: Theme.of(context).textTheme.bodyLarge?.color,
@@ -462,7 +519,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       onTap: () {
                                         RouterHelper.getAuthScreenRoute(fromLogout:  widget.fromLogout, fromPage: widget.fromPage, onLoginSuccess: widget.onLoginSuccess);
                                       },
-                                      child: Text(getTranslated('signup_here', context)!,
+                                      child: Text(getTranslated('quiero_afiliarme', context)!,
                                         style: Theme.of(context).textTheme.displaySmall!.copyWith(
                                           fontSize: Dimensions.fontSizeDefault,
                                           decoration: TextDecoration.underline,

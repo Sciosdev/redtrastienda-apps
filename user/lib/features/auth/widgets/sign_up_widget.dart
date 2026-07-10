@@ -1,9 +1,8 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/domain/models/register_model.dart';
-import 'package:flutter_sixvalley_ecommerce/features/more/widgets/anpec_contact_sheet_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/widgets/condition_check_box_widget.dart';
+import 'package:flutter_sixvalley_ecommerce/helper/route_healper.dart';
 import 'package:flutter_sixvalley_ecommerce/features/profile/controllers/profile_contrroller.dart';
 import 'package:flutter_sixvalley_ecommerce/helper/velidate_check.dart';
 import 'package:flutter_sixvalley_ecommerce/localization/language_constrants.dart';
@@ -36,8 +35,9 @@ class SignUpWidgetState extends State<SignUpWidget> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _referController = TextEditingController();
-  // ANPEC: número de afiliado y nombre de negocio.
-  final TextEditingController _numeroAnpController = TextEditingController();
+  // R-Lead: nombre del negocio (opcional). El número ANP ya no se pide aquí:
+  // este formulario registra INTERESADOS ("Quiero afiliarme"); la activación de
+  // afiliados precargados vive en el wizard ActivateAccountScreen.
   final TextEditingController _nombreNegocioController = TextEditingController();
 
   final FocusNode _fNameFocus = FocusNode();
@@ -47,21 +47,10 @@ class SignUpWidgetState extends State<SignUpWidget> {
   final FocusNode _passwordFocus = FocusNode();
   final FocusNode _confirmPasswordFocus = FocusNode();
   final FocusNode _referFocus = FocusNode();
-  final FocusNode _numeroAnpFocus = FocusNode();
   final FocusNode _nombreNegocioFocus = FocusNode();
 
   RegisterModel register = RegisterModel();
   final GlobalKey<FormState> signUpFormKey = GlobalKey<FormState>();
-
-  // R-ANP: el prefijo "ANP" es fijo en la UI; el afiliado teclea solo los
-  // dígitos (y letra final si su número la tiene). Aquí se antepone el prefijo
-  // antes de validar contra el backend y de registrar.
-  String get _fullNumeroAnp {
-    final String typed = _numeroAnpController.text.trim();
-    return typed.isEmpty ? '' : 'ANP$typed';
-  }
-
-
 
   Future<void> route(bool isRoute, String? token, String? tempToken, String? errorMessage) async {
     var splashController = Provider.of<SplashController>(context,listen: false);
@@ -116,91 +105,40 @@ class SignUpWidgetState extends State<SignUpWidget> {
       _referController.text = widget.referCode ?? '';
     }
 
-    // Pre-validación del número ANP al perder el foco (UX): consulta el backend
-    // y muestra feedback verde/rojo sin bloquear el resto del formulario.
-    _numeroAnpFocus.addListener(() {
-      if (!_numeroAnpFocus.hasFocus && _numeroAnpController.text.trim().isNotEmpty) {
-        authController.checkNumeroAnp(_fullNumeroAnp);
-      }
-    });
-
-    // Empezamos con el estado de verificación limpio.
-    WidgetsBinding.instance.addPostFrameCallback((_) => authController.resetAnpCheck());
+    // Estado limpio del registro de lead.
+    WidgetsBinding.instance.addPostFrameCallback((_) => authController.resetLeadRegistro());
   }
 
   @override
   void dispose() {
-    _numeroAnpFocus.dispose();
     _nombreNegocioFocus.dispose();
     super.dispose();
   }
 
-  // Feedback visual de la pre-validación del número ANP (verde/rojo).
-  Widget _buildAnpFeedback(BuildContext context, AuthController authProvider) {
-    if (authProvider.anpCheckStatus == AnpCheckStatus.idle) {
-      return const SizedBox.shrink();
-    }
-
-    if (authProvider.anpCheckStatus == AnpCheckStatus.checking) {
-      return Padding(
-        padding: const EdgeInsets.only(left: Dimensions.marginSizeDefault, right: Dimensions.marginSizeDefault, top: Dimensions.paddingSizeExtraSmall),
-        child: Row(children: [
-          const SizedBox(height: 14, width: 14, child: CircularProgressIndicator(strokeWidth: 2)),
+  // R-Lead: pantalla de éxito. La solicitud quedó registrada; el interesado NO
+  // inicia sesión y regresa al home como invitado.
+  Future<void> _mostrarExitoLead(String? mensaje) {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge)),
+        title: Row(children: [
+          const Icon(Icons.check_circle, color: Color(0xFF2E7D32), size: 28),
           const SizedBox(width: Dimensions.paddingSizeSmall),
-          Text(getTranslated('checking_numero_anp', context) ?? '',
-              style: textRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).hintColor)),
+          Expanded(child: Text(getTranslated('solicitud_registrada', dialogContext) ?? '',
+              style: textBold.copyWith(fontSize: Dimensions.fontSizeLarge))),
         ]),
-      );
-    }
-
-    final bool isValid = authProvider.anpCheckStatus == AnpCheckStatus.valid;
-    final Color color = isValid ? const Color(0xFF2E7D32) : Theme.of(context).colorScheme.error;
-    final String message = authProvider.anpCheckMessage ??
-        getTranslated(isValid ? 'numero_anp_available' : 'numero_anp_invalid', context) ?? '';
-
-    return Padding(
-      padding: const EdgeInsets.only(left: Dimensions.marginSizeDefault, right: Dimensions.marginSizeDefault, top: Dimensions.paddingSizeExtraSmall),
-      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Icon(isValid ? Icons.check_circle : Icons.error, size: 16, color: color),
-        const SizedBox(width: Dimensions.paddingSizeSmall),
-        Expanded(child: Text(message, style: textRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: color))),
-      ]),
-    );
-  }
-
-  // Aviso "¿No conoces tu número ANPEC?": abre el canal de contacto de F5
-  // (WhatsApp/Llamar con company_phone del config). Oculto si no hay número.
-  Widget _buildAnpHelp(BuildContext context) {
-    final String phone = (Provider.of<SplashController>(context, listen: false).configModel?.companyPhone ?? '').trim();
-    if (phone.isEmpty || phone.toLowerCase() == 'null') {
-      return const SizedBox.shrink();
-    }
-
-    return Container(
-      margin: const EdgeInsets.only(left: Dimensions.marginSizeDefault, right: Dimensions.marginSizeDefault, top: Dimensions.paddingSizeExtraSmall),
-      child: InkWell(
-        onTap: () => showModalBottomSheet(
-          context: context,
-          backgroundColor: Theme.of(context).cardColor,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(Dimensions.radiusLarge)),
+        content: Text(mensaje ?? getTranslated('tu_solicitud_quedo_registrada_anpec_te_contactara', dialogContext) ?? ''),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              RouterHelper.getDashboardRoute(action: RouteAction.pushNamedAndRemoveUntil);
+            },
+            child: Text(getTranslated('entendido', dialogContext) ?? ''),
           ),
-          builder: (_) => AnpecContactSheetWidget(rawPhone: phone),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraSmall),
-          child: Row(children: [
-            Icon(Icons.help_outline, size: 16, color: Theme.of(context).hintColor),
-            const SizedBox(width: Dimensions.paddingSizeSmall),
-            Expanded(child: Text.rich(TextSpan(children: [
-              TextSpan(text: '${getTranslated('anp_help_question', context) ?? '¿No conoces tu número ANPEC?'} '),
-              TextSpan(
-                text: getTranslated('anp_help_action', context) ?? 'Llámanos o escríbenos',
-                style: textMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor),
-              ),
-            ]), style: textRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).textTheme.bodyLarge?.color))),
-          ]),
-        ),
+        ],
       ),
     );
   }
@@ -241,54 +179,26 @@ class SignUpWidgetState extends State<SignUpWidget> {
                               labelTextStyle: textRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).textTheme.bodyLarge!.color),
                               focusNode: _lNameFocus,
                               prefixIcon: Images.username,
-                              nextFocus: _emailFocus,
+                              nextFocus: _nombreNegocioFocus,
                               required: true,
                               capitalization: TextCapitalization.words,
                               controller: _lastNameController,
                               validator: (value)  => ValidateCheck.validateEmptyText(value, "last_name_field_is_required"))),
 
-                      // ANPEC: Número ANP (requerido) + feedback de disponibilidad.
-                      Container(margin: const EdgeInsets.only(left: Dimensions.marginSizeDefault, right: Dimensions.marginSizeDefault,
-                          top: Dimensions.marginSizeSmall),
-                          child: CustomTextFieldWidget(
-                              hintText: getTranslated('enter_numero_anp', context),
-                              labelText: getTranslated('numero_anp', context),
-                              labelTextStyle: textRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).textTheme.bodyLarge!.color),
-                              focusNode: _numeroAnpFocus,
-                              nextFocus: _nombreNegocioFocus,
-                              required: true,
-                              inputType: TextInputType.text,
-                              controller: _numeroAnpController,
-                              capitalization: TextCapitalization.characters,
-                              prefixIcon: Images.username,
-                              prefixText: 'ANP',
-                              inputFormatters: [NumeroAnpInputFormatter()],
-                              onChanged: (value) {
-                                // Al editar reiniciamos el feedback previo.
-                                if (authProvider.anpCheckStatus != AnpCheckStatus.idle) {
-                                  authProvider.resetAnpCheck();
-                                }
-                              },
-                              validator: (value)  => ValidateCheck.validateEmptyText(value, "numero_anp_field_is_required"))),
-
-                      _buildAnpFeedback(context, authProvider),
-                      _buildAnpHelp(context),
-
-                      // ANPEC: Nombre del negocio (requerido).
+                      // R-Lead: nombre del negocio (opcional). El número ANP se
+                      // pide en el wizard de activación, no aquí.
                       Container(margin: const EdgeInsets.only(left: Dimensions.marginSizeDefault, right: Dimensions.marginSizeDefault,
                           top: Dimensions.marginSizeSmall),
                           child: CustomTextFieldWidget(
                               hintText: getTranslated('enter_nombre_negocio', context),
-                              labelText: getTranslated('nombre_negocio', context),
+                              labelText: '${getTranslated('nombre_negocio', context)} (${getTranslated('optional', context)})',
                               labelTextStyle: textRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).textTheme.bodyLarge!.color),
                               focusNode: _nombreNegocioFocus,
                               nextFocus: _emailFocus,
-                              required: true,
                               inputType: TextInputType.text,
                               controller: _nombreNegocioController,
                               capitalization: TextCapitalization.words,
-                              prefixIcon: Images.username,
-                              validator: (value)  => ValidateCheck.validateEmptyText(value, "nombre_negocio_field_is_required"))),
+                              prefixIcon: Images.username)),
 
                       Container(margin: const EdgeInsets.only(left: Dimensions.marginSizeDefault, right: Dimensions.marginSizeDefault,
                           top: Dimensions.marginSizeSmall),
@@ -391,36 +301,27 @@ class SignUpWidgetState extends State<SignUpWidget> {
                             String email = _emailController.text.trim();
                             String phoneNumber = authProvider.countryDialCode +_phoneController.text.trim();
                             String password = _passwordController.text.trim();
-                            String numeroAnp = _fullNumeroAnp;
                             String nombreNegocio = _nombreNegocioController.text.trim();
 
                             if (signUpFormKey.currentState?.validate() ?? false) {
-                              // Aseguramos que el número ANP sea válido antes de continuar.
-                              // Si aún no se validó (o se editó), lo comprobamos ahora.
-                              bool anpOk = authProvider.anpCheckStatus == AnpCheckStatus.valid;
-                              if (!anpOk) {
-                                anpOk = await authProvider.checkNumeroAnp(numeroAnp);
-                              }
-                              if (!context.mounted) return;
-                              if (!anpOk) {
-                                showCustomSnackBarWidget(
-                                  authProvider.anpCheckMessage ?? getTranslated('numero_anp_invalid', context),
-                                  context, snackBarType: SnackBarType.error);
-                                return;
-                              }
-
                               register.fName = firstName;
                               register.lName = lastName;
                               register.email = email;
                               register.phone = phoneNumber;
                               register.password = password;
                               register.referCode = _referController.text.trim();
-                              register.numeroAnp = numeroAnp;
                               register.nombreNegocio = nombreNegocio;
-                              authProvider.registration(register, route, config!, widget.fromPage, widget.onLoginSuccess);
+                              // R-Lead: este formulario registra interesados sin
+                              // número ANP; el backend crea la cuenta pendiente.
+                              register.esLead = true;
+                              await authProvider.registration(register, route, config!, widget.fromPage, widget.onLoginSuccess);
+                              if (!context.mounted) return;
+                              if (authProvider.leadRegistrado) {
+                                await _mostrarExitoLead(authProvider.leadMensaje);
+                              }
                             }
 
-                          } : null, buttonText: getTranslated('sign_up', context),
+                          } : null, buttonText: getTranslated('quiero_afiliarme', context),
                         ),
                       )),
 
@@ -455,14 +356,5 @@ class SignUpWidgetState extends State<SignUpWidget> {
   }
 }
 
-/// R-ANP: estructura de lo que teclea el afiliado SIN el prefijo fijo "ANP":
-/// dígitos y opcionalmente UNA letra al final. Es el formato real de la base
-/// ANPEC (ej. 12268, 0102, 14873A). Cualquier otra edición se rechaza.
-class NumeroAnpInputFormatter extends TextInputFormatter {
-  static final RegExp _pattern = RegExp(r'^\d*[a-zA-Z]?$');
-
-  @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
-    return _pattern.hasMatch(newValue.text) ? newValue : oldValue;
-  }
-}
+// NOTA: NumeroAnpInputFormatter y el campo con prefijo "ANP" fijo se movieron a
+// widgets/anp_number_field_widget.dart para reusarse en el wizard de activación.

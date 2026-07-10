@@ -62,6 +62,11 @@ abstract class AuthServiceInterface{
 
   Future<dynamic> checkNumeroAnp(String numeroAnp);
 
+  // R-Afiliación: activación de cuentas precargadas (claim).
+  Future<dynamic> verificarIdentidadAnp(String numeroAnp, {String? telefono, String? nombre, String? correoContacto});
+
+  Future<dynamic> activarCuentaAnp(String claimToken, String correoReal, String password, String confirmPassword);
+
   Future<dynamic> firebaseAuthVerify({required String phoneNumber, required String session, required String otp, required bool isForgetPassword});
 
   Future<dynamic> registerWithOtp(String name, {String? email, required String phone});

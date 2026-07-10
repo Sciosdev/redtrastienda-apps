@@ -48,6 +48,10 @@ class AuthRepository implements AuthRepoInterface{
         data: {"email_or_phone": userInput, "password": password, "type": type},
       );
       return ApiResponseModel.withSuccess(response);
+    } on DioException catch (e) {
+      // R-Afiliación: conservar la respuesta cruda para que el controller lea
+      // el code (cuenta_sin_activar / lead_pendiente) y muestre el CTA correcto.
+      return ApiResponseModel.withError(ApiErrorHandler.getMessage(e), responseValue: e.response);
     } catch (e) {
       return ApiResponseModel.withError(ApiErrorHandler.getMessage(e));
     }
@@ -419,6 +423,40 @@ class AuthRepository implements AuthRepoInterface{
       return ApiResponseModel.withSuccess(response);
     } catch (e) {
       return ApiResponseModel.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+
+  @override
+  Future<ApiResponseModel> verificarIdentidadAnp(String numeroAnp, {String? telefono, String? nombre, String? correoContacto}) async {
+    try {
+      Response response = await dioClient!.post(AppConstants.verificarIdentidadAnpUri, data: {
+        "numero_anp": numeroAnp,
+        if (telefono != null && telefono.isNotEmpty) "telefono": telefono,
+        if (nombre != null && nombre.isNotEmpty) "nombre": nombre,
+        if (correoContacto != null && correoContacto.isNotEmpty) "correo_contacto": correoContacto,
+      });
+      return ApiResponseModel.withSuccess(response);
+    } catch (e) {
+      // Conservamos la respuesta cruda para poder leer el code del error
+      // (identidad_no_coincide, intentos_bloqueados...) en el controller.
+      return ApiResponseModel.withError(ApiErrorHandler.getMessage(e),
+          responseValue: e is DioException ? e.response : null);
+    }
+  }
+
+  @override
+  Future<ApiResponseModel> activarCuentaAnp(String claimToken, String correoReal, String password, String confirmPassword) async {
+    try {
+      Response response = await dioClient!.post(AppConstants.activarCuentaAnpUri, data: {
+        "claim_token": claimToken,
+        "correo_real": correoReal,
+        "password": password,
+        "password_confirmation": confirmPassword,
+      });
+      return ApiResponseModel.withSuccess(response);
+    } catch (e) {
+      return ApiResponseModel.withError(ApiErrorHandler.getMessage(e),
+          responseValue: e is DioException ? e.response : null);
     }
   }
 
