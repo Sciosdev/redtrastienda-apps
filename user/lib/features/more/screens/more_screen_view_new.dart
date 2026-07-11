@@ -4,6 +4,7 @@ import 'package:flutter_sixvalley_ecommerce/common/basewidget/custom_image_widge
 import 'package:flutter_sixvalley_ecommerce/common/basewidget/not_logged_in_bottom_sheet_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auction_dashboard_summary/controllers/auction_dashboard_summary_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/auth_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/features/more/screens/anpec_webview_screen.dart';
 import 'package:flutter_sixvalley_ecommerce/features/more/widgets/logout_confirm_bottom_sheet_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/more/widgets/anpec_contact_sheet_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/notification/controllers/notification_controller.dart';
@@ -17,6 +18,7 @@ import 'package:flutter_sixvalley_ecommerce/helper/route_healper.dart';
 import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/screens/my_opportunity_requests_screen.dart';
 import 'package:flutter_sixvalley_ecommerce/localization/language_constrants.dart';
 import 'package:flutter_sixvalley_ecommerce/theme/controllers/theme_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/utill/app_constants.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/custom_themes.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/dimensions.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/images.dart';
@@ -590,6 +592,17 @@ class _MoreScreenViewState extends State<MoreScreenView> {
                           ),
                         ),
                       ),
+
+                    // R-Conéctate (D2): página pública de venta para marcas, abierta
+                    // en webview in-app. Visible con y sin sesión.
+                    MenuItem(
+                      iconImage: Images.aboutUsSvg,
+                      label: getTranslated('conectate_con_anpec', context) ?? 'Conéctate con ANPEC',
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => AnpecWebviewScreen(
+                        url: '${AppConstants.baseUrl}/conectate',
+                        title: getTranslated('conectate_con_anpec', context) ?? 'Conéctate con ANPEC',
+                      ))),
+                    ),
 
                     if (authController.isLoggedIn())
                       MenuItem(
