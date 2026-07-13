@@ -4,6 +4,7 @@ import 'package:flutter_sixvalley_ecommerce/common/basewidget/custom_image_widge
 import 'package:flutter_sixvalley_ecommerce/common/basewidget/not_logged_in_bottom_sheet_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auction_dashboard_summary/controllers/auction_dashboard_summary_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/auth_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/features/chat_tiendas/screens/conversaciones_tiendas_screen.dart';
 import 'package:flutter_sixvalley_ecommerce/features/more/screens/anpec_webview_screen.dart';
 import 'package:flutter_sixvalley_ecommerce/features/more/widgets/logout_confirm_bottom_sheet_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/more/widgets/anpec_contact_sheet_widget.dart';
@@ -602,6 +603,25 @@ class _MoreScreenViewState extends State<MoreScreenView> {
                         url: '${AppConstants.baseUrl}/conectate',
                         title: getTranslated('conectate_con_anpec', context) ?? 'Conéctate con ANPEC',
                       ))),
+                    ),
+
+                    // R-Chat-Tiendas (D5): mensajería afiliado↔afiliado. Solo con
+                    // sesión iniciada; sin sesión abre el sheet de login.
+                    MenuItem(
+                      iconImage: Images.chats,
+                      label: getTranslated('chat_entre_tiendas', context) ?? 'Chat entre tiendas',
+                      onTap: () {
+                        if (!Provider.of<AuthController>(context, listen: false).isLoggedIn()) {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (_) => NotLoggedInBottomSheetWidget(fromPage: RouterHelper.moreScreen, onLoginSuccess: _onLoginSuccess),
+                          );
+                        } else {
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => const ConversacionesTiendasScreen()));
+                        }
+                      },
                     ),
 
                     if (authController.isLoggedIn())

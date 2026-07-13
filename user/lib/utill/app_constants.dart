@@ -137,6 +137,12 @@ import 'package:flutter_sixvalley_ecommerce/common/enums/local_caches_type_enum.
   static const String productRestockDelete = '/api/v1/customer/restock-requests/delete';
   static const String opportunityRequestStore = '/api/v1/customer/opportunity-requests/store';
   static const String opportunityRequestList = '/api/v1/customer/opportunity-requests/list?';
+  static const String chatTiendasBase = '/api/v1/chat-tiendas';
+  static const String chatTiendasInbox = '/api/v1/chat-tiendas?';
+  static const String chatTiendasDirectorio = '/api/v1/chat-tiendas/directorio?';
+  static const String chatTiendasEnviar = '/api/v1/chat-tiendas/enviar';
+  static const String chatTiendasBloquear = '/api/v1/chat-tiendas/bloquear';
+  static const String chatTiendasDesbloquear = '/api/v1/chat-tiendas/desbloquear';
   static const String clearanceAllProductUri = '/api/v1/products/clearance-sale';
   static const String clearanceShopProductUri = '/api/v1/seller/';
   static const String clearanceShopSearchProductUri = '/api/v1/seller/';

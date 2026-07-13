@@ -191,6 +191,11 @@ import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/domain/
 import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/domain/repositories/opportunity_request_repository_interface.dart';
 import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/domain/services/opportunity_request_service.dart';
 import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/domain/services/opportunity_request_service_interface.dart';
+import 'package:flutter_sixvalley_ecommerce/features/chat_tiendas/controllers/chat_tiendas_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/features/chat_tiendas/domain/repositories/chat_tiendas_repository.dart';
+import 'package:flutter_sixvalley_ecommerce/features/chat_tiendas/domain/repositories/chat_tiendas_repository_interface.dart';
+import 'package:flutter_sixvalley_ecommerce/features/chat_tiendas/domain/services/chat_tiendas_service.dart';
+import 'package:flutter_sixvalley_ecommerce/features/chat_tiendas/domain/services/chat_tiendas_service_interface.dart';
 import 'package:flutter_sixvalley_ecommerce/features/affiliate_profile/controllers/affiliate_profile_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/affiliate_profile/domain/repositories/affiliate_profile_repository.dart';
 import 'package:flutter_sixvalley_ecommerce/features/affiliate_profile/domain/repositories/affiliate_profile_repository_interface.dart';
@@ -376,6 +381,7 @@ Future<void> init() async {
   sl.registerFactory(() => ReOrderController(reOrderServiceInterface: sl()));
   sl.registerFactory(() => RestockController(restockServiceInterface: sl()));
   sl.registerFactory(() => OpportunityRequestController(opportunityRequestServiceInterface: sl()));
+  sl.registerFactory(() => ChatTiendasController(chatTiendasServiceInterface: sl()));
   sl.registerFactory(() => AffiliateProfileController(affiliateProfileServiceInterface: sl()));
   sl.registerFactory(() => AuctionCategoryController(auctionCategoryServiceInterface: sl()));
   sl.registerFactory(() => AuctionHomeController(auctionHomeServiceInterface: sl()));
@@ -568,6 +574,11 @@ Future<void> init() async {
   sl.registerLazySingleton(() => opportunityRequestRepositoryInterface);
   OpportunityRequestServiceInterface opportunityRequestServiceInterface = OpportunityRequestService(opportunityRequestRepositoryInterface: sl());
   sl.registerLazySingleton(() => opportunityRequestServiceInterface);
+
+  ChatTiendasRepositoryInterface chatTiendasRepositoryInterface = ChatTiendasRepository(dioClient: sl());
+  sl.registerLazySingleton(() => chatTiendasRepositoryInterface);
+  ChatTiendasServiceInterface chatTiendasServiceInterface = ChatTiendasService(chatTiendasRepositoryInterface: sl());
+  sl.registerLazySingleton(() => chatTiendasServiceInterface);
 
   AffiliateProfileRepositoryInterface affiliateProfileRepositoryInterface = AffiliateProfileRepository(dioClient: sl());
   sl.registerLazySingleton(() => affiliateProfileRepositoryInterface);

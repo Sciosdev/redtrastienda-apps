@@ -1465,5 +1465,21 @@
   "estado": "State",
   "municipio": "Municipality",
   "colonia": "Neighborhood",
-  "foto_negocio": "Business photo"
+  "foto_negocio": "Business photo",
+  "chat_entre_tiendas": "Store-to-store chat",
+  "nueva_conversacion": "New conversation",
+  "directorio_de_afiliados": "Affiliate directory",
+  "buscar_por_nombre_negocio_o_estado": "Search by name, business or state",
+  "sin_conversaciones_aun": "You have no conversations yet. Find another affiliate in the directory.",
+  "sin_resultados_directorio": "No affiliates found",
+  "escribe_un_mensaje": "Write a message",
+  "inicia_la_conversacion": "This is the start of your conversation. Say hello!",
+  "bloquear_usuario": "Block",
+  "desbloquear_usuario": "Unblock",
+  "reportar_usuario": "Report",
+  "motivo_del_reporte": "Report reason",
+  "confirmar_bloqueo_pregunta": "Block this affiliate? You will no longer be able to message each other.",
+  "reportar_tambien_bloquea": "Reporting also blocks this user and ANPEC will review the case.",
+  "bloqueaste_a_este_usuario_banner": "You blocked this user",
+  "tu_prefijo_mensaje": "You"
 }

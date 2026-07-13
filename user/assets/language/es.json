@@ -1475,5 +1475,21 @@
   "estado": "Estado",
   "municipio": "Municipio",
   "colonia": "Colonia",
-  "foto_negocio": "Foto del negocio"
+  "foto_negocio": "Foto del negocio",
+  "chat_entre_tiendas": "Chat entre tiendas",
+  "nueva_conversacion": "Nueva conversación",
+  "directorio_de_afiliados": "Directorio de afiliados",
+  "buscar_por_nombre_negocio_o_estado": "Busca por nombre, negocio o estado",
+  "sin_conversaciones_aun": "Aún no tienes conversaciones. Busca a otro afiliado en el directorio.",
+  "sin_resultados_directorio": "No se encontraron afiliados",
+  "escribe_un_mensaje": "Escribe un mensaje",
+  "inicia_la_conversacion": "Este es el inicio de su conversación. ¡Salúdalo!",
+  "bloquear_usuario": "Bloquear",
+  "desbloquear_usuario": "Desbloquear",
+  "reportar_usuario": "Reportar",
+  "motivo_del_reporte": "Motivo del reporte",
+  "confirmar_bloqueo_pregunta": "¿Bloquear a este afiliado? Ya no podrán enviarse mensajes.",
+  "reportar_tambien_bloquea": "Al reportar también se bloquea a este usuario y ANPEC revisará el caso.",
+  "bloqueaste_a_este_usuario_banner": "Bloqueaste a este usuario",
+  "tu_prefijo_mensaje": "Tú"
 }
