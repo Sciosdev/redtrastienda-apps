@@ -95,7 +95,12 @@ class ChatTiendasController with ChangeNotifier {
 
     ApiResponseModel apiResponse = await chatTiendasServiceInterface.getMensajes(chatId, offset.toString());
 
-    if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
+    // Respuesta tardía de otra conversación (el usuario ya abrió otro chat):
+    // se descarta para no pisar el modelo activo.
+    final bool respuestaDeOtraConversacion =
+        mensajesModel != null && mensajesModel!.chatId != null && mensajesModel!.chatId != chatId;
+
+    if (apiResponse.response != null && apiResponse.response!.statusCode == 200 && !respuestaDeOtraConversacion) {
       final MensajesTiendaModel pagina = MensajesTiendaModel.fromJson(apiResponse.response?.data);
       if (offset > 1 && mensajesModel != null && mensajesModel!.chatId == chatId) {
         // Los mensajes nuevos del polling desplazan las páginas del backend:

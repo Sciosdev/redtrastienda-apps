@@ -90,11 +90,11 @@ class _ConversacionTiendaScreenState extends State<ConversacionTiendaScreen> {
     if (chatId != null) {
       _inputController.clear();
       if (_chatId == null) {
-        // Primer mensaje desde el directorio: ya existe conversación — se
-        // carga el historial completo (por si el par ya se había escrito).
+        // Primer mensaje desde el directorio: ya existe conversación — carga
+        // completa del historial (por si el par ya se había escrito antes).
         _chatId = chatId;
         _paginaCargada = 1;
-        controller.getMensajes(chatId, silencioso: true);
+        controller.getMensajes(chatId);
         _iniciarPolling();
       }
     }
