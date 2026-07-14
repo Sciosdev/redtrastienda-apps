@@ -89,7 +89,12 @@ class MercadoRepository implements MercadoRepositoryInterface {
   @override
   Future<ApiResponseModel> togglePublicacion(int id) async {
     try {
-      final response = await dioClient!.post('${AppConstants.mercadoPublicaciones}/$id/toggle');
+      // Mod_Security del hosting responde 406 a POSTs con body vacío (curls §5.1):
+      // este endpoint siempre debe mandar un body.
+      final response = await dioClient!.post(
+        '${AppConstants.mercadoPublicaciones}/$id/toggle',
+        data: {'confirm': 1},
+      );
       return ApiResponseModel.withSuccess(response);
     } catch (e) {
       return ApiResponseModel.withError(ApiErrorHandler.getMessage(e));
