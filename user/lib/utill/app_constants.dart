@@ -12,6 +12,10 @@ import 'package:flutter_sixvalley_ecommerce/common/enums/local_caches_type_enum.
   // en carrito/checkout. El pedido a proveedor no tiene pasarelas ni fricción de envío.
   static const bool anpecPedidoFlow = true;
 
+  // R-Mercado (Fase A): vitrina entre tenderos. Gatea TODA la entrada al módulo;
+  // en false la app queda idéntica a hoy (apagar en builds de review de tienda).
+  static const bool anpecMercadoFlow = true;
+
   static const int imageQuality = 100;
   static const LocalCachesTypeEnum cachesType = LocalCachesTypeEnum.all;
 
@@ -143,6 +147,9 @@ import 'package:flutter_sixvalley_ecommerce/common/enums/local_caches_type_enum.
   static const String chatTiendasEnviar = '/api/v1/chat-tiendas/enviar';
   static const String chatTiendasBloquear = '/api/v1/chat-tiendas/bloquear';
   static const String chatTiendasDesbloquear = '/api/v1/chat-tiendas/desbloquear';
+  static const String mercadoPublicaciones = '/api/v1/mercado/publicaciones';
+  static const String mercadoTienda = '/api/v1/mercado/tienda/';
+  static const String mercadoMisPublicaciones = '/api/v1/mercado/mis-publicaciones?';
   static const String clearanceAllProductUri = '/api/v1/products/clearance-sale';
   static const String clearanceShopProductUri = '/api/v1/seller/';
   static const String clearanceShopSearchProductUri = '/api/v1/seller/';

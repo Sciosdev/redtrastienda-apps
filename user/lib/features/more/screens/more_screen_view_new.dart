@@ -5,6 +5,7 @@ import 'package:flutter_sixvalley_ecommerce/common/basewidget/not_logged_in_bott
 import 'package:flutter_sixvalley_ecommerce/features/auction_dashboard_summary/controllers/auction_dashboard_summary_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/auth_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/chat_tiendas/screens/conversaciones_tiendas_screen.dart';
+import 'package:flutter_sixvalley_ecommerce/features/mercado/screens/mercado_explorar_screen.dart';
 import 'package:flutter_sixvalley_ecommerce/features/more/screens/anpec_webview_screen.dart';
 import 'package:flutter_sixvalley_ecommerce/features/more/widgets/logout_confirm_bottom_sheet_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/more/widgets/anpec_contact_sheet_widget.dart';
@@ -604,6 +605,26 @@ class _MoreScreenViewState extends State<MoreScreenView> {
                         title: getTranslated('conectate_con_anpec', context) ?? 'Conéctate con ANPEC',
                       ))),
                     ),
+
+                    // R-Mercado (Fase A): vitrina entre tenderos, gateada por flag
+                    // (en false la app queda idéntica). Solo con sesión iniciada.
+                    if (AppConstants.anpecMercadoFlow)
+                      MenuItem(
+                        iconImage: Images.storeIcon,
+                        label: getTranslated('mercado', context) ?? 'Mercado',
+                        onTap: () {
+                          if (!Provider.of<AuthController>(context, listen: false).isLoggedIn()) {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (_) => NotLoggedInBottomSheetWidget(fromPage: RouterHelper.moreScreen, onLoginSuccess: _onLoginSuccess),
+                            );
+                          } else {
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => const MercadoExplorarScreen()));
+                          }
+                        },
+                      ),
 
                     // R-Chat-Tiendas (D5): mensajería afiliado↔afiliado. Solo con
                     // sesión iniciada; sin sesión abre el sheet de login.

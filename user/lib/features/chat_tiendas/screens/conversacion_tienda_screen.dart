@@ -14,7 +14,10 @@ import 'package:provider/provider.dart';
 class ConversacionTiendaScreen extends StatefulWidget {
   final AfiliadoDirectorio contraparte;
   final int? chatId;
-  const ConversacionTiendaScreen({super.key, required this.contraparte, this.chatId});
+  // R-Mercado: prellenado opcional del input ("Me interesa: {titulo}").
+  // El usuario decide si lo envía; los usos existentes no cambian.
+  final String? textoInicial;
+  const ConversacionTiendaScreen({super.key, required this.contraparte, this.chatId, this.textoInicial});
 
   @override
   State<ConversacionTiendaScreen> createState() => _ConversacionTiendaScreenState();
@@ -35,6 +38,9 @@ class _ConversacionTiendaScreenState extends State<ConversacionTiendaScreen> {
   void initState() {
     super.initState();
     _chatId = widget.chatId;
+    if ((widget.textoInicial ?? '').isNotEmpty) {
+      _inputController.text = widget.textoInicial!;
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_chatId != null) {
         Provider.of<ChatTiendasController>(context, listen: false).getMensajes(_chatId!);
