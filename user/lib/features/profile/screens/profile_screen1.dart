@@ -17,6 +17,7 @@ import 'package:flutter_sixvalley_ecommerce/helper/image_size_checker.dart';
 import 'package:flutter_sixvalley_ecommerce/helper/route_healper.dart';
 import 'package:flutter_sixvalley_ecommerce/localization/language_constrants.dart';
 import 'package:flutter_sixvalley_ecommerce/main.dart';
+import 'package:flutter_sixvalley_ecommerce/utill/custom_themes.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/dimensions.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/images.dart';
 import 'package:image_picker/image_picker.dart';
@@ -238,6 +239,36 @@ class _ProfileScreen1State extends State<ProfileScreen1> {
                             topRight: Radius.circular(Dimensions.marginSizeDefault),)),
                       child: ListView(physics: const BouncingScrollPhysics(), children: [
                         const SizedBox(height: Dimensions.paddingSizeSmall),
+
+                        // R-Limpieza (B10): acceso directo a la credencial del
+                        // afiliado desde su perfil.
+                        InkWell(
+                          onTap: () => RouterHelper.getDigitalCardRoute(action: RouteAction.push),
+                          borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: Dimensions.paddingSizeDefault,
+                              vertical: Dimensions.paddingSizeSmall,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                              border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.25)),
+                            ),
+                            child: Row(children: [
+                              Icon(Icons.badge_outlined, color: Theme.of(context).primaryColor),
+                              const SizedBox(width: Dimensions.paddingSizeSmall),
+                              Expanded(
+                                child: Text(getTranslated('my_digital_card', context) ?? 'Mi Tarjeta Digital',
+                                  style: textMedium.copyWith(fontSize: Dimensions.fontSizeDefault),
+                                ),
+                              ),
+                              Icon(Icons.arrow_forward_ios_rounded, size: Dimensions.iconSizeSmall, color: Theme.of(context).hintColor),
+                            ]),
+                          ),
+                        ),
+                        const SizedBox(height: Dimensions.paddingSizeLarge),
+
                         CustomTextFieldWidget(
                             labelText: getTranslated('first_name', context),
                             inputType: TextInputType.name,
