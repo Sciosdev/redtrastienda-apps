@@ -14,7 +14,7 @@ import 'package:flutter_sixvalley_ecommerce/common/enums/local_caches_type_enum.
 
   // R-Mercado (Fase A): vitrina entre tenderos. Gatea TODA la entrada al módulo;
   // en false la app queda idéntica a hoy (apagar en builds de review de tienda).
-  static const bool anpecMercadoFlow = true;
+  static const bool anpecMercadoFlow = false;
 
   static const int imageQuality = 100;
   static const LocalCachesTypeEnum cachesType = LocalCachesTypeEnum.all;
