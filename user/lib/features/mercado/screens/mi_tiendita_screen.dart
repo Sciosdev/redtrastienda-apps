@@ -63,8 +63,12 @@ class _MiTienditaScreenState extends State<MiTienditaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(title: getTranslated('mi_tiendita', context) ?? 'Mi tiendita'),
+      // Colores explícitos: el default M3 del theme pintaba el FAB verdoso,
+      // fuera del patrón de botón primario de la app.
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PublicacionFormScreen())),
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
         label: Text(getTranslated('publicar', context) ?? 'Publicar'),
       ),

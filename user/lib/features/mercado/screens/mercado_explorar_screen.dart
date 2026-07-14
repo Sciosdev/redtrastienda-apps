@@ -7,6 +7,7 @@ import 'package:flutter_sixvalley_ecommerce/features/mercado/controllers/mercado
 import 'package:flutter_sixvalley_ecommerce/features/mercado/domain/models/publicacion_mercado_model.dart';
 import 'package:flutter_sixvalley_ecommerce/features/mercado/screens/mi_tiendita_screen.dart';
 import 'package:flutter_sixvalley_ecommerce/features/mercado/screens/publicacion_detalle_screen.dart';
+import 'package:flutter_sixvalley_ecommerce/features/mercado/widgets/mercado_chip_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/mercado/widgets/publicacion_card_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/localization/language_constrants.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/custom_themes.dart';
@@ -71,13 +72,10 @@ class _MercadoExplorarScreenState extends State<MercadoExplorarScreen> {
 
   Widget _chipTipo(MercadoController controller, String valor, String etiqueta) {
     final bool seleccionado = controller.filtroTipo == valor;
-    return Padding(
-      padding: const EdgeInsets.only(right: Dimensions.paddingSizeExtraSmall),
-      child: ChoiceChip(
-        label: Text(etiqueta, style: textRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-        selected: seleccionado,
-        onSelected: (_) => controller.getPublicaciones(tipo: seleccionado ? '' : valor),
-      ),
+    return MercadoChipWidget(
+      etiqueta: etiqueta,
+      seleccionado: seleccionado,
+      onTap: () => controller.getPublicaciones(tipo: seleccionado ? '' : valor),
     );
   }
 
@@ -124,17 +122,11 @@ class _MercadoExplorarScreenState extends State<MercadoExplorarScreen> {
                     _chipTipo(controller, 'producto', getTranslated('productos', context) ?? 'Productos'),
                     _chipTipo(controller, 'aviso', getTranslated('avisos', context) ?? 'Avisos'),
                     if ((miEstado ?? '').isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(right: Dimensions.paddingSizeExtraSmall),
-                        child: ChoiceChip(
-                          label: Text(
-                            '${getTranslated('mi_estado', context) ?? 'Mi estado'} ($miEstado)',
-                            style: textRegular.copyWith(fontSize: Dimensions.fontSizeSmall),
-                          ),
-                          selected: controller.filtroEstado.isNotEmpty,
-                          onSelected: (_) => controller.getPublicaciones(
-                            estado: controller.filtroEstado.isNotEmpty ? '' : miEstado,
-                          ),
+                      MercadoChipWidget(
+                        etiqueta: '${getTranslated('mi_estado', context) ?? 'Mi estado'} ($miEstado)',
+                        seleccionado: controller.filtroEstado.isNotEmpty,
+                        onTap: () => controller.getPublicaciones(
+                          estado: controller.filtroEstado.isNotEmpty ? '' : miEstado,
                         ),
                       ),
                   ],

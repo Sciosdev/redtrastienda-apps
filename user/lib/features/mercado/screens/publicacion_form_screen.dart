@@ -6,6 +6,7 @@ import 'package:flutter_sixvalley_ecommerce/common/basewidget/custom_image_widge
 import 'package:flutter_sixvalley_ecommerce/common/basewidget/show_custom_snakbar_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/mercado/controllers/mercado_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/mercado/domain/models/publicacion_mercado_model.dart';
+import 'package:flutter_sixvalley_ecommerce/features/mercado/widgets/mercado_chip_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/helper/image_size_checker.dart';
 import 'package:flutter_sixvalley_ecommerce/localization/language_constrants.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/custom_themes.dart';
@@ -162,13 +163,10 @@ class _PublicacionFormScreenState extends State<PublicacionFormScreen> {
   }
 
   Widget _chipTipo(String valor, String etiqueta) {
-    return Padding(
-      padding: const EdgeInsets.only(right: Dimensions.paddingSizeExtraSmall),
-      child: ChoiceChip(
-        label: Text(etiqueta, style: textRegular.copyWith(fontSize: Dimensions.fontSizeSmall)),
-        selected: _tipo == valor,
-        onSelected: (_) => setState(() => _tipo = valor),
-      ),
+    return MercadoChipWidget(
+      etiqueta: etiqueta,
+      seleccionado: _tipo == valor,
+      onTap: () => setState(() => _tipo = valor),
     );
   }
 
@@ -215,7 +213,10 @@ class _PublicacionFormScreenState extends State<PublicacionFormScreen> {
             ),
             const SizedBox(height: Dimensions.paddingSizeSmall),
 
+            // Mismo widget, misma decoración y contador oculto en Unidad:
+            // con el "0/30" abajo los dos campos quedaban a alturas distintas.
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: TextField(
@@ -232,7 +233,8 @@ class _PublicacionFormScreenState extends State<PublicacionFormScreen> {
                   child: TextField(
                     controller: _unidadController,
                     maxLength: 30,
-                    decoration: _decoracion(getTranslated('unidad_medida', context) ?? 'Unidad (kg, caja...)'),
+                    decoration: _decoracion(getTranslated('unidad_medida', context) ?? 'Unidad (kg, caja...)')
+                        .copyWith(counterText: ''),
                   ),
                 ),
               ],
@@ -241,6 +243,8 @@ class _PublicacionFormScreenState extends State<PublicacionFormScreen> {
 
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
+              activeThumbColor: Theme.of(context).primaryColor,
+              activeTrackColor: Theme.of(context).primaryColor.withValues(alpha: 0.4),
               title: Text(getTranslated('marcar_como_oferta', context) ?? 'Marcar como oferta',
                   style: textRegular.copyWith(fontSize: Dimensions.fontSizeDefault)),
               value: _esOferta,
@@ -297,13 +301,15 @@ class _PublicacionFormScreenState extends State<PublicacionFormScreen> {
             ),
             const SizedBox(height: Dimensions.paddingSizeLarge),
 
+            // onTap siempre presente: con null CustomButton pinta disabledColor
+            // (el gris/verde "feo"); isLoading ya bloquea el doble envío.
             Consumer<MercadoController>(
               builder: (context, controller, child) => CustomButton(
                 buttonText: _esEdicion
                     ? (getTranslated('guardar_cambios', context) ?? 'Guardar cambios')
                     : (getTranslated('publicar', context) ?? 'Publicar'),
                 isLoading: controller.isGuardando,
-                onTap: controller.isGuardando ? null : _guardar,
+                onTap: _guardar,
               ),
             ),
             const SizedBox(height: Dimensions.paddingSizeLarge),
