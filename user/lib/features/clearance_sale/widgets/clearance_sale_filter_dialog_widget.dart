@@ -41,8 +41,10 @@ class ClearanceProductFilterDialogState extends State<ClearanceProductFilterDial
   void initState() {
     super.initState();
 
-    _authorList = widget.authorList;
-    _publishingHouse = widget.publishingHouse;
+    // R-Limpieza: las listas pueden llegar null sin la precarga del dashboard —
+    // se coalescen a vacías y las secciones de autor/editorial se auto-ocultan.
+    _authorList = widget.authorList ?? [];
+    _publishingHouse = widget.publishingHouse ?? [];
 
     if(_authorList!.isNotEmpty) {
       for (int i =0; i< _authorList!.length; i++) {
@@ -68,11 +70,11 @@ class ClearanceProductFilterDialogState extends State<ClearanceProductFilterDial
       onDismissed: (_) => Navigator.pop(context),
       child: Consumer<SearchProductController>(builder: (context, searchProvider, child) {
         if(widget.fromShop){
-          _authorList = searchProvider.sellerAuthorsList;
-          _publishingHouse = searchProvider.sellerPublishingHouseList;
+          _authorList = searchProvider.sellerAuthorsList ?? [];
+          _publishingHouse = searchProvider.sellerPublishingHouseList ?? [];
         }else{
-          _authorList = searchProvider.authorsList;
-         _publishingHouse = searchProvider.publishingHouseList;
+          _authorList = searchProvider.authorsList ?? [];
+         _publishingHouse = searchProvider.publishingHouseList ?? [];
         }
         return Consumer<CategoryController>(builder: (context, categoryProvider,_) {
           return Consumer<BrandController>(builder: (context, brandProvider,_) {

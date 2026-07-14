@@ -35,12 +35,14 @@ class _ClearanceSearchBarWidgetState extends State<ClearanceSearchBarWidget> {
   void initState() {
     super.initState();
 
+    // R-Limpieza: sin la precarga del dashboard estas listas pueden venir
+    // null — se coalescen a vacías para el diálogo de filtros.
     if(widget.fromShop) {
-      authorList = Provider.of<SearchProductController>(context, listen: false).sellerAuthorsList;
-      publishingHouse = Provider.of<SearchProductController>(context, listen: false).sellerPublishingHouseList;
+      authorList = Provider.of<SearchProductController>(context, listen: false).sellerAuthorsList ?? [];
+      publishingHouse = Provider.of<SearchProductController>(context, listen: false).sellerPublishingHouseList ?? [];
     } else {
-      authorList = Provider.of<SearchProductController>(context, listen: false).authorsList;
-      publishingHouse = Provider.of<SearchProductController>(context, listen: false).publishingHouseList;
+      authorList = Provider.of<SearchProductController>(context, listen: false).authorsList ?? [];
+      publishingHouse = Provider.of<SearchProductController>(context, listen: false).publishingHouseList ?? [];
     }
   }
 

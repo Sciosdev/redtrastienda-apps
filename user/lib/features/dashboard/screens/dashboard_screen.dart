@@ -24,7 +24,6 @@ import 'package:flutter_sixvalley_ecommerce/features/home/screens/home_explore_s
 import 'package:flutter_sixvalley_ecommerce/features/product/controllers/product_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/profile/controllers/profile_contrroller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/restock/controllers/restock_controller.dart';
-import 'package:flutter_sixvalley_ecommerce/features/search_product/controllers/search_product_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/shop/controllers/shop_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/wallet/controllers/wallet_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/wishlist/controllers/wishlist_controller.dart';
@@ -95,14 +94,19 @@ class DashBoardScreenState extends State<DashBoardScreen> {
       Provider.of<ChatController>(context, listen: false).getChatList(1, reload: false, userType: 0);
       Provider.of<ChatController>(context, listen: false).getChatList(1, reload: false, userType: 1);
       Provider.of<RestockController>(context, listen: false).getRestockProductList(1, getAll: true);
-      Provider.of<WalletController>(context, listen: false).getTransactionList(1, isUpdate: false);
+      // R-Limpieza: con el wallet apagado en config el endpoint responde error
+      // y ApiChecker lo vuelve toast global — solo consultar con el módulo activo.
+      if (Provider.of<SplashController>(context, listen: false).configModel?.walletStatus == 1) {
+        Provider.of<WalletController>(context, listen: false).getTransactionList(1, isUpdate: false);
+      }
     }
 
     final SplashController splashController = Provider.of<SplashController>(context, listen: false);
     isAuctionEnabled = splashController.configModel?.isAuctionFeatureEnabled ?? false;
     singleVendor = splashController.configModel?.businessMode == "single";
-    Provider.of<SearchProductController>(context, listen: false).getAuthorList(null);
-    Provider.of<SearchProductController>(context, listen: false).getPublishingHouseList(null);
+    // R-Limpieza: fuera la precarga de autores/editoriales (catálogo de librería
+    // de 6valley que no aplica); los filtros que las listan quedan gateados por
+    // lista no-vacía y desaparecen solos.
 
     if (splashController.configModel?.activeTheme == "default") {
       // HomePage.loadData(false);

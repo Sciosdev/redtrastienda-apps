@@ -63,7 +63,9 @@ class CustomTextFieldWidget extends StatefulWidget {
 
   const CustomTextFieldWidget({
     super.key,
-    this.hintText = 'Write something...',
+    // R-Limpieza: sin hint por default — el 'Write something...' de 6valley
+    // delataba inglés en cualquier campo que no pasara hintText propio.
+    this.hintText = '',
     this.controller,
     this.focusNode,
     this.titleText,

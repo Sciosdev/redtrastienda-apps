@@ -267,7 +267,9 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
                           centerTitle: false,
                           automaticallyImplyLeading: false,
                           backgroundColor: Theme.of(context).primaryColor,
-                          expandedHeight: 65,
+                          // R-Limpieza: 65 dejaba el saludo 0.4px corto de alto
+                          // ("Bottom overflowed by 0.381 pixels" con sesión).
+                          expandedHeight: 70,
                           flexibleSpace: _CustomizableSpaceBarWidget(
                             builder: (ctx, scrollingRate, child) => Opacity(
                               opacity: (1 - scrollingRate).clamp(0.0, 1.0),

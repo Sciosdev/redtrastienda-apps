@@ -41,6 +41,16 @@ class _MoreScreenViewState extends State<MoreScreenView> {
   late final List<({IconData icon, Widget? badge, String route})> _railItems;
   late AuthController _authController;
 
+  // R-Limpieza: wallet/subastas apagados en el backend responden error a estas
+  // consultas y ApiChecker lo convierte en toast global ("acceso denegado").
+  // Solo se consulta lo que el config trae encendido.
+  bool get _walletEnabled =>
+      Provider.of<SplashController>(context, listen: false).configModel?.walletStatus == 1;
+
+  bool get _auctionEnabled =>
+      (Provider.of<SplashController>(context, listen: false).configModel?.isAuctionFeatureEnabled == true) ||
+      (Provider.of<ProfileController>(context, listen: false).userInfoModel?.showAuctionMenuForUser == true);
+
   @override
   void initState() {
     super.initState();
@@ -62,10 +72,16 @@ class _MoreScreenViewState extends State<MoreScreenView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_authController.isLoggedIn()) {
         Provider.of<ProfileController>(context, listen: false).getUserInfo(context, isLoggedIn: true);
-        Provider.of<WalletController>(context, listen: false).getTransactionList(1);
-        Provider.of<AuctionDashboardSummaryController>(context, listen: false).getAuctionDashboardSummary(context);
+        if (_walletEnabled) {
+          Provider.of<WalletController>(context, listen: false).getTransactionList(1);
+        }
+        if (_auctionEnabled) {
+          Provider.of<AuctionDashboardSummaryController>(context, listen: false).getAuctionDashboardSummary(context);
+        }
         notificationController.getNotificationList(1);
-        notificationController.getAuctionNotificationList(1);
+        if (_auctionEnabled) {
+          notificationController.getAuctionNotificationList(1);
+        }
       }
     });
   }
@@ -92,8 +108,12 @@ class _MoreScreenViewState extends State<MoreScreenView> {
     if (!mounted) return;
     setState(() {});
     Provider.of<ProfileController>(context, listen: false).getUserInfo(context, isLoggedIn: true);
-    Provider.of<WalletController>(context, listen: false).getTransactionList(1);
-    Provider.of<AuctionDashboardSummaryController>(context, listen: false).getAuctionDashboardSummary(context);
+    if (_walletEnabled) {
+      Provider.of<WalletController>(context, listen: false).getTransactionList(1);
+    }
+    if (_auctionEnabled) {
+      Provider.of<AuctionDashboardSummaryController>(context, listen: false).getAuctionDashboardSummary(context);
+    }
   }
 
   BusinessPageModel? _getPageBySlug(String slug, List<BusinessPageModel>? pagesList) {

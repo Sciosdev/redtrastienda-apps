@@ -72,19 +72,21 @@ class ProductFilterDialogState extends State<ProductFilterDialog> {
       minChildSize: 0.5,
       builder: (context, scrollController) {
         return Consumer<SearchProductController>(builder: (context, searchProvider, child) {
-        late List<AuthorModel>? authorList = widget.fromShop ? Provider.of<SearchProductController>(context, listen: false).sellerAuthorsList :
-        Provider.of<SearchProductController>(context, listen: false).authorsList;
+        // R-Limpieza: sin la precarga del dashboard estas listas pueden venir
+        // null — se coalescen a vacías y las secciones se auto-ocultan.
+        final List<AuthorModel> authorList = (widget.fromShop ? Provider.of<SearchProductController>(context, listen: false).sellerAuthorsList :
+        Provider.of<SearchProductController>(context, listen: false).authorsList) ?? [];
 
-        late List<AuthorModel>? publishingHouse = widget.fromShop ? Provider.of<SearchProductController>(context, listen: false).sellerPublishingHouseList :
-        Provider.of<SearchProductController>(context, listen: false).publishingHouseList;
+        final List<AuthorModel> publishingHouse = (widget.fromShop ? Provider.of<SearchProductController>(context, listen: false).sellerPublishingHouseList :
+        Provider.of<SearchProductController>(context, listen: false).publishingHouseList) ?? [];
 
-        if(authorList!.isNotEmpty) {
+        if(authorList.isNotEmpty) {
           for (int i =0; i< authorList.length; i++) {
             authors.add(i);
           }
         }
 
-        if(publishingHouse!.isNotEmpty) {
+        if(publishingHouse.isNotEmpty) {
           for (int i=0; i < publishingHouse.length; i++) {
             publishingHouses.add(i);
           }

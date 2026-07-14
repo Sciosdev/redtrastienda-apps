@@ -18,6 +18,7 @@ import 'package:flutter_sixvalley_ecommerce/helper/route_healper.dart';
 import 'package:flutter_sixvalley_ecommerce/localization/controllers/localization_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/localization/language_constrants.dart';
 import 'package:flutter_sixvalley_ecommerce/main.dart';
+import 'package:flutter_sixvalley_ecommerce/utill/app_constants.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/custom_themes.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/dimensions.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/images.dart';
@@ -112,7 +113,6 @@ class _LoginScreenState extends State<LoginScreen> {
     final double width = MediaQuery.of(context).size.width;
     final size = MediaQuery.of(context).size;
     final configModel = Provider.of<SplashController>(context,listen: false).configModel!;
-    final LocalizationController localizationProvider = Provider.of<LocalizationController>(context, listen: false);
     // final socialStatus = configModel.customerLogin?.socialMediaLoginOptions;
 
     if(configModel.customerLogin!.loginOption!.manualLogin == 0 && configModel.customerLogin!.loginOption!.otpLogin == 0) {
@@ -217,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
                                       child: Directionality(
                                         textDirection: TextDirection.ltr,
-                                        child: Image.asset(Images.logoWithNameImage, width: 140, height: 50, fit: BoxFit.contain)
+                                        child: Image.asset(Images.logoWithNameImage, width: 200, height: 72, fit: BoxFit.contain)
                                       ),
                                     ),
                                   ),
@@ -257,6 +257,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         inputType: TextInputType.name,
                                         // R-Afiliación: el login también acepta el número ANP.
                                         labelText: getTranslated('correo_telefono_o_numero_anp', context),
+                                        hintText: getTranslated('ejemplo_correo_o_anp', context),
                                         required: true,
                                       );
                                     },
@@ -311,8 +312,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       child: Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Text(
-                                          localizationProvider.isLtr ? "${getTranslated('forget_password', context)!}?"
-                                              : "${getTranslated('forget_password', context)!}؟",
+                                          // R-Limpieza: la clave ya trae los signos
+                                          // de interrogación completos ("¿...?").
+                                          getTranslated('forget_password', context)!,
                                           style: Theme.of(context).textTheme.displayMedium!.copyWith(
                                             fontSize: Dimensions.fontSizeSmall,
                                             color: Theme.of(context).primaryColor,
@@ -456,7 +458,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     const SizedBox(height: Dimensions.paddingSizeLarge),
                                   ],
 
-                                  if((configModel.customerLogin?.loginOption?.socialMediaLogin == 1) && configModel.customerLogin?.loginOption?.otpLogin != 1)
+                                  // R-Limpieza: anpecSocialLogin oculta el bloque social
+                                  // aunque el config del server lo traiga prendido.
+                                  if(AppConstants.anpecSocialLogin && (configModel.customerLogin?.loginOption?.socialMediaLogin == 1) && configModel.customerLogin?.loginOption?.otpLogin != 1)
                                     Row(
                                       children: [
                                         Expanded(child: Divider(color: Theme.of(context).hintColor)),
@@ -475,11 +479,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ],
                                     ),
 
-                                  if(configModel.customerLogin?.loginOption?.socialMediaLogin == 1)
+                                  if(AppConstants.anpecSocialLogin && configModel.customerLogin?.loginOption?.socialMediaLogin == 1)
                                     const SizedBox(height: Dimensions.paddingSizeSmall),
 
 
-                                  if(configModel.customerLogin?.loginOption?.socialMediaLogin == 1)
+                                  if(AppConstants.anpecSocialLogin && configModel.customerLogin?.loginOption?.socialMediaLogin == 1)
                                     Center(child: SocialLoginWidget(fromPage:  widget.fromPage, onLoginSuccess: widget.onLoginSuccess)),
                                   const SizedBox(height: Dimensions.paddingSizeLarge),
 

@@ -16,6 +16,11 @@ import 'package:flutter_sixvalley_ecommerce/common/enums/local_caches_type_enum.
   // en false la app queda idéntica a hoy (apagar en builds de review de tienda).
   static const bool anpecMercadoFlow = false;
 
+  // R-Limpieza: oculta los botones de login social aunque el config del server
+  // los traiga prendidos — los SDK (Facebook/Google) no tienen credenciales
+  // reales y un botón que truena es rechazo casi seguro en review de tienda.
+  static const bool anpecSocialLogin = false;
+
   static const int imageQuality = 100;
   static const LocalCachesTypeEnum cachesType = LocalCachesTypeEnum.all;
 
