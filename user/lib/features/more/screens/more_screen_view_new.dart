@@ -447,22 +447,8 @@ class _MoreScreenViewState extends State<MoreScreenView> {
                       },
                     ),
 
-                      MenuItem(
-                        iconImage: Images.compareIconSvg,
-                        label: getTranslated('compare_products', context)!,
-                        onTap: () {
-                          if (!Provider.of<AuthController>(context, listen: false).isLoggedIn()) {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
-                              builder: (_) => NotLoggedInBottomSheetWidget(fromPage: RouterHelper.moreScreen, onLoginSuccess: _onLoginSuccess),
-                            );
-                          } else {
-                            RouterHelper.getCompareProductScreenRoute();
-                          }
-                        },
-                      ),
+                    // R-Limpieza: fuera "Comparar productos" (Amazon DNA, no aplica
+                    // a una red de tiendas en v1).
 
                     if (splashController.configModel?.refEarningStatus == '1')
                       MenuItem(
@@ -498,12 +484,12 @@ class _MoreScreenViewState extends State<MoreScreenView> {
                         }
                       },
                     ),
-                    MenuItem(
-                      iconImage: Images.newTrackOrderIcon,
-                      label: getTranslated('track_order', context)!,
-                      onTap: () => RouterHelper.getGuestTrackOrderRoute(action: RouteAction.push),
-                    ),
+                    // R-Limpieza: fuera "Rastrear pedido" (invitado) — no se rastrean
+                    // envíos; los pedidos viven en la pestaña Pedidos.
 
+                    // R-Limpieza: Wallet y Puntos de lealtad solo si el config los
+                    // trae encendidos (antes aparecían siempre; ocultos, no borrados).
+                    if (splashController.configModel?.walletStatus == 1)
                     MenuItem(
                       iconImage: Images.walletIcon,
                       label: getTranslated('wallet', context)!,
@@ -532,6 +518,7 @@ class _MoreScreenViewState extends State<MoreScreenView> {
                       },
                     ),
 
+                    if (splashController.configModel?.loyaltyPointStatus == 1)
                     MenuItem(
                       iconImage: Images.loyaltyPointsIcon,
                       label: getTranslated('loyalty_points', context)!,
@@ -665,12 +652,8 @@ class _MoreScreenViewState extends State<MoreScreenView> {
                       },
                     ),
 
-                    if (authController.isLoggedIn())
-                      MenuItem(
-                        iconImage: Images.restockRequestSvg,
-                        label: getTranslated('restock_requests', context)!,
-                        onTap: () => RouterHelper.getRestockListRoute(action: RouteAction.push),
-                      ),
+                    // R-Limpieza: fuera "Restock requests" ("avísame cuando haya
+                    // stock") — consumer, no aplica al flujo mayorista COD en v1.
 
                     if (authController.isLoggedIn())
                       MenuItem(

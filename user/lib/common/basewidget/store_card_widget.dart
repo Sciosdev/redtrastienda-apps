@@ -117,6 +117,9 @@ class StoreCardWidget extends StatelessWidget {
                       ),
                     ),
 
+                    // R-Limpieza: sin reseñas no se pinta "★0.0" (ruido de
+                    // marketplace de consumo en tiendas nuevas).
+                    if ((sellerInfo.reviewCount ?? 0) > 0)
                     Row(children: [
                       Icon(Icons.star,
                         color: Theme.of(context).colorScheme.secondary,
@@ -151,7 +154,8 @@ class StoreCardWidget extends StatelessWidget {
                   ),
                 ]),
 
-                Text('${sellerInfo.reviewCount ?? 0} ${getTranslated('review', context)!}',
+                if ((sellerInfo.reviewCount ?? 0) > 0)
+                Text('${sellerInfo.reviewCount} ${getTranslated('review', context)!}',
                   style: titilliumRegular.copyWith(
                     fontSize: Dimensions.fontSizeSmall,
                     color: Theme.of(context).hintColor,

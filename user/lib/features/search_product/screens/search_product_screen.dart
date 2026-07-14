@@ -126,6 +126,9 @@ class _SearchScreenState extends State<SearchScreen> {
                           }
                       ),
 
+                    // R-Limpieza: la sección solo se pinta si el config trae
+                    // etiquetas (antes salía el título con la lista vacía).
+                    if (Provider.of<SplashController>(context, listen: false).configModel?.popularTags?.isNotEmpty ?? false) ...[
                     Padding(padding: const EdgeInsets.only(top: Dimensions.paddingSizeExtraSmall,left: Dimensions.paddingSizeDefault,right: Dimensions.paddingSizeDefault),
                       child: Text(getTranslated('popular_tag', context)!, style: textMedium.copyWith(fontSize : Dimensions.fontSizeLarge))),
                     SizedBox(height: Dimensions.paddingSizeExtraSmall),
@@ -147,6 +150,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         Flexible(child: Text(popularTagProvider.configModel!.popularTags![index].tag??'',
                                             style: textRegular.copyWith(color: Theme.of(context).textTheme.bodyLarge!.color),
                                             overflow: TextOverflow.ellipsis))])))))]);})),
+                    ],
                     ],
                   ));
                 },

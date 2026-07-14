@@ -6,7 +6,6 @@ import 'package:flutter_sixvalley_ecommerce/common/basewidget/category_content_s
 import 'package:flutter_sixvalley_ecommerce/common/basewidget/no_internet_screen_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/common/basewidget/product_card_shimmer_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/common/basewidget/product_card_widget.dart';
-import 'package:flutter_sixvalley_ecommerce/common/basewidget/todays_deal_section_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auction_home/controllers/auction_home_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auction_home/domain/auction_enum.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/auth_controller.dart';
@@ -19,7 +18,6 @@ import 'package:flutter_sixvalley_ecommerce/features/home/widgets/redesign/aucti
 import 'package:flutter_sixvalley_ecommerce/features/home/widgets/redesign/banner_slider_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/home/widgets/redesign/featured_products_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/home/widgets/redesign/flash_deal_section.dart';
-import 'package:flutter_sixvalley_ecommerce/features/home/widgets/redesign/new_user_exclusive_section.dart';
 import 'package:flutter_sixvalley_ecommerce/features/home/widgets/redesign/top_stores_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/home/widgets/search_home_page_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/product/controllers/product_controller.dart';
@@ -388,16 +386,18 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
                             child: ColoredBox(
                               color: Theme.of(context).scaffoldBackgroundColor,
                               child: Column(
+                                // R-Limpieza: fuera "Oferta del día" y "Exclusivo para
+                                // nuevos usuarios" — growth-hacks de e-commerce de consumo
+                                // que no aplican a una red de tiendas (los widgets quedan
+                                // intactos por si se re-encuadran después).
                                 children: [
                                   const SizedBox(height: Dimensions.paddingSizeOverLarge),
                                   const FlashDealSection(),
                                   const BannersSliderWidget(),
                                   const FeaturedProductsWidget(),
                                   ClearanceListWidget(),
-                                  TodaysDealSectionWidget(),
                                   if (_isAuctionEnabled)
                                     AuctionProductSectionWidget(onSeeAll: widget.onAuctionSeeAll),
-                                  const NewUserExclusiveSection(),
                                   if (!_singleVendor) const TopStoresWidget(),
                                   const BannersSliderWidget(useFooterBanners: true),
                                 ],

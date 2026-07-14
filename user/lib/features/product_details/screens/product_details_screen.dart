@@ -9,7 +9,6 @@ import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/widgets
 import 'package:flutter_sixvalley_ecommerce/features/product_details/widgets/product_carousel_image_viewer_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/product_details/widgets/product_specification_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/product_details/widgets/product_title_widget.dart';
-import 'package:flutter_sixvalley_ecommerce/features/product_details/widgets/promise_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/product_details/widgets/related_product_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/product_details/widgets/review_and_specification_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/product_details/widgets/shop_info_widget.dart';
@@ -267,21 +266,10 @@ class _ProductDetailsState extends State<ProductDetails> {
                       ) : const SizedBox.shrink(),
                       const SizedBox(height: Dimensions.paddingSizeSmall),
 
-                      Consumer<SplashController>(
-                        builder: (context, splashController, _) {
-                          final config = splashController.configModel;
-                          final showPromiseWidget = config?.activeTheme == 'default' && config?.companyReliability?.any((item) => item.status == 1) == true;
-
-                          if (showPromiseWidget) {
-                            return Container(
-                              padding: const EdgeInsets.only(top: Dimensions.paddingSizeLarge, bottom: Dimensions.paddingSizeDefault),
-                              decoration: BoxDecoration(color: Theme.of(context).cardColor),
-                              child: const PromiseWidget(),
-                            );
-                          }
-                          return const SizedBox();
-                        },
-                      ),
+                      // R-Limpieza: fuera los badges de "company reliability"
+                      // (Fast Delivery / Safe Payment / devoluciones) — promesas
+                      // de e-commerce de consumo que no aplican a pedidos entre
+                      // tiendas (PromiseWidget queda intacto).
 
                       _ProductDetailsProductListWidget(scrollController: scrollController),
 

@@ -119,7 +119,6 @@ class CartScreenState extends State<CartScreen> {
               List<CartModel> cartList = [];
               cartList.addAll(cart.cartList);
               bool isItemChecked = false;
-              int totalItemCheckedCount = 0;
 
               for(CartModel cart in cartList) {
                 if(cart.productType == "physical" && cart.isChecked!) {
@@ -142,9 +141,6 @@ class CartScreenState extends State<CartScreen> {
                   sellerList.add(cart.cartGroupId);
                   cart.isGroupChecked = false;
                   sellerGroupList.add(cart);
-                }
-                if(cart.isChecked ?? false){
-                  totalItemCheckedCount +=1;
                 }
               }
 
@@ -263,37 +259,10 @@ class CartScreenState extends State<CartScreen> {
                           ]),
                         ),
 
+                        // R-Limpieza: fuera el ícono de caja/paquete de envío junto
+                        // al botón — el pedido F6 no maneja envíos.
                         Row(
                           children: [
-                            Stack(
-                              children: [
-                                Padding(
-                                  padding : EdgeInsetsGeometry.only(
-                                    right : Dimensions.paddingSizeSmall,
-                                    top : Dimensions.paddingSizeSmall,
-                                    bottom : Dimensions.paddingSizeSmall
-                                  ),
-                                  child: CustomAssetImageWidget(
-                                    Images.cartBox,
-                                    height: 35, width: 35,
-                                  ),
-                                ),
-
-                                Positioned(
-                                  top: 2, right: 5,
-                                  child: Container(
-                                    padding: EdgeInsetsGeometry.all(5),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(width: 2, color: Theme.of(context).cardColor),
-                                      shape: BoxShape.circle,
-                                      color: Theme.of(context).colorScheme.error,
-                                    ),
-                                    child: Text(totalItemCheckedCount.toString(), style: titleRegular.copyWith(color: Theme.of(context).cardColor, fontSize: Dimensions.fontSizeSmall)),
-                                  ),
-                                ),
-                              ]
-                            ),
-
                             Expanded(
                               child: InkWell(
                                 onTap: () async {
@@ -957,7 +926,6 @@ class CartScreenState extends State<CartScreen> {
       List<List<CartModel>> cartProductList,
     ) {
     final ConfigModel? configModel = Provider.of<SplashController>(context, listen: false).configModel;
-    bool hasNull;
     if (configModel!.shippingMethod =='sellerwise_shipping') {
       for (int index = 0; index < sellerGroupList.length; index++) {
         bool hasPhysical = false;
@@ -976,7 +944,6 @@ class CartScreenState extends State<CartScreen> {
 
 
 
-          hasNull = true;
           return (
           sellerCart: sellerGroupList[index],
           sellerIndex: index
@@ -1013,7 +980,6 @@ class CartScreenState extends State<CartScreen> {
 
       ) {
       double total;
-      bool minimum = false;
       for(int index = 0; index < sellerGroupList.length; index++) {
         total = 0;
         for(CartModel cart in cartProductList[index]) {
@@ -1022,7 +988,6 @@ class CartScreenState extends State<CartScreen> {
           }
         }
         if(total< sellerGroupList[index].minimumOrderAmountInfo!) {
-          minimum = true;
           return (
             productCart: cartProductList[0][0],
             sellerCart: sellerGroupList[index],
