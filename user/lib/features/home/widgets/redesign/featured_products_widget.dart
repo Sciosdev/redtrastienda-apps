@@ -51,19 +51,23 @@ class FeaturedProductsWidget extends StatelessWidget {
           ),
           const SizedBox(height: Dimensions.paddingSizeSmall),
 
-          SizedBox(
-            // R-Limpieza: shortestSide*0.65 sobraba ~30-60dp bajo las tarjetas
-            // (la franja blanca del home); misma altura que usa el shimmer.
-            height: !ResponsiveHelper.isShortMobile(context) ? 245 : 235,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.only(left: Dimensions.homePagePadding, right: 15),
-              separatorBuilder: (_, __) => const SizedBox(width: Dimensions.paddingSizeSmall),
-              itemCount: min(products.length, 4),
-              itemBuilder: (context, index) => SizedBox(
-                width: 150,
-                child: ProductCardWidget(product: products[index]),
-              ),
+          // R-Limpieza: sin alto fijo — cualquier constante (el shortestSide*0.65
+          // original o un valor a mano) deja franja blanca según el device. Con
+          // máximo 4 tarjetas, un Row con scroll mide EXACTAMENTE su contenido.
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.only(left: Dimensions.homePagePadding, right: 15),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (int index = 0; index < min(products.length, 4); index++) ...[
+                  if (index > 0) const SizedBox(width: Dimensions.paddingSizeSmall),
+                  SizedBox(
+                    width: 150,
+                    child: ProductCardWidget(product: products[index]),
+                  ),
+                ],
+              ],
             ),
           ),
           const SizedBox(height: Dimensions.homePagePadding),
