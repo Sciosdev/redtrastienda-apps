@@ -52,7 +52,9 @@ class FeaturedProductsWidget extends StatelessWidget {
           const SizedBox(height: Dimensions.paddingSizeSmall),
 
           SizedBox(
-            height: MediaQuery.sizeOf(context).shortestSide * 0.65,
+            // R-Limpieza: shortestSide*0.65 sobraba ~30-60dp bajo las tarjetas
+            // (la franja blanca del home); misma altura que usa el shimmer.
+            height: !ResponsiveHelper.isShortMobile(context) ? 245 : 235,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.only(left: Dimensions.homePagePadding, right: 15),

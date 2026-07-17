@@ -72,7 +72,9 @@ class _FlashDealSectionState extends State<FlashDealSection> {
               ),
               const SizedBox(height: Dimensions.paddingSizeDefault),
               SizedBox(
-                height: MediaQuery.sizeOf(context).shortestSide * 0.65,
+                // R-Limpieza: misma corrección que destacados — el alto por
+                // shortestSide dejaba franja blanca bajo las tarjetas.
+                height: !ResponsiveHelper.isShortMobile(context) ? 245 : 235,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.only(left: Dimensions.homePagePadding, right: 15),
