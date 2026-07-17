@@ -29,6 +29,13 @@ class MercadoController with ChangeNotifier {
   bool _isMisPublicacionesLoading = false;
   bool get isMisPublicacionesLoading => _isMisPublicacionesLoading;
 
+  // R-Nav (C1): riel "Tiendas de la red" del home. Mismo endpoint que el
+  // explorar pero con estado propio, para que el home y el explorar no se
+  // pisen los filtros ni la paginación.
+  PublicacionesMercadoModel? tiendasRedModel;
+  bool _isTiendasRedLoading = false;
+  bool get isTiendasRedLoading => _isTiendasRedLoading;
+
   bool _isGuardando = false;
   bool get isGuardando => _isGuardando;
 
@@ -60,6 +67,27 @@ class MercadoController with ChangeNotifier {
     }
 
     _isExplorarLoading = false;
+    notifyListeners();
+  }
+
+  /// R-Nav (C1): página 1 de publicaciones activas (las más recientes) para
+  /// derivar client-side las tiendas con vitrina — sin backend nuevo.
+  Future<void> getTiendasRed() async {
+    _isTiendasRedLoading = true;
+    notifyListeners();
+
+    ApiResponseModel apiResponse = await mercadoServiceInterface.getPublicaciones(
+      search: '',
+      estado: '',
+      tipo: '',
+      offset: '1',
+    );
+
+    if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
+      tiendasRedModel = PublicacionesMercadoModel.fromJson(apiResponse.response?.data);
+    }
+
+    _isTiendasRedLoading = false;
     notifyListeners();
   }
 

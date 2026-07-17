@@ -16,6 +16,13 @@ import 'package:flutter_sixvalley_ecommerce/common/enums/local_caches_type_enum.
   // en false la app queda idéntica a hoy (apagar en builds de review de tienda).
   static const bool anpecMercadoFlow = false;
 
+  // R-Nav: rediseño de navegación (barra Inicio/Chats/Pedidos/Menú + menú en
+  // 4 secciones). Gatea el rediseño ENTERO; en false la app queda idéntica a
+  // main (la 1.0.0 de review ya salió — este seguro permite mergear sin
+  // decidir el estreno). Las piezas que dependen del Mercado llevan doble
+  // gate con anpecMercadoFlow.
+  static const bool anpecNavFlow = true;
+
   // R-Limpieza: oculta los botones de login social aunque el config del server
   // los traiga prendidos — los SDK (Facebook/Google) no tienen credenciales
   // reales y un botón que truena es rechazo casi seguro en review de tienda.

@@ -1530,5 +1530,18 @@
   "el_precio_es_obligatorio_para_productos": "Price is required for products",
   "tienda": "Shop",
   "tienda_no_disponible": "This shop is not available right now",
-  "enviar_mensaje": "Send message"
+  "enviar_mensaje": "Send message",
+  "inicio": "Home",
+  "menu": "Menu",
+  "inicia_sesion_para_chatear": "Log in to chat with other shops in the network",
+  "mi_tienda": "My shop",
+  "proveedores": "Suppliers",
+  "mis_cosas": "My stuff",
+  "mi_perfil": "My profile",
+  "mis_direcciones": "My addresses",
+  "configuracion": "Settings",
+  "soporte": "Support",
+  "chat_con_proveedores": "Chat with suppliers",
+  "cerrar_sesion": "Sign out",
+  "tiendas_de_la_red": "Network shops"
 }

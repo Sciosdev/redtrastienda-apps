@@ -164,7 +164,7 @@
   "orders": "Pedidos",
   "all_category": "Toda la categoría",
   "notification": "Notificación",
-  "chats": "Charlas",
+  "chats": "Chats",
   "settings": "Ajustes",
   "OPPS": "¡Ups!",
   "RETRY": "Rever",
@@ -1540,5 +1540,18 @@
   "el_precio_es_obligatorio_para_productos": "El precio es obligatorio para productos",
   "tienda": "Tienda",
   "tienda_no_disponible": "Esta tienda no está disponible en este momento",
-  "enviar_mensaje": "Enviar mensaje"
+  "enviar_mensaje": "Enviar mensaje",
+  "inicio": "Inicio",
+  "menu": "Menú",
+  "inicia_sesion_para_chatear": "Inicia sesión para chatear con otras tiendas de la red",
+  "mi_tienda": "Mi tienda",
+  "proveedores": "Proveedores",
+  "mis_cosas": "Mis cosas",
+  "mi_perfil": "Mi perfil",
+  "mis_direcciones": "Mis direcciones",
+  "configuracion": "Configuración",
+  "soporte": "Soporte",
+  "chat_con_proveedores": "Chat con proveedores",
+  "cerrar_sesion": "Cerrar sesión",
+  "tiendas_de_la_red": "Tiendas de la red"
 }

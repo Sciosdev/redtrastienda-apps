@@ -10,12 +10,17 @@ import 'package:flutter_sixvalley_ecommerce/features/mercado/screens/publicacion
 import 'package:flutter_sixvalley_ecommerce/features/mercado/widgets/mercado_chip_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/mercado/widgets/publicacion_card_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/localization/language_constrants.dart';
+import 'package:flutter_sixvalley_ecommerce/utill/app_constants.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/custom_themes.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/dimensions.dart';
 import 'package:provider/provider.dart';
 
 class MercadoExplorarScreen extends StatefulWidget {
-  const MercadoExplorarScreen({super.key});
+  // R-Nav (C2): abre con el chip "Ofertas" preseleccionado (la entrada Ofertas
+  // del menú). El backend no filtra por es_oferta (solo search/estado/tipo),
+  // así que el filtro es client-side; default false = pantalla idéntica a hoy.
+  final bool soloOfertas;
+  const MercadoExplorarScreen({super.key, this.soloOfertas = false});
 
   @override
   State<MercadoExplorarScreen> createState() => _MercadoExplorarScreenState();
@@ -25,6 +30,15 @@ class _MercadoExplorarScreenState extends State<MercadoExplorarScreen> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   Timer? _debounce;
+
+  // R-Nav (C2): filtro Ofertas client-side. El auto-fetch rellena la vista
+  // filtrada con las páginas siguientes pero con tope de 3 seguidas — el
+  // hosting tiene rate limit (~5/min en rutas con throttle) y sin cap un tap
+  // podía disparar una ráfaga. Después del tope sigue el scroll infinito
+  // normal. El param es_oferta en el backend queda como mejora post-expo.
+  late bool _soloOfertas = widget.soloOfertas && AppConstants.anpecNavFlow;
+  int _autoFetchOfertas = 0;
+  static const int _maxAutoFetchOfertas = 3;
 
   @override
   void initState() {
@@ -58,6 +72,7 @@ class _MercadoExplorarScreenState extends State<MercadoExplorarScreen> {
   void _onSearchChanged(String value) {
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 400), () {
+      _autoFetchOfertas = 0;
       Provider.of<MercadoController>(context, listen: false).getPublicaciones(search: value.trim());
     });
   }
@@ -121,6 +136,15 @@ class _MercadoExplorarScreenState extends State<MercadoExplorarScreen> {
                     _chipTipo(controller, '', getTranslated('todos', context) ?? 'Todos'),
                     _chipTipo(controller, 'producto', getTranslated('productos', context) ?? 'Productos'),
                     _chipTipo(controller, 'aviso', getTranslated('avisos', context) ?? 'Avisos'),
+                    if (AppConstants.anpecNavFlow)
+                      MercadoChipWidget(
+                        etiqueta: getTranslated('offers', context) ?? 'Ofertas',
+                        seleccionado: _soloOfertas,
+                        onTap: () => setState(() {
+                          _soloOfertas = !_soloOfertas;
+                          _autoFetchOfertas = 0;
+                        }),
+                      ),
                     if ((miEstado ?? '').isNotEmpty)
                       MercadoChipWidget(
                         etiqueta: '${getTranslated('mi_estado', context) ?? 'Mi estado'} ($miEstado)',
@@ -138,7 +162,26 @@ class _MercadoExplorarScreenState extends State<MercadoExplorarScreen> {
           Expanded(
             child: Consumer<MercadoController>(
               builder: (context, controller, child) {
-                final List<PublicacionMercado> publicaciones = controller.explorarModel?.data ?? [];
+                final List<PublicacionMercado> todas = controller.explorarModel?.data ?? [];
+                final List<PublicacionMercado> publicaciones = _soloOfertas
+                    ? todas.where((p) => p.ofertaVigente == true).toList()
+                    : todas;
+
+                final int total = controller.explorarModel?.totalSize ?? 0;
+
+                // R-Nav (C2): si el filtro deja la vista corta y quedan
+                // páginas, trae la siguiente — máximo 3 seguidas (cap por el
+                // rate limit del hosting); después, scroll infinito normal.
+                if (_soloOfertas && !controller.isExplorarLoading && todas.length < total &&
+                    publicaciones.length < 6 && _autoFetchOfertas < _maxAutoFetchOfertas) {
+                  _autoFetchOfertas++;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      Provider.of<MercadoController>(context, listen: false)
+                          .getPublicaciones(offset: (todas.length ~/ 15) + 1);
+                    }
+                  });
+                }
 
                 if (controller.isExplorarLoading && publicaciones.isEmpty) {
                   return const Center(child: CircularProgressIndicator());
@@ -151,8 +194,7 @@ class _MercadoExplorarScreenState extends State<MercadoExplorarScreen> {
                   );
                 }
 
-                final int total = controller.explorarModel?.totalSize ?? 0;
-                final bool hayMas = publicaciones.length < total;
+                final bool hayMas = todas.length < total;
 
                 return ListView.builder(
                   controller: _scrollController,
