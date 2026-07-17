@@ -11,7 +11,10 @@ import 'package:flutter_sixvalley_ecommerce/utill/dimensions.dart';
 import 'package:provider/provider.dart';
 
 class ConversacionesTiendasScreen extends StatefulWidget {
-  const ConversacionesTiendasScreen({super.key});
+  // R-Nav: como pestaña del dashboard no lleva flecha back y el título es
+  // "Chats"; el uso pusheado (menú viejo) queda idéntico con el default.
+  final bool fromDashboard;
+  const ConversacionesTiendasScreen({super.key, this.fromDashboard = false});
 
   @override
   State<ConversacionesTiendasScreen> createState() => _ConversacionesTiendasScreenState();
@@ -66,7 +69,12 @@ class _ConversacionesTiendasScreenState extends State<ConversacionesTiendasScree
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: getTranslated('chat_entre_tiendas', context) ?? 'Chat entre tiendas'),
+      appBar: CustomAppBar(
+        title: widget.fromDashboard
+            ? (getTranslated('chats', context) ?? 'Chats')
+            : (getTranslated('chat_entre_tiendas', context) ?? 'Chat entre tiendas'),
+        isBackButtonExist: !widget.fromDashboard,
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DirectorioTiendasScreen())),
         icon: const Icon(Icons.add_comment_outlined),

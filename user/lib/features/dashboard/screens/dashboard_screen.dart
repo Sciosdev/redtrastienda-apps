@@ -18,6 +18,11 @@ import 'package:flutter_sixvalley_ecommerce/features/cart/screens/cart_screen.da
 import 'package:flutter_sixvalley_ecommerce/features/category/controllers/category_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/category/screens/category_screen.dart';
 import 'package:flutter_sixvalley_ecommerce/features/chat/controllers/chat_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/features/chat_tiendas/controllers/chat_tiendas_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/features/chat_tiendas/domain/models/conversacion_tienda_model.dart';
+import 'package:flutter_sixvalley_ecommerce/features/dashboard/screens/chats_tab_screen.dart';
+import 'package:flutter_sixvalley_ecommerce/features/more/screens/menu_anpec_screen.dart';
+import 'package:flutter_sixvalley_ecommerce/features/notification/controllers/notification_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/deal/controllers/featured_deal_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/deal/controllers/flash_deal_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/home/screens/home_explore_screen.dart';
@@ -99,6 +104,12 @@ class DashBoardScreenState extends State<DashBoardScreen> {
       if (Provider.of<SplashController>(context, listen: false).configModel?.walletStatus == 1) {
         Provider.of<WalletController>(context, listen: false).getTransactionList(1, isUpdate: false);
       }
+      if (AppConstants.anpecNavFlow) {
+        // R-Nav: el inbox del chat entre tiendas alimenta el badge de la
+        // pestaña Chats; las notificaciones, el de la campana del home.
+        Provider.of<ChatTiendasController>(context, listen: false).getInbox();
+        Provider.of<NotificationController>(context, listen: false).getNotificationList(1);
+      }
     }
 
     final SplashController splashController = Provider.of<SplashController>(context, listen: false);
@@ -132,7 +143,29 @@ class DashBoardScreenState extends State<DashBoardScreen> {
       },
     );
 
-    _mainScreens = [
+    // R-Nav: barra Inicio/Chats/Pedidos/Menú (el slot de subastas, índice 4,
+    // no cambia). Con flag OFF la lista es la de siempre.
+    _mainScreens = AppConstants.anpecNavFlow ? [
+      homeScreen,
+      ChatsTabScreen(
+        loginNotifier: _loginNotifier,
+        onLoginSuccess: () => setState(() {
+          _currentMode = AppMode.main;
+          _selectedIndex = 1;
+        }),
+      ),
+      OrderScreen(
+        isBacButtonExist: false,
+        fromDashboard: true,
+        loginNotifier: _loginNotifier,
+        onLoginSuccess: () => setState(() {
+          _currentMode = AppMode.main;
+          _selectedIndex = 2;
+        }),
+      ),
+      const MenuAnpecScreen(),
+      const SizedBox.shrink(),
+    ] : [
       homeScreen,
       const CategoryScreen(isBacButtonExist: false),
       const CartScreen(showBackButton: false, fromDashboard: true),
@@ -210,6 +243,13 @@ class DashBoardScreenState extends State<DashBoardScreen> {
 
   void _onItemTapped(int index) {
     refreshLoginStatus();
+
+    // R-Nav: tocar la pestaña Chats refresca el conteo de no leídos (además
+    // del arranque, el login y el regreso desde una conversación — el inbox
+    // ya se recarga al hacer pop, y el badge escucha el mismo controller).
+    if (AppConstants.anpecNavFlow && _currentMode == AppMode.main && index == 1 && _loginNotifier.value) {
+      Provider.of<ChatTiendasController>(context, listen: false).getInbox();
+    }
 
     setState(() {
       if (_currentMode == AppMode.main) {
@@ -511,7 +551,38 @@ class ElevatedCard extends StatelessWidget {
             );
           },
           child: currentMode == AppMode.main
-              ? Row(
+              ? (AppConstants.anpecNavFlow
+                  ? Row(
+                      key: const ValueKey('main_menus'),
+                      children: [
+                        NavItem(
+                            icon: Images.navHomeIcon,
+                            label: getTranslated('inicio', context) ?? 'Inicio',
+                            index: 0,
+                            selectedIndex: selectedIndex,
+                            onTap: onItemTapped),
+                        NavItem(
+                            icon: Images.chats,
+                            label: getTranslated('chats', context) ?? 'Chats',
+                            index: 1,
+                            selectedIndex: selectedIndex,
+                            badge: const ChatsNavBadge(),
+                            onTap: onItemTapped),
+                        NavItem(
+                            icon: Images.navOrderIcon,
+                            label: getTranslated('orders', context) ?? 'Pedidos',
+                            index: 2,
+                            selectedIndex: selectedIndex,
+                            onTap: onItemTapped),
+                        NavItem(
+                            icon: Images.navCategoryIcon,
+                            label: getTranslated('menu', context) ?? 'Menú',
+                            index: 3,
+                            selectedIndex: selectedIndex,
+                            onTap: onItemTapped),
+                      ],
+                    )
+                  : Row(
                   key: const ValueKey('main_menus'),
                   children: [
                     NavItem(
@@ -539,7 +610,7 @@ class ElevatedCard extends StatelessWidget {
                         selectedIndex: selectedIndex,
                         onTap: onItemTapped),
                   ],
-                )
+                ))
               : Row(
                   key: const ValueKey('auction_menus'),
                   children: [
@@ -581,6 +652,8 @@ class NavItem extends StatelessWidget {
   final int index;
   final int selectedIndex;
   final ValueChanged<int> onTap;
+  // R-Nav: overlay opcional sobre el ícono (badge de no leídos de Chats).
+  final Widget? badge;
 
   const NavItem({
     super.key,
@@ -589,6 +662,7 @@ class NavItem extends StatelessWidget {
     required this.index,
     required this.selectedIndex,
     required this.onTap,
+    this.badge,
   });
 
   @override
@@ -614,11 +688,14 @@ class NavItem extends StatelessWidget {
             ),
             child: Row(mainAxisSize: MainAxisSize.min,
               children: [
-                CustomAssetImageWidget(
-                  icon,
-                  height: isSelected ? Dimensions.paddingSizeDefaultAddress : Dimensions.paddingSizeLarge,
-                  color: isSelected ? Colors.white : Colors.grey.shade500,
-                ),
+                Stack(clipBehavior: Clip.none, children: [
+                  CustomAssetImageWidget(
+                    icon,
+                    height: isSelected ? Dimensions.paddingSizeDefaultAddress : Dimensions.paddingSizeLarge,
+                    color: isSelected ? Colors.white : Colors.grey.shade500,
+                  ),
+                  if (badge != null) Positioned(top: -6, right: -8, child: badge!),
+                ]),
                 if (isSelected)
                   Flexible(
                     child: Padding(
@@ -643,6 +720,43 @@ class NavItem extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// R-Nav: badge de no leídos de la pestaña Chats. Suma los `no_leidos` del
+/// inbox cargado (primera página, 20 conversaciones — suficiente en la
+/// práctica); escucha el mismo controller que la pantalla, así baja solo al
+/// volver de leer una conversación.
+class ChatsNavBadge extends StatelessWidget {
+  const ChatsNavBadge({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    if (!Provider.of<AuthController>(context, listen: false).isLoggedIn()) {
+      return const SizedBox.shrink();
+    }
+    return Consumer<ChatTiendasController>(
+      builder: (context, chatController, _) {
+        int noLeidos = 0;
+        for (final ConversacionTienda conversacion in chatController.conversacionesModel?.data ?? []) {
+          noLeidos += conversacion.noLeidos ?? 0;
+        }
+        if (noLeidos == 0) return const SizedBox.shrink();
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+          constraints: const BoxConstraints(minWidth: 15),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.error,
+            borderRadius: BorderRadius.circular(100),
+          ),
+          child: Text(
+            noLeidos > 9 ? '9+' : '$noLeidos',
+            textAlign: TextAlign.center,
+            style: textBold.copyWith(fontSize: 9, color: Colors.white),
+          ),
+        );
+      },
     );
   }
 }

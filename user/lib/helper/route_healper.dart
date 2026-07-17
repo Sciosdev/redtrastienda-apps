@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_sixvalley_ecommerce/common/enums/auction_enum.dart';
+import 'package:flutter_sixvalley_ecommerce/utill/app_constants.dart';
 import 'package:flutter_sixvalley_ecommerce/data/model/image_full_url.dart';
 import 'package:flutter_sixvalley_ecommerce/features/address/domain/models/address_model.dart';
 import 'package:flutter_sixvalley_ecommerce/features/address/screens/address_list_screen.dart';
@@ -1184,8 +1185,13 @@ class RouterHelper {
       GoRoute(path: splashScreen, builder: (context, state) => const SplashScreen()),
       GoRoute(path: dashboardScreen, builder: (context, state) {
         String? page =  state.uri.queryParameters['page'];
+        // R-Nav: con la barra nueva los índices cambian (chats=1, orders=2,
+        // menu=3); los nombres legacy category/cart ya no tienen pestaña y
+        // caen a Inicio (verificado: ningún caller navega con ellos).
         return DashBoardScreen(
-          pageIndex: page == 'home' ? 0 : page == 'category' ? 1 : page == 'cart' ? 2 : page == 'orders' ? 3 : page == 'auction'  ? 4 : page == 'auction_my_bid' ? 6 : 0,
+          pageIndex: AppConstants.anpecNavFlow
+              ? (page == 'home' ? 0 : page == 'chats' ? 1 : page == 'orders' ? 2 : page == 'menu' ? 3 : page == 'auction' ? 4 : page == 'auction_my_bid' ? 6 : 0)
+              : (page == 'home' ? 0 : page == 'category' ? 1 : page == 'cart' ? 2 : page == 'orders' ? 3 : page == 'auction'  ? 4 : page == 'auction_my_bid' ? 6 : 0),
         );
       }),
       GoRoute(path: loginScreen, builder: (context, state) {

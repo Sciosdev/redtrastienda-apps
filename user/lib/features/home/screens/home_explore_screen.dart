@@ -18,8 +18,15 @@ import 'package:flutter_sixvalley_ecommerce/features/home/widgets/redesign/aucti
 import 'package:flutter_sixvalley_ecommerce/features/home/widgets/redesign/banner_slider_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/home/widgets/redesign/featured_products_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/home/widgets/redesign/flash_deal_section.dart';
+import 'package:flutter_sixvalley_ecommerce/features/home/widgets/redesign/tiendas_red_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/home/widgets/redesign/top_stores_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/home/widgets/search_home_page_widget.dart';
+import 'package:flutter_sixvalley_ecommerce/common/basewidget/not_logged_in_bottom_sheet_widget.dart';
+import 'package:flutter_sixvalley_ecommerce/features/mercado/controllers/mercado_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/features/notification/controllers/notification_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/features/notification/domain/models/notification_model.dart';
+import 'package:flutter_sixvalley_ecommerce/utill/app_constants.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_sixvalley_ecommerce/features/product/controllers/product_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/product/domain/models/product_model.dart';
 import 'package:flutter_sixvalley_ecommerce/features/product/enums/product_type.dart';
@@ -150,6 +157,8 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
     final bannerController    = Provider.of<BannerController>(context, listen: false);
     final shopController      = Provider.of<ShopController>(context, listen: false);
     final auctionController   = _isAuctionEnabled ? Provider.of<AuctionHomeController>(context, listen: false) : null;
+    final mercadoController   = (AppConstants.anpecNavFlow && AppConstants.anpecMercadoFlow)
+        ? Provider.of<MercadoController>(context, listen: false) : null;
     final isLoggedIn = authController.isLoggedIn();
 
     _tabScrollOffsets.clear();
@@ -164,6 +173,9 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
     await productController.getRecommendedProduct();
     await productController.getJustForYouProduct(1);
     await shopController.getTopSellerList(offset: 1);
+    if (mercadoController != null && isLoggedIn) {
+      await mercadoController.getTiendasRed();
+    }
     if (auctionController != null) {
       await auctionController.getAuctionHomeSection(AuctionEnum.all);
     }
@@ -308,8 +320,30 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
                                             ],
                                           ),
                                         ),
+                                        // R-Nav: campana de notificaciones (el rail del
+                                        // menú viejo muere y este es su nuevo lugar) y el
+                                        // avatar pasa a abrir Mi perfil — el menú ya tiene
+                                        // su pestaña. Flag OFF: avatar → menú viejo, igual.
+                                        if (AppConstants.anpecNavFlow) ...[
+                                          const NotificationBellWidget(),
+                                          const SizedBox(width: Dimensions.paddingSizeDefault),
+                                        ],
                                         GestureDetector(
-                                          onTap: () => RouterHelper.getMoreScreenRoute(action: RouteAction.push),
+                                          onTap: () {
+                                            if (!AppConstants.anpecNavFlow) {
+                                              RouterHelper.getMoreScreenRoute(action: RouteAction.push);
+                                            } else if (isLoggedIn) {
+                                              context.push(RouterHelper.profileScreen1);
+                                            } else {
+                                              showModalBottomSheet(
+                                                context: context,
+                                                isScrollControlled: true,
+                                                backgroundColor: Colors.transparent,
+                                                builder: (_) => NotLoggedInBottomSheetWidget(
+                                                    fromPage: '${RouterHelper.dashboardScreen}?page=home'),
+                                              );
+                                            }
+                                          },
                                           child: ClipOval(
                                             child: CustomImageWidget(
                                                 image: profileController.userInfoModel?.imageFullUrl?.path ?? '',
@@ -403,6 +437,10 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
                                   if (_isAuctionEnabled)
                                     AuctionProductSectionWidget(onSeeAll: widget.onAuctionSeeAll),
                                   if (!_singleVendor) const TopStoresWidget(),
+                                  // R-Nav (C1): tiendas con publicaciones activas en el
+                                  // Mercado; doble gate — sin Mercado, cero rastro.
+                                  if (AppConstants.anpecNavFlow && AppConstants.anpecMercadoFlow)
+                                    const TiendasRedWidget(),
                                   const BannersSliderWidget(useFooterBanners: true),
                                 ],
                               ),
@@ -507,6 +545,51 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
   bool shouldRebuild(_SliverTabBarDelegate oldDelegate) =>
       oldDelegate.child != child || oldDelegate.height != height ||
           oldDelegate.stuckToSearch != stuckToSearch || oldDelegate.containerKey != containerKey;
+}
+
+/// R-Nav: campana de notificaciones en el AppBar del home — heredera del
+/// ícono del rail del menú viejo (mismo conteo `totalNewNotification`).
+class NotificationBellWidget extends StatelessWidget {
+  const NotificationBellWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => RouterHelper.getNotificationRoute(action: RouteAction.push),
+      child: Stack(clipBehavior: Clip.none, children: [
+        const Icon(Icons.notifications_outlined, color: Colors.white, size: 26),
+        Positioned(
+          top: -4,
+          right: -4,
+          child: Consumer2<AuthController, NotificationController>(
+            builder: (context, authController, notificationController, _) {
+              if (!authController.isLoggedIn()) return const SizedBox.shrink();
+              final int count = totalNewNotification(
+                notificationController.notificationModel,
+                notificationController.auctionNotificationModel,
+                isAuctionEnabled: (Provider.of<SplashController>(context, listen: false).configModel?.isAuctionFeatureEnabled == true) ||
+                    (Provider.of<ProfileController>(context, listen: false).userInfoModel?.showAuctionMenuForUser == true),
+              );
+              if (count == 0) return const SizedBox.shrink();
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                constraints: const BoxConstraints(minWidth: 15),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.error,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Text(
+                  count > 9 ? '9+' : '$count',
+                  textAlign: TextAlign.center,
+                  style: textBold.copyWith(fontSize: 9, color: Colors.white),
+                ),
+              );
+            },
+          ),
+        ),
+      ]),
+    );
+  }
 }
 
 class _CustomizableSpaceBarWidget extends StatelessWidget {
