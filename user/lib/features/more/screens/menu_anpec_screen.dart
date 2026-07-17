@@ -170,7 +170,10 @@ class _MenuAnpecScreenState extends State<MenuAnpecScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final splashController = Provider.of<SplashController>(context, listen: false);
+    // Con listen: la pestaña se monta al arrancar el dashboard, ANTES de que
+    // respondan las business pages; sin escuchar al SplashController, T&C /
+    // privacidad / sobre nosotros no aparecerían hasta remontar la pestaña.
+    final splashController = Provider.of<SplashController>(context);
     final authController = Provider.of<AuthController>(context);
     final isLoggedIn = authController.isLoggedIn();
 

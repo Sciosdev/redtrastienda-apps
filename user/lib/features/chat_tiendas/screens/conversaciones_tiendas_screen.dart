@@ -75,10 +75,15 @@ class _ConversacionesTiendasScreenState extends State<ConversacionesTiendasScree
             : (getTranslated('chat_entre_tiendas', context) ?? 'Chat entre tiendas'),
         isBackButtonExist: !widget.fromDashboard,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DirectorioTiendasScreen())),
-        icon: const Icon(Icons.add_comment_outlined),
-        label: Text(getTranslated('nueva_conversacion', context) ?? 'Nueva conversación'),
+      // R-Nav: como pestaña, la barra del dashboard (extendBody) tapa el FAB;
+      // el padding lo sube. Pusheada, queda igual que siempre.
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: widget.fromDashboard ? 76 : 0),
+        child: FloatingActionButton.extended(
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DirectorioTiendasScreen())),
+          icon: const Icon(Icons.add_comment_outlined),
+          label: Text(getTranslated('nueva_conversacion', context) ?? 'Nueva conversación'),
+        ),
       ),
       body: Consumer<ChatTiendasController>(
         builder: (context, controller, child) {
