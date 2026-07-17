@@ -217,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
                                       child: Directionality(
                                         textDirection: TextDirection.ltr,
-                                        child: Image.asset(Images.logoWithNameImage, width: 200, height: 72, fit: BoxFit.contain)
+                                        child: Image.asset(Images.logoWithNameImage, width: 220, height: 130, fit: BoxFit.contain)
                                       ),
                                     ),
                                   ),

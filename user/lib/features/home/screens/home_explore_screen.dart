@@ -12,6 +12,7 @@ import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/auth_contr
 import 'package:flutter_sixvalley_ecommerce/features/banner/controllers/banner_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/category/controllers/category_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/clearance_sale/widgets/clearance_sale_list_widget.dart';
+import 'package:flutter_sixvalley_ecommerce/common/basewidget/todays_deal_section_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/deal/controllers/flash_deal_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/home/widgets/redesign/home_category_content.dart';
 import 'package:flutter_sixvalley_ecommerce/features/home/widgets/redesign/auction_product_section_widget.dart';
@@ -396,6 +397,9 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
                                   const BannersSliderWidget(),
                                   const FeaturedProductsWidget(),
                                   ClearanceListWidget(),
+                                  // R-Limpieza smoke: la sección regresa a petición de Axel,
+                                  // ahora con banner propio en español (sin la imagen del template).
+                                  const TodaysDealSectionWidget(),
                                   if (_isAuctionEnabled)
                                     AuctionProductSectionWidget(onSeeAll: widget.onAuctionSeeAll),
                                   if (!_singleVendor) const TopStoresWidget(),

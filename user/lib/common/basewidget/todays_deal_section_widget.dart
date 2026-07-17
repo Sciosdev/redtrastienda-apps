@@ -58,11 +58,43 @@ class TodaysDealSectionWidget extends StatelessWidget {
               ),
               child: Row(crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // R-Limpieza: el asset del template traía "Don't Miss Today's Deal"
+                  // horneado en la imagen (inglés y morado). Banner propio: rojo del
+                  // theme y texto traducible.
                   SizedBox(
                     width: bannerWidth, height: bannerHeight,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                      child: CustomAssetImageWidget(Images.todaysDealBanner, fit: BoxFit.cover),
+                    child: Container(
+                      padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Theme.of(context).primaryColor,
+                            Theme.of(context).primaryColor.withValues(alpha: 0.78),
+                          ],
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(getTranslated('no_te_la_pierdas', context) ?? 'No te la pierdas',
+                            style: titilliumRegular.copyWith(
+                              color: Colors.white.withValues(alpha: 0.9),
+                              fontSize: Dimensions.fontSizeSmall,
+                            ),
+                          ),
+                          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                          Text(getTranslated('la_oferta_del_dia', context) ?? 'La oferta del día',
+                            style: titilliumBold.copyWith(
+                              color: Colors.white,
+                              fontSize: Dimensions.fontSizeLarge,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
 
