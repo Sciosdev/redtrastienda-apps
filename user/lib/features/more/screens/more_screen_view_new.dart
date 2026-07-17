@@ -578,7 +578,7 @@ class _MoreScreenViewState extends State<MoreScreenView> {
 
                     if (authController.isLoggedIn())
                       MenuItem(
-                        iconImage: Images.restockRequestSvg,
+                        iconImage: Images.walletIcon,
                         label: getTranslated('my_digital_card', context) ?? 'Mi Tarjeta Digital',
                         onTap: () => RouterHelper.getDigitalCardRoute(action: RouteAction.push),
                       ),
@@ -921,10 +921,13 @@ class MenuItem extends StatelessWidget {
         ),
         child: Row(
           children: [
+            // R-Limpieza: tinte uniforme — los SVG del template mezclan azules
+            // y grises; un solo color deja el menú parejo.
             CustomAssetImageWidget(
               iconImage,
               width: Dimensions.iconSizeDefault,
               height: Dimensions.iconSizeDefault,
+              color: Theme.of(context).textTheme.bodySmall?.color,
             ),
             const SizedBox(width: Dimensions.paddingSizeDefault),
             Expanded(

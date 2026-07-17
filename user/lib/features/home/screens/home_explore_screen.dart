@@ -11,7 +11,6 @@ import 'package:flutter_sixvalley_ecommerce/features/auction_home/domain/auction
 import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/auth_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/banner/controllers/banner_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/category/controllers/category_controller.dart';
-import 'package:flutter_sixvalley_ecommerce/features/clearance_sale/widgets/clearance_sale_list_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/common/basewidget/todays_deal_section_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/deal/controllers/flash_deal_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/home/widgets/redesign/home_category_content.dart';
@@ -164,7 +163,6 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
     await productController.getFeaturedProductModel(1);
     await productController.getRecommendedProduct();
     await productController.getJustForYouProduct(1);
-    await productController.getClearanceAllProductList(1);
     await shopController.getTopSellerList(offset: 1);
     if (auctionController != null) {
       await auctionController.getAuctionHomeSection(AuctionEnum.all);
@@ -396,7 +394,9 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
                                   const FlashDealSection(),
                                   const BannersSliderWidget(),
                                   const FeaturedProductsWidget(),
-                                  ClearanceListWidget(),
+                                  // R-Limpieza: liquidación fuera — sin datos se quedaba en
+                                  // shimmer permanente (el "hueco blanco" del home) y el
+                                  // concepto no aplica a la red.
                                   // R-Limpieza smoke: la sección regresa a petición de Axel,
                                   // ahora con banner propio en español (sin la imagen del template).
                                   const TodaysDealSectionWidget(),
