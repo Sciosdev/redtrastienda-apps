@@ -581,7 +581,10 @@ class _MenuAnpecScreenState extends State<MenuAnpecScreen> {
               ),
             ),
 
-            const SizedBox(height: Dimensions.paddingSizeLarge),
+            // R-Nav pulido: la barra flotante del dashboard (extendBody) tapaba
+            // el final del menú (toggle de tema + versión) — colchón para que
+            // el scroll llegue al fondo de verdad.
+            const SizedBox(height: 96),
           ],
         ),
       ),

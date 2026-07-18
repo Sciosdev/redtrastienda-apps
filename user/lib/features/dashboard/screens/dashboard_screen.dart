@@ -563,6 +563,7 @@ class ElevatedCard extends StatelessWidget {
                             onTap: onItemTapped),
                         NavItem(
                             icon: Images.chats,
+                            iconData: Icons.forum_rounded,
                             label: getTranslated('chats', context) ?? 'Chats',
                             index: 1,
                             selectedIndex: selectedIndex,
@@ -654,6 +655,9 @@ class NavItem extends StatelessWidget {
   final ValueChanged<int> onTap;
   // R-Nav: overlay opcional sobre el ícono (badge de no leídos de Chats).
   final Widget? badge;
+  // R-Nav pulido: ícono de Material opcional — si viene, sustituye al asset
+  // (el SVG de chats del template no convencía para la pestaña Chats).
+  final IconData? iconData;
 
   const NavItem({
     super.key,
@@ -663,6 +667,7 @@ class NavItem extends StatelessWidget {
     required this.selectedIndex,
     required this.onTap,
     this.badge,
+    this.iconData,
   });
 
   @override
@@ -689,11 +694,18 @@ class NavItem extends StatelessWidget {
             child: Row(mainAxisSize: MainAxisSize.min,
               children: [
                 Stack(clipBehavior: Clip.none, children: [
-                  CustomAssetImageWidget(
-                    icon,
-                    height: isSelected ? Dimensions.paddingSizeDefaultAddress : Dimensions.paddingSizeLarge,
-                    color: isSelected ? Colors.white : Colors.grey.shade500,
-                  ),
+                  if (iconData != null)
+                    Icon(
+                      iconData,
+                      size: isSelected ? Dimensions.paddingSizeDefaultAddress : Dimensions.paddingSizeLarge,
+                      color: isSelected ? Colors.white : Colors.grey.shade500,
+                    )
+                  else
+                    CustomAssetImageWidget(
+                      icon,
+                      height: isSelected ? Dimensions.paddingSizeDefaultAddress : Dimensions.paddingSizeLarge,
+                      color: isSelected ? Colors.white : Colors.grey.shade500,
+                    ),
                   if (badge != null) Positioned(top: -6, right: -8, child: badge!),
                 ]),
                 if (isSelected)

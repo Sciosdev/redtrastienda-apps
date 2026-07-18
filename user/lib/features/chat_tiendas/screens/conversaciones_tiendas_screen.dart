@@ -80,6 +80,10 @@ class _ConversacionesTiendasScreenState extends State<ConversacionesTiendasScree
       floatingActionButton: Padding(
         padding: EdgeInsets.only(bottom: widget.fromDashboard ? 76 : 0),
         child: FloatingActionButton.extended(
+          // R-Nav pulido: sin color explícito, M3 lo pintaba en tono pastel
+          // fuera de theme (mismo caso que el FAB del Mercado).
+          backgroundColor: Theme.of(context).primaryColor,
+          foregroundColor: Colors.white,
           onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DirectorioTiendasScreen())),
           icon: const Icon(Icons.add_comment_outlined),
           label: Text(getTranslated('nueva_conversacion', context) ?? 'Nueva conversación'),
