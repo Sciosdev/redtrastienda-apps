@@ -18,10 +18,12 @@ import 'package:flutter_sixvalley_ecommerce/theme/controllers/theme_controller.d
 import 'package:flutter_sixvalley_ecommerce/utill/custom_themes.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/dimensions.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/images.dart';
+import 'package:flutter_sixvalley_ecommerce/common/basewidget/no_internet_screen_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/common/basewidget/product_filter_dialog_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/common/basewidget/search_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/home/screens/home_screens.dart';
 import 'package:flutter_sixvalley_ecommerce/features/shop/screens/overview_screen.dart';
+import 'package:flutter_sixvalley_ecommerce/features/shop/widgets/seller_category_chips.dart';
 import 'package:flutter_sixvalley_ecommerce/features/shop/widgets/shop_info_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/shop/widgets/shop_product_view_list.dart';
 import 'package:flutter_sixvalley_ecommerce/features/surtido/controllers/surtido_controller.dart';
@@ -70,13 +72,22 @@ class _TopSellerProductScreenState extends State<TopSellerProductScreen> with Ti
   int selectedIndex = 0;
 
   void _load() async {
-    await Provider.of<ShopController>(Get.context!, listen: false).getClearanceShopProductList('clearance_sale', '1', widget.slug.toString());
+    // R-Proveedor: el proveedor no lleva promos → se omiten los fetches
+    // promocionales (clearance/best-selling/featured/recommended/coupons) para
+    // cargar más rápido. Se conservan siempre: catálogo, info, categorías y
+    // marcas (alimentan grilla, header, chips y filtro ⚙). Flag OFF: orden y
+    // llamadas idénticas a hoy.
+    if(!AppConstants.anpecProveedorFlow) {
+      await Provider.of<ShopController>(Get.context!, listen: false).getClearanceShopProductList('clearance_sale', '1', widget.slug.toString());
+    }
     await Provider.of<SellerProductController>(Get.context!, listen: false).getSellerProductList(widget.slug.toString(), 1, "");
     await Provider.of<ShopController>(Get.context!, listen: false).getSellerInfo(widget.slug.toString());
-    await Provider.of<SellerProductController>(Get.context!, listen: false).getSellerWiseBestSellingProductList(widget.slug.toString(), 1);
-    await Provider.of<SellerProductController>(Get.context!, listen: false).getSellerWiseFeaturedProductList(widget.slug.toString(), 1);
-    await Provider.of<SellerProductController>(Get.context!, listen: false).getSellerWiseRecommendedProductList(widget.slug.toString(), 1);
-    await Provider.of<CouponController>(Get.context!, listen: false).getSellerWiseCouponList(widget.slug!, 1);
+    if(!AppConstants.anpecProveedorFlow) {
+      await Provider.of<SellerProductController>(Get.context!, listen: false).getSellerWiseBestSellingProductList(widget.slug.toString(), 1);
+      await Provider.of<SellerProductController>(Get.context!, listen: false).getSellerWiseFeaturedProductList(widget.slug.toString(), 1);
+      await Provider.of<SellerProductController>(Get.context!, listen: false).getSellerWiseRecommendedProductList(widget.slug.toString(), 1);
+      await Provider.of<CouponController>(Get.context!, listen: false).getSellerWiseCouponList(widget.slug!, 1);
+    }
     await Provider.of<CategoryController>(Get.context!, listen: false).getSellerWiseCategoryList(widget.slug!);
     await Provider.of<BrandController>(Get.context!, listen: false).getSellerWiseBrandList(widget.slug!);
   }
@@ -84,10 +95,6 @@ class _TopSellerProductScreenState extends State<TopSellerProductScreen> with Ti
   @override
   void initState() {
     super.initState();
-
-    print("--------->>${widget.totalReview}");
-    print("--------->>${widget.rating}");
-
 
     vacationIsOn = ShopHelper.isVacationActive(
       context, startDate: widget.vacationStartDate,
@@ -97,7 +104,10 @@ class _TopSellerProductScreenState extends State<TopSellerProductScreen> with Ti
       isInHouseSeller: widget.sellerId == 0,
     );
 
-    if(widget.fromMore){
+    if(AppConstants.anpecProveedorFlow || widget.fromMore){
+      // R-Proveedor: sin pestañas, la grilla de surtido es el cuerpo único →
+      // índice fijo en "todos los productos" (neutraliza fromMore, que hoy solo
+      // servía para saltar a esta misma vista).
       Provider.of<ShopController>(context, listen: false).setMenuItemIndex(1, notify: false);
     }else{
       Provider.of<ShopController>(context, listen: false).setMenuItemIndex(0, notify: false);
@@ -149,11 +159,6 @@ class _TopSellerProductScreenState extends State<TopSellerProductScreen> with Ti
         body: Consumer<ShopController>(
           builder: (context, sellerProvider, _) {
 
-
-            print("=====1324=====>>${sellerProvider.sellerInfoModel?.totalReview ?? 0}");
-            print("=====1324=====>>${sellerProvider.sellerInfoModel?.avgRating ?? 0}");
-
-
             vacationIsOn = ShopHelper.isVacationActive(
               context, startDate: sellerProvider.sellerInfoModel?.seller?.shop?.vacationStartDate,
               endDate: sellerProvider.sellerInfoModel?.seller?.shop?.vacationEndDate,
@@ -188,6 +193,51 @@ class _TopSellerProductScreenState extends State<TopSellerProductScreen> with Ti
                 ),
               ),
 
+              // R-Proveedor: sin TabBar. El buscador sube y queda fijo; debajo,
+              // el filtro ⚙ (acceso avanzado) + los chips de categoría (acceso
+              // rápido). Flag OFF: la cabecera con pestañas de hoy, intacta.
+              AppConstants.anpecProveedorFlow ?
+              SliverPersistentHeader(pinned: true,
+                delegate: SliverDelegate(
+                  height: 128 + topPadding,
+                  child: Container(color: Theme.of(context).canvasColor,
+                    child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                      SizedBox(height: topPadding),
+                      SearchWidget(hintText: '${getTranslated('search_hint', context)}', slug: widget.slug!),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraSmall),
+                        child: Row(children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: Dimensions.homePagePadding),
+                            child: Stack(children: [
+                              InkWell(onTap: () => showModalBottomSheet(context: context,
+                                isScrollControlled: true, backgroundColor: Colors.transparent,
+                                builder: (c) => ProductFilterDialog(slug: widget.slug!)),
+                                child: Container(decoration: BoxDecoration(
+                                  color: Theme.of(context).cardColor,
+                                  border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha:.5)),
+                                  borderRadius: BorderRadius.circular(Dimensions.paddingSizeExtraSmall)),
+                                  width: 30, height: 30,
+                                  child: Center(child: CustomAssetImageWidget(Images.filterIcon, width: 15, height: 15,
+                                    color: Provider.of<ThemeController>(context, listen: false).darkTheme?
+                                    Colors.white : Theme.of(context).primaryColor,
+                                  )))),
+                              Consumer<SellerProductController>(
+                                builder: (context, sellerProductController, _) {
+                                  return sellerProductController.isFilterApply ?
+                                    CircleAvatar(radius: 5, backgroundColor: Theme.of(context).primaryColor) :
+                                    const SizedBox();
+                                }
+                              )
+                            ]),
+                          ),
+                          Expanded(child: SellerCategoryChips(slug: widget.slug!)),
+                        ]),
+                      ),
+                    ]),
+                  ),
+                )
+              ) :
               SliverPersistentHeader(pinned: true,
                 delegate: SliverDelegate(
                   height: (sellerProvider.shopMenuIndex == 1 ? 140 : 50) + topPadding,
@@ -269,7 +319,44 @@ class _TopSellerProductScreenState extends State<TopSellerProductScreen> with Ti
               ),
 
               SliverToBoxAdapter(
-                child: sellerProvider.shopMenuIndex == 0 ? ShopOverviewScreen(slug: widget.slug!, scrollController: _scrollController,
+                // R-Proveedor: cuerpo único = grilla de surtido, nunca Overview.
+                // Estado vacío digno vía Consumer, SIN tocar ShopProductViewList
+                // (que conserva su shimmer/empty propios para el resto de la app).
+                child: AppConstants.anpecProveedorFlow ?
+                Consumer<SellerProductController>(
+                  builder: (context, spc, _) {
+                    final bool loaded = spc.sellerProduct != null;
+                    final bool empty = loaded && (spc.sellerProduct!.products?.isEmpty ?? true);
+                    if (empty) {
+                      return const NoInternetOrDataScreenWidget(isNoInternet: false, message: 'provider_no_catalog');
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(12, Dimensions.paddingSizeSmall, 12, 0),
+                      child: ShopProductViewList(
+                        scrollController: _scrollController,
+                        sellerId: widget.sellerId ?? 0,
+                        slug: widget.slug ?? '',
+                        sellerNavigationModel: SellerNavigationModel(
+                          sellerId: widget.sellerId ?? 0,
+                          banner: widget.banner ?? '',
+                          temporaryClose: widget.temporaryClose ?? false,
+                          slug: widget.slug,
+                          totalReview: widget.totalReview,
+                          totalProduct: widget.totalProduct,
+                          rating: widget.rating,
+                          fromMore: widget.fromMore,
+                          vacationDurationType: widget.vacationDurationType,
+                          vacationEndDate: widget.vacationEndDate,
+                          vacationStartDate: widget.vacationStartDate,
+                          vacationStatus: widget.vacationStatus,
+                          name: widget.name,
+                          image: widget.image,
+                        ),
+                      ),
+                    );
+                  },
+                ) :
+                (sellerProvider.shopMenuIndex == 0 ? ShopOverviewScreen(slug: widget.slug!, scrollController: _scrollController,
                   sellerNavigationModel: SellerNavigationModel(
                       slug:  widget.slug,
                       sellerId: widget.sellerId ?? 0,
@@ -310,6 +397,7 @@ class _TopSellerProductScreenState extends State<TopSellerProductScreen> with Ti
                       image: widget.image
                     ),
                   )
+                )
                 )
               ),
 
