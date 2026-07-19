@@ -613,9 +613,10 @@ class _MoreScreenViewState extends State<MoreScreenView> {
                       ))),
                     ),
 
-                    // R-Mercado (Fase A): vitrina entre tenderos, gateada por flag
-                    // (en false la app queda idéntica). Solo con sesión iniciada.
-                    if (AppConstants.anpecMercadoFlow)
+                    // R-Mercado (Fase A): vitrina entre tenderos, gateada por el
+                    // gate combinado (kill-switch de código && remoto del panel).
+                    // Solo con sesión iniciada.
+                    if (splashController.mercadoVisible)
                       MenuItem(
                         iconImage: Images.storeIcon,
                         label: getTranslated('mercado', context) ?? 'Mercado',

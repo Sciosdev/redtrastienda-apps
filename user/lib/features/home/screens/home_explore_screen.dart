@@ -157,7 +157,8 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
     final bannerController    = Provider.of<BannerController>(context, listen: false);
     final shopController      = Provider.of<ShopController>(context, listen: false);
     final auctionController   = _isAuctionEnabled ? Provider.of<AuctionHomeController>(context, listen: false) : null;
-    final mercadoController   = (AppConstants.anpecNavFlow && AppConstants.anpecMercadoFlow)
+    final mercadoController   = (AppConstants.anpecNavFlow &&
+            Provider.of<SplashController>(context, listen: false).mercadoVisible)
         ? Provider.of<MercadoController>(context, listen: false) : null;
     final isLoggedIn = authController.isLoggedIn();
 
@@ -438,8 +439,10 @@ class _HomeExploreScreenState extends State<HomeExploreScreen> with TickerProvid
                                     AuctionProductSectionWidget(onSeeAll: widget.onAuctionSeeAll),
                                   if (!_singleVendor) const TopStoresWidget(),
                                   // R-Nav (C1): tiendas con publicaciones activas en el
-                                  // Mercado; doble gate — sin Mercado, cero rastro.
-                                  if (AppConstants.anpecNavFlow && AppConstants.anpecMercadoFlow)
+                                  // Mercado; doble gate (nav && gate combinado remoto) —
+                                  // sin Mercado, cero rastro.
+                                  if (AppConstants.anpecNavFlow &&
+                                      Provider.of<SplashController>(context).mercadoVisible)
                                     const TiendasRedWidget(),
                                   const BannersSliderWidget(useFooterBanners: true),
                                 ],

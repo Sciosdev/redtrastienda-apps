@@ -216,7 +216,7 @@ class _MenuAnpecScreenState extends State<MenuAnpecScreen> {
               onTap: () => context.push(RouterHelper.settingsScreen),
             ),
 
-            if (AppConstants.anpecMercadoFlow) ...[
+            if (splashController.mercadoVisible) ...[
               MenuItem(
                 iconImage: Images.storeIcon,
                 label: getTranslated('mi_tiendita', context) ?? 'Mi tiendita',
@@ -254,7 +254,7 @@ class _MenuAnpecScreenState extends State<MenuAnpecScreen> {
               iconImage: Images.offerSvg,
               label: getTranslated('offers', context) ?? 'Ofertas',
               onTap: () {
-                if (AppConstants.anpecMercadoFlow) {
+                if (splashController.mercadoVisible) {
                   _conSesion(() => Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const MercadoExplorarScreen(soloOfertas: true))));
                 } else {
