@@ -16,6 +16,7 @@ import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/auth_contr
 import 'package:flutter_sixvalley_ecommerce/features/shop/controllers/shop_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/main.dart' show Get;
 import 'package:flutter_sixvalley_ecommerce/theme/controllers/theme_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/utill/app_constants.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/custom_themes.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/dimensions.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/images.dart';
@@ -177,6 +178,9 @@ class ShopInfoWidget extends StatelessWidget {
                           )]),
 
                         if ((sellerProvider.sellerInfoModel != null) || (rating != null && totalProduct != null && totalReview != null))...[
+                          // R-Proveedor: fuera ★ rating + "N reseñas" (un tendero no
+                          // reseña a una marca). Se conservan pedido-mínimo + N-productos.
+                          if(!AppConstants.anpecProveedorFlow)...[
                           SizedBox(height: Dimensions.paddingSizeTwelve),
                           Row(children: [
                             const Icon(Icons.star_rate_rounded, color: Colors.orange, size: 16),
@@ -191,6 +195,7 @@ class ShopInfoWidget extends StatelessWidget {
                                   style: titleRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor),
                                   maxLines: 1, overflow: TextOverflow.ellipsis),
                           ]),
+                          ],
                           SizedBox(height: Dimensions.paddingSizeExtraSmall),
                           Row(children: [
                             if (sellerProvider.sellerInfoModel?.minimumOrderAmount != null && sellerProvider.sellerInfoModel!.minimumOrderAmount! > 0)
