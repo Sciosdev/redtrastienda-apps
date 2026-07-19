@@ -119,14 +119,40 @@ class SurtidoController extends ChangeNotifier {
 
     final ok = await _rawAdd(pid, initialQty);
     if (ok) {
-      // Recarga puntual SOLO en la transición 0 -> n, para conocer la llave real
-      // de la nueva línea (los +/- siguientes ya no recargan).
-      await loadShopCart(notify: false);
+      // Sync puntual SOLO de este producto (transición 0 -> n) para conocer la
+      // llave real de la nueva línea. No recargamos todo el mapa para no pisar
+      // un +/- en vuelo de otro producto durante el surtido rápido.
+      await _syncLineFromServer(pid);
     } else {
       _byProductId.remove(pid);
     }
     _busyProductIds.remove(pid);
     notifyListeners();
+  }
+
+  /// Lee el carrito y actualiza SOLO la línea de [pid] (llave + cantidad reales),
+  /// sin tocar el resto del mapa.
+  Future<void> _syncLineFromServer(int pid) async {
+    final res = await cartServiceInterface.getCartList(couponCode: null);
+    if (res.response != null && res.response!.statusCode == 200) {
+      for (var item in res.response!.data) {
+        final cart = CartModel.fromJson(item);
+        if (cart.productId == pid && cart.id != null) {
+          final existing = _byProductId[pid];
+          if (existing != null) {
+            existing.key = cart.id!;
+            existing.quantity = cart.quantity ?? existing.quantity;
+          } else {
+            _byProductId[pid] = SurtidoCartLine(
+              key: cart.id!,
+              unitPrice: (cart.price ?? 0) - (cart.discount ?? 0),
+              quantity: cart.quantity ?? 0,
+            );
+          }
+          break;
+        }
+      }
+    }
   }
 
   Future<void> increment(BuildContext context, Product product) async {
