@@ -28,6 +28,14 @@ import 'package:flutter_sixvalley_ecommerce/common/enums/local_caches_type_enum.
   // reales y un botón que truena es rechazo casi seguro en review de tienda.
   static const bool anpecSocialLogin = false;
 
+  // R-Surtido: "maquinita del preventista". Surtir por cantidades DIRECTO en la
+  // lista del proveedor (stepper por card + barra resumen) y "Repetir pedido"
+  // (reconstruye un pedido pasado con las APIs de carrito, secuencial, con
+  // reporte honesto de faltantes). Gatea TODO el módulo; en false la app queda
+  // idéntica a main (steppers, barra y botón desaparecen y vuelve el "Order
+  // Again" nativo de 6valley). Sin cambios de backend.
+  static const bool anpecSurtidoFlow = true;
+
   static const int imageQuality = 100;
   static const LocalCachesTypeEnum cachesType = LocalCachesTypeEnum.all;
 

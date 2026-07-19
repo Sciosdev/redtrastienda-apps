@@ -197,6 +197,7 @@ import 'package:flutter_sixvalley_ecommerce/features/chat_tiendas/domain/reposit
 import 'package:flutter_sixvalley_ecommerce/features/chat_tiendas/domain/services/chat_tiendas_service.dart';
 import 'package:flutter_sixvalley_ecommerce/features/chat_tiendas/domain/services/chat_tiendas_service_interface.dart';
 import 'package:flutter_sixvalley_ecommerce/features/mercado/controllers/mercado_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/features/surtido/controllers/surtido_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/mercado/domain/repositories/mercado_repository.dart';
 import 'package:flutter_sixvalley_ecommerce/features/mercado/domain/repositories/mercado_repository_interface.dart';
 import 'package:flutter_sixvalley_ecommerce/features/mercado/domain/services/mercado_service.dart';
@@ -384,6 +385,7 @@ Future<void> init() async {
   sl.registerFactory(() => OrderDetailsController(orderDetailsServiceInterface: sl()));
   sl.registerFactory(() => RefundController(refundServiceInterface: sl()));
   sl.registerFactory(() => ReOrderController(reOrderServiceInterface: sl()));
+  sl.registerFactory(() => SurtidoController(cartServiceInterface: sl(), orderDetailsServiceInterface: sl()));
   sl.registerFactory(() => RestockController(restockServiceInterface: sl()));
   sl.registerFactory(() => OpportunityRequestController(opportunityRequestServiceInterface: sl()));
   sl.registerFactory(() => ChatTiendasController(chatTiendasServiceInterface: sl()));

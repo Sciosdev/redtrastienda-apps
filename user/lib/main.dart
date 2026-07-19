@@ -43,6 +43,7 @@ import 'package:flutter_sixvalley_ecommerce/features/reorder/controllers/re_orde
 import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/controllers/opportunity_request_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/chat_tiendas/controllers/chat_tiendas_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/mercado/controllers/mercado_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/features/surtido/controllers/surtido_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/affiliate_profile/controllers/affiliate_profile_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/restock/controllers/restock_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/review/controllers/review_controller.dart';
@@ -171,6 +172,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => di.sl<OrderDetailsController>()),
       ChangeNotifierProvider(create: (context) => di.sl<RefundController>()),
       ChangeNotifierProvider(create: (context) => di.sl<ReOrderController>()),
+      ChangeNotifierProvider(create: (context) => di.sl<SurtidoController>()),
       ChangeNotifierProvider(create: (context) => di.sl<ReviewController>()),
       ChangeNotifierProvider(create: (context) => di.sl<SellerProductController>()),
       ChangeNotifierProvider(create: (context) => di.sl<RestockController>()),
