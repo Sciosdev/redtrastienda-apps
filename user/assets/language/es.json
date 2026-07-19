@@ -1553,5 +1553,16 @@
   "soporte": "Soporte",
   "chat_con_proveedores": "Chat con proveedores",
   "cerrar_sesion": "Cerrar sesión",
-  "tiendas_de_la_red": "Tiendas de la red"
+  "tiendas_de_la_red": "Tiendas de la red",
+  "surtido_add": "Agregar",
+  "surtido_out_of_stock": "Sin existencias",
+  "surtido_no_more_stock": "No hay más existencias disponibles",
+  "surtido_view_order": "Ver pedido",
+  "surtido_repeat_order": "Repetir pedido",
+  "surtido_repeat_preparing": "Preparando pedido…",
+  "surtido_repeat_adding": "Agregando",
+  "surtido_repeat_added": "Se agregaron",
+  "surtido_repeat_of": "de",
+  "surtido_repeat_unavailable": "no disponibles",
+  "surtido_repeat_none": "Ninguno de los productos sigue disponible"
 }

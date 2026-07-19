@@ -1543,5 +1543,16 @@
   "soporte": "Support",
   "chat_con_proveedores": "Chat with suppliers",
   "cerrar_sesion": "Sign out",
-  "tiendas_de_la_red": "Network shops"
+  "tiendas_de_la_red": "Network shops",
+  "surtido_add": "Add",
+  "surtido_out_of_stock": "Out of stock",
+  "surtido_no_more_stock": "No more stock available",
+  "surtido_view_order": "View order",
+  "surtido_repeat_order": "Repeat order",
+  "surtido_repeat_preparing": "Preparing order…",
+  "surtido_repeat_adding": "Adding",
+  "surtido_repeat_added": "Added",
+  "surtido_repeat_of": "of",
+  "surtido_repeat_unavailable": "unavailable",
+  "surtido_repeat_none": "None of the products are available anymore"
 }
