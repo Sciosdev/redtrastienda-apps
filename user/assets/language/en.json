@@ -488,6 +488,8 @@
   "continue_shopping": "Continue Shopping",
   "overview": "Overview",
   "all_products": "All Products",
+  "all_categories": "All",
+  "provider_no_catalog": "This supplier has no catalog available yet.",
   "available_till": "Available till",
   "OFF": "OFF",
   "discount_on_purchase": "Discount on Purchase",

@@ -36,6 +36,16 @@ import 'package:flutter_sixvalley_ecommerce/common/enums/local_caches_type_enum.
   // Again" nativo de 6valley). Sin cambios de backend.
   static const bool anpecSurtidoFlow = true;
 
+  // R-Proveedor: la pantalla del proveedor deja de ser el aparador de consumo de
+  // 6valley (pestaña "Descripción general" con cupones/oferta del día/destacados/
+  // recomendados) y pasa a ser SOLO la lista de surtido: una vista, sin TabBar,
+  // sin carruseles promocionales, con buscador + chips de categoría arriba y el
+  // header slim (sin ★/reseñas). Gatea el rediseño ENTERO; en false la pantalla
+  // vuelve BYTE-IDÉNTICA a las dos pestañas de hoy. Va de la mano con
+  // anpecSurtidoFlow (los steppers): la config de producción/expo es AMBOS en
+  // true. Las promos NO se borran — se apagan aquí y quedan para el Mercado.
+  static const bool anpecProveedorFlow = true;
+
   static const int imageQuality = 100;
   static const LocalCachesTypeEnum cachesType = LocalCachesTypeEnum.all;
 

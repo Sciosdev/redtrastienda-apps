@@ -498,6 +498,8 @@
   "continue_shopping": "Continuar comprando",
   "overview": "Descripción general",
   "all_products": "Todos los productos",
+  "all_categories": "Todos",
+  "provider_no_catalog": "Este proveedor aún no tiene catálogo disponible.",
   "available_till": "Disponible hasta",
   "OFF": "APAGADO",
   "discount_on_purchase": "Descuento en la compra",
