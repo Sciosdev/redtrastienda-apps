@@ -75,6 +75,27 @@ class OrderController with ChangeNotifier {
     notifyListeners();
   }
 
+  // R-Inicio: pedidos recientes del hub en su PROPIO slot. `orderModel` es
+  // compartido con la lista completa (cambiar a "cancelados" allá lo pisa) —
+  // el hub necesita uno inmune. Una sola llamada con status 'all' (el backend
+  // lo acepta) y el hub pinta los primeros 3.
+  OrderModel? hubOrdersModel;
+  bool isHubOrdersLoading = false;
+  Future<void> getHubRecentOrders() async {
+    isHubOrdersLoading = true;
+    notifyListeners();
+    final ApiResponseModel apiResponse = await orderServiceInterface.getOrderList(1, 'all');
+    if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
+      hubOrdersModel = OrderModel.fromJson(apiResponse.response?.data);
+    }
+    isHubOrdersLoading = false;
+    notifyListeners();
+  }
+
+  void clearHubOrders() {
+    hubOrdersModel = null;
+  }
+
   int _orderTypeIndex = 0;
   int get orderTypeIndex => _orderTypeIndex;
 

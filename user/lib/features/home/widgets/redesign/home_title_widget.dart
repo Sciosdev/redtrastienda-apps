@@ -7,8 +7,11 @@ class HomeTitleWidget extends StatelessWidget {
   final String title;
   final bool isShowViewAll;
   final VoidCallback? onViewAllTap;
+  // R-Inicio: etiqueta propia del enlace ("Ver todos"/"Ver todas" según la
+  // sección del hub); null = el "Ver todo" de siempre.
+  final String? viewAllLabel;
 
-  const HomeTitleWidget({super.key, required this.title, this.isShowViewAll = true, this.onViewAllTap});
+  const HomeTitleWidget({super.key, required this.title, this.isShowViewAll = true, this.onViewAllTap, this.viewAllLabel});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +31,7 @@ class HomeTitleWidget extends StatelessWidget {
 
       isShowViewAll ? InkWell(
         onTap: onViewAllTap,
-        child: Text(getTranslated('VIEW_ALL', context) ?? '', style: titilliumRegular.copyWith(
+        child: Text(viewAllLabel ?? getTranslated('VIEW_ALL', context) ?? '', style: titilliumRegular.copyWith(
           fontSize: Dimensions.fontSizeSmall,
           color: Theme.of(context).textTheme.bodyLarge?.color,
         )),

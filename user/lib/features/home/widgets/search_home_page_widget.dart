@@ -7,7 +7,10 @@ import 'package:flutter_sixvalley_ecommerce/utill/images.dart';
 class SearchHomePageWidget extends StatelessWidget {
   final bool isFormAuction;
   final bool isCompact;
-  const SearchHomePageWidget({super.key, this.isFormAuction = false, this.isCompact = false});
+  // R-Inicio: hint propio del hub ("Buscar en todos tus proveedores");
+  // null = el hint de siempre.
+  final String? hintKey;
+  const SearchHomePageWidget({super.key, this.isFormAuction = false, this.isCompact = false, this.hintKey});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +38,7 @@ class SearchHomePageWidget extends StatelessWidget {
                   enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(Dimensions.paddingSizeExtraSmall),
                       borderSide: BorderSide(color: Colors.grey[300]!)),
-                  hintText: getTranslated(isFormAuction ? 'search_auction' : 'search_hint', context),
+                  hintText: getTranslated(hintKey ?? (isFormAuction ? 'search_auction' : 'search_hint'), context),
                   hintStyle: textRegular.copyWith(color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.9)),
                   suffixIcon: SizedBox(width: 50,
                     child: Row(children: [
