@@ -8,13 +8,9 @@
 	<array>
 		<string>Default</string>
 	</array>
-	<key>com.apple.developer.associated-domains</key>
-	<array>
-		<string>applinks:6valley-install.6amdev.xyz</string>
-	</array>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>7WSYLQ8Y87.com.sixamtech.sixValley</string>
+		<string>$(AppIdentifierPrefix)club.scios.redtrastienda</string>
 	</array>
 </dict>
 </plist>
