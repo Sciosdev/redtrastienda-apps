@@ -234,13 +234,15 @@ Con `anpecSurtidoFlow=false`:
 ---
 
 ## 9. Checklist de smoke en device (A059P · `00170155D001304` · `otro.correo@test.com`/`secreto1`)
-1. Entrar a un proveedor → tab "Productos". Surtir **3 productos** con cantidades distintas **sin abrir un solo detalle** (Agregar → stepper).
+1. Entrar a un proveedor → tab "Productos". Surtir **3 productos** con cantidades distintas **sin abrir un solo detalle** (Agregar → stepper). Meta: <60 s.
 2. Barra resumen aparece con conteo/total correctos → "Ver pedido" → carrito coincide → "Solicitar pedido" → pedido creado correcto (F6).
 3. Editar cantidades con `+/−` y **quitar** con el stepper → verificar contra el carrito real (recargar cart screen).
-4. "Repetir pedido" del pedido recién creado → progreso → carrito idéntico → "Solicitar pedido" de nuevo.
-5. Producto **con variante** → la card abre el detalle (sin stepper).
-6. `anpecSurtidoFlow=false` → app **idéntica** (sin stepper, sin barra, sin botón; branch nativo re_order vuelve).
-7. Regresión: F6 clásico (agregar desde ficha), chat tienda↔tienda, Tarjeta Digital.
+4. **Precisión 1 — mínimo:** producto con `minimum_order_qty > 1` → "Agregar" pone el mínimo como cantidad inicial (no 1); el `−` estando EN el mínimo **elimina** (nunca cae a mínimo−1, el ícono cambia a 🗑).
+5. **Precisión 2 — stock 0:** producto sin existencias → botón **"Sin existencias" deshabilitado** (no "Agregar"); producto con stock N → el `+` se topa en N con aviso "No hay más existencias".
+6. **Precisión 3 — Repetir:** "Repetir pedido" del pedido recién creado → **diálogo de progreso "Agregando X/N" secuencial** → al final **reporte de faltantes** ("Se agregaron X de Y…") → carrito idéntico → "Solicitar pedido" de nuevo. Repetir un pedido que YA tiene items en carrito → **SUMA** cantidades.
+7. Producto **con variante** → la card abre el detalle (sin stepper).
+8. `anpecSurtidoFlow=false` → app **idéntica** (sin stepper, sin barra, sin botón; branch nativo re_order vuelve).
+9. Regresión: F6 clásico (agregar desde ficha), chat tienda↔tienda, Tarjeta Digital.
 
 ---
 
