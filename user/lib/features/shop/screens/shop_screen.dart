@@ -24,6 +24,9 @@ import 'package:flutter_sixvalley_ecommerce/features/home/screens/home_screens.d
 import 'package:flutter_sixvalley_ecommerce/features/shop/screens/overview_screen.dart';
 import 'package:flutter_sixvalley_ecommerce/features/shop/widgets/shop_info_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/shop/widgets/shop_product_view_list.dart';
+import 'package:flutter_sixvalley_ecommerce/features/surtido/controllers/surtido_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/features/surtido/widgets/shop_cart_summary_bar.dart';
+import 'package:flutter_sixvalley_ecommerce/utill/app_constants.dart';
 import 'package:provider/provider.dart';
 
 class TopSellerProductScreen extends StatefulWidget {
@@ -102,6 +105,11 @@ class _TopSellerProductScreenState extends State<TopSellerProductScreen> with Ti
 
     searchController.clear();
     _load();
+    // R-Surtido: carga única del carrito para pintar cantidades existentes en
+    // los steppers y la barra resumen (evita N+1; los +/- son puntuales).
+    if(AppConstants.anpecSurtidoFlow) {
+      Provider.of<SurtidoController>(context, listen: false).loadShopCart();
+    }
     if(widget.fromMore) {
       _tabController = TabController(length: 2, initialIndex: 1, vsync: this);
     } else{
@@ -120,6 +128,9 @@ class _TopSellerProductScreenState extends State<TopSellerProductScreen> with Ti
     return PopScope(
       canPop: Navigator.canPop(context),
       onPopInvokedWithResult: (didPop, _) {
+        if(AppConstants.anpecSurtidoFlow) {
+          Provider.of<SurtidoController>(context, listen: false).clearShopCart();
+        }
         Provider.of<SellerProductController>(context, listen: false).clearSellerProducts();
         Provider.of<CategoryController>(Get.context!, listen: false).onUpdateFilteredCategoryList(isSeller: false);
         Provider.of<BrandController>(Get.context!, listen: false).onUpdateFiltererBrandList(isSeller: false);
@@ -134,6 +145,7 @@ class _TopSellerProductScreenState extends State<TopSellerProductScreen> with Ti
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
+        bottomNavigationBar: AppConstants.anpecSurtidoFlow ? const ShopCartSummaryBar() : null,
         body: Consumer<ShopController>(
           builder: (context, sellerProvider, _) {
 
