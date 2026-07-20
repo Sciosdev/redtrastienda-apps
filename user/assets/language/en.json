@@ -1556,5 +1556,19 @@
   "surtido_repeat_added": "Added",
   "surtido_repeat_of": "of",
   "surtido_repeat_unavailable": "unavailable",
-  "surtido_repeat_none": "None of the products are available anymore"
+  "surtido_repeat_none": "None of the products are available anymore",
+  "tarjeta": "Card",
+  "mis_pedidos": "My orders",
+  "mis_pedidos_recientes": "My recent orders",
+  "ver_todos": "View all",
+  "ver_todas": "View all",
+  "categorias": "Categories",
+  "mis_proveedores": "My suppliers",
+  "buscar_en_todos_tus_proveedores": "Search across all your suppliers",
+  "aun_no_tienes_pedidos": "You have no orders yet",
+  "surte_con_tus_proveedores": "Stock your store with your suppliers",
+  "inicia_sesion_para_ver_tus_pedidos": "Log in to see your orders",
+  "sin_proveedores_disponibles": "No suppliers available yet",
+  "inicia_sesion_para_ver_tu_tarjeta": "Log in to see your Digital Card",
+  "inicia_sesion_para_ver_el_mercado": "Log in to see the Mercado"
 }

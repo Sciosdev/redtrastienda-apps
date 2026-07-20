@@ -1566,5 +1566,19 @@
   "surtido_repeat_added": "Se agregaron",
   "surtido_repeat_of": "de",
   "surtido_repeat_unavailable": "no disponibles",
-  "surtido_repeat_none": "Ninguno de los productos sigue disponible"
+  "surtido_repeat_none": "Ninguno de los productos sigue disponible",
+  "tarjeta": "Tarjeta",
+  "mis_pedidos": "Mis pedidos",
+  "mis_pedidos_recientes": "Mis pedidos recientes",
+  "ver_todos": "Ver todos",
+  "ver_todas": "Ver todas",
+  "categorias": "Categorías",
+  "mis_proveedores": "Mis proveedores",
+  "buscar_en_todos_tus_proveedores": "Buscar en todos tus proveedores",
+  "aun_no_tienes_pedidos": "Aún no tienes pedidos",
+  "surte_con_tus_proveedores": "Surte tu tienda con tus proveedores",
+  "inicia_sesion_para_ver_tus_pedidos": "Inicia sesión para ver tus pedidos",
+  "sin_proveedores_disponibles": "Aún no hay proveedores disponibles",
+  "inicia_sesion_para_ver_tu_tarjeta": "Inicia sesión para ver tu Tarjeta Digital",
+  "inicia_sesion_para_ver_el_mercado": "Inicia sesión para ver el Mercado"
 }

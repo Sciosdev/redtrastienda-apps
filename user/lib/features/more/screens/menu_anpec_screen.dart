@@ -235,9 +235,13 @@ class _MenuAnpecScreenState extends State<MenuAnpecScreen> {
             // ── Proveedores ──────────────────────────────────────────────
             SectionHeader(title: getTranslated('proveedores', context) ?? 'Proveedores'),
 
+            // R-Inicio: Pedidos sale del footer — esta entrada pasa a ser la
+            // canónica y se llama "Mis pedidos". Flag OFF: el label de hoy.
             MenuItem(
               iconImage: Images.navOrderIcon,
-              label: getTranslated('order_history', context) ?? 'Historial de pedidos',
+              label: AppConstants.anpecInicioFlow
+                  ? (getTranslated('mis_pedidos', context) ?? 'Mis pedidos')
+                  : (getTranslated('order_history', context) ?? 'Historial de pedidos'),
               onTap: () => _conSesion(() => RouterHelper.getOrderScreenRoute(action: RouteAction.push)),
             ),
 
