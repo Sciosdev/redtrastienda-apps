@@ -278,11 +278,11 @@ class _OtpLoginScreenState extends State<OtpLoginScreen> {
 bool _isShowSocialLoginButton (ConfigModel configModel, SocialMediaLoginOptions? socialStatus){
   // R-Limpieza: anpecSocialLogin oculta el bloque social aunque el config del
   // server lo traiga prendido (SDKs sin credenciales reales).
+  // R-Pulido-AAB: Facebook ya no cuenta — su SDK salió del binario.
   return AppConstants.anpecSocialLogin
       && (configModel.customerLogin?.loginOption?.socialMediaLogin == 1)
       && (configModel.customerLogin?.loginOption?.manualLogin != 1)
       && ( (socialStatus?.apple == 1 && defaultTargetPlatform == TargetPlatform.iOS)
           || socialStatus?.google == 1
-          || socialStatus?.facebook == 1
       );
 }

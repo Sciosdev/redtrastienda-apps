@@ -58,7 +58,6 @@ import 'package:flutter_sixvalley_ecommerce/features/auction_transaction/domain/
 import 'package:flutter_sixvalley_ecommerce/features/auction_transaction/domain/repository/auction_transaction_repository_interface.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auction_transaction/domain/service/auction_transaction_service.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auction_transaction/domain/service/auction_transaction_service_interface.dart';
-import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/facebook_login_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/google_login_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/domain/repositories/auth_repository.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/domain/repositories/auth_repository_interface.dart';
@@ -370,7 +369,6 @@ Future<void> init() async {
   sl.registerFactory(() => LocalizationController(sharedPreferences: sl(), dioClient: sl()));
   sl.registerFactory(() => ThemeController(sharedPreferences: sl()));
   sl.registerFactory(() => GoogleSignInController());
-  sl.registerFactory(() => FacebookLoginController());
   sl.registerFactory(() => AddressController(addressServiceInterface: sl()));
   sl.registerFactory(() => WalletController(walletServiceInterface: sl()));
   sl.registerFactory(() => CompareController(compareServiceInterface: sl()));

@@ -62,8 +62,8 @@ class _OnlySocialLoginWidgetState extends State<OnlySocialLoginWidget> {
     final double width = MediaQuery.of(context).size.width;
     final Size size = MediaQuery.of(context).size;
 
+    // R-Pulido-AAB: sin Facebook — el SDK salió del binario.
     final socialLogin = SocialMediaLoginOptions(
-      facebook: 1,
       google: 1,
       apple: 1
     );
@@ -154,48 +154,6 @@ class _OnlySocialLoginWidgetState extends State<OnlySocialLoginWidget> {
                                     color: Theme.of(context).textTheme.bodyMedium?.color,
                                   ),),
 
-                                ],),
-                              ),
-                            );
-                          }
-                      ),
-                    ),
-
-                    Expanded(child: Container()),
-
-                  ]),
-                  const SizedBox(height: Dimensions.paddingSizeLarge),
-                ],
-
-                if(socialLogin.facebook == 1)...[
-                  Row(children: [
-
-                    Expanded(child: Container()),
-
-                    Expanded(flex: 4,
-                      child: Consumer<AuthController>(
-                          builder: (context, authProvider, child) {
-                            return InkWell(
-                              onTap: () => facebookLogin(context, widget.fromPage, widget.onLoginSuccess),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeDefault),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).hintColor.withValues(alpha:0.08),
-                                  borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                                  border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha:0.1)),
-                                ),
-                                child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-
-                                  Image.asset(Images.facebook,
-                                    height: ResponsiveHelper.isTab(context) ? 20 : 15,
-                                    width: ResponsiveHelper.isTab(context) ? 20 : 15,
-                                  ),
-                                  const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
-                                  Text(getTranslated("continue_with_facebook", context)!, style: robotoBold.copyWith(
-                                    fontSize: Dimensions.fontSizeDefault,
-                                    color: Theme.of(context).textTheme.bodyMedium?.color,
-                                  )),
                                 ],),
                               ),
                             );

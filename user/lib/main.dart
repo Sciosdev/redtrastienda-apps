@@ -20,7 +20,6 @@ import 'package:flutter_sixvalley_ecommerce/features/auction_home/controllers/au
 import 'package:flutter_sixvalley_ecommerce/features/auction_list/controllers/auction_product_queue_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auction_search/controllers/auction_search_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auction_transaction/controller/auction_transaction_controller.dart';
-import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/facebook_login_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/google_login_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/banner/controllers/banner_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/checkout/controllers/checkout_controller.dart';
@@ -160,7 +159,6 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => di.sl<LocalizationController>()),
       ChangeNotifierProvider(create: (context) => di.sl<ThemeController>()),
       ChangeNotifierProvider(create: (context) => di.sl<GoogleSignInController>()),
-      ChangeNotifierProvider(create: (context) => di.sl<FacebookLoginController>()),
       ChangeNotifierProvider(create: (context) => di.sl<AddressController>()),
       ChangeNotifierProvider(create: (context) => di.sl<WalletController>()),
       ChangeNotifierProvider(create: (context) => di.sl<CompareController>()),
