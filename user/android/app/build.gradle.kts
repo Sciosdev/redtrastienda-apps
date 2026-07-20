@@ -34,10 +34,11 @@ android {
 
 
     defaultConfig {
-        // ANPEC: applicationId definitivo (reverse-DNS de scios.club, verificado en Play).
+        // ANPEC: applicationId propio (namespace de redtrastiendaanpec.com). Cambiado desde
+        // club.scios.redtrastienda antes del 1er AAB para que ANPEC no quede atado a SCIOS.
         // En Play queda PERMANENTE tras el primer upload — no cambiar jamás.
         multiDexEnabled = true
-        applicationId = "club.scios.redtrastienda"
+        applicationId = "com.redtrastiendaanpec.afiliados"
         minSdk = flutter.minSdkVersion
         targetSdk = 36
         versionCode = flutter.versionCode

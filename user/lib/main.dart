@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:app_links/app_links.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -92,25 +91,11 @@ final database = AppDatabase();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  if(Firebase.apps.isEmpty) {
-    if(Platform.isAndroid) {
-      try{
-        /// todo you need to configure that firebase Option with your own firebase to run your app
-        await Firebase.initializeApp(
-          name: 'your_project_name',
-          options: const FirebaseOptions(
-              apiKey: "current_key here",
-              projectId: "project_id here",
-              messagingSenderId: "project_number here",
-              appId: "mobilesdk_app_id here"
-          )
-        );
-      } finally {
-        await Firebase.initializeApp();
-      }
-    }else{
-      await Firebase.initializeApp();
-    }
+  if (Firebase.apps.isEmpty) {
+    // Firebase propio ANPEC (proyecto anpec-b7c3c) vía google-services.json /
+    // GoogleService-Info.plist. Se eliminó el initializeApp secundario placeholder
+    // ('your_project_name') que traía la plantilla 6valley.
+    await Firebase.initializeApp();
   }
 
 
