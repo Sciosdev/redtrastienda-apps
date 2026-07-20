@@ -1427,11 +1427,24 @@ class AuthController with ChangeNotifier {
           });
         }
       } else if (onLoginSuccess != null) {
-        GoRouter.of(Get.context!).pop();
+        _popOrGoDashboard();
         onLoginSuccess();
       } else {
-        GoRouter.of(Get.context!).pop();
+        _popOrGoDashboard();
       }
+    } else {
+      RouterHelper.getDashboardRoute(action: RouteAction.pushReplacement);
+    }
+  }
+
+  // Cuando el login es la RAÍZ de la pila (p. ej. se llegó desde el reset de
+  // contraseña con pushReplacement), un pop() a secas lanza "GoError: There is
+  // nothing to pop" y la pantalla se congela girando. Si no se puede hacer pop,
+  // vamos al dashboard.
+  void _popOrGoDashboard() {
+    final router = GoRouter.of(Get.context!);
+    if (router.canPop()) {
+      router.pop();
     } else {
       RouterHelper.getDashboardRoute(action: RouteAction.pushReplacement);
     }
