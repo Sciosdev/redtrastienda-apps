@@ -1573,5 +1573,6 @@
   "inicia_sesion_para_ver_el_mercado": "Log in to see the Mercado",
   "chat_accion": "Chat",
   "llamar_accion": "Call",
-  "email_or_phone": "Email or phone"
+  "email_or_phone": "Email or phone",
+  "reset_por_telefono_no_disponible": "Password reset by phone is not available yet — please use your email"
 }

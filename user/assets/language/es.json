@@ -1583,5 +1583,6 @@
   "inicia_sesion_para_ver_el_mercado": "Inicia sesión para ver el Mercado",
   "chat_accion": "Chat",
   "llamar_accion": "Llamar",
-  "email_or_phone": "Correo o teléfono"
+  "email_or_phone": "Correo o teléfono",
+  "reset_por_telefono_no_disponible": "El restablecimiento por teléfono no está disponible por ahora — escribe tu correo electrónico"
 }

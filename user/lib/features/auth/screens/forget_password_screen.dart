@@ -123,9 +123,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                     buttonText: getTranslated('send', context),
                     onTap: () async {
                       if(forgetFormKey.currentState?.validate() ?? false) {
-                        if(!(config.emailVerification ?? false) && !(config.phoneVerification ?? false) && config.customerVerification?.phone == 0 && config.customerVerification?.firebase == 0 && config.customerVerification?.email == 0) {
-                          showCustomSnackBarWidget(getTranslated('forgot_password_configuration_is_not', context), context, snackBarType: SnackBarType.warning);
-                        } else if (_userInputController!.text.isEmpty) {
+                        if (_userInputController!.text.isEmpty) {
                           showCustomSnackBarWidget(getTranslated('enter_email_or_phone', context), context, snackBarType: SnackBarType.warning);
                         } else if(!NumberCheckerHelper.isNumber(_userInputController!.text.trim())
                             && !_userInputController!.text.contains('@')) {
@@ -133,6 +131,13 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                           // dejaba el reset por correo inalcanzable (los afiliados
                           // entran con correo). Se acepta correo O teléfono.
                           showCustomSnackBarWidget(getTranslated('enter_email_or_phone', context), context, snackBarType: SnackBarType.warning);
+                        } else if(NumberCheckerHelper.isNumber(_userInputController!.text.trim())
+                            && !(config.emailVerification ?? false) && !(config.phoneVerification ?? false) && config.customerVerification?.phone == 0 && config.customerVerification?.firebase == 0 && config.customerVerification?.email == 0) {
+                          // ANPEC: la reja de "verificación configurada" solo aplica al
+                          // reset por TELÉFONO (SMS sin configurar). El reset por CORREO
+                          // no depende de ella: el backend manda el código por SMTP
+                          // (verificado en producción) — el template lo bloqueaba entero.
+                          showCustomSnackBarWidget(getTranslated('reset_por_telefono_no_disponible', context), context, snackBarType: SnackBarType.warning);
                         } else {
 
                           String userInput = _userInputController!.text.trim();
