@@ -24,7 +24,12 @@ class HomeShellHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // bottom: false — el dashboard usa extendBody, así que el Scaffold inyecta
+    // la altura del footer como padding.bottom del MediaQuery; con el SafeArea
+    // completo ese colchón se pintaba como franja roja vacía bajo el saludo
+    // (smoke A1). El header solo necesita respetar el status bar.
     return SafeArea(
+      bottom: false,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: Dimensions.homePagePadding, vertical: Dimensions.paddingSizeSmall),
         child: Consumer<ProfileController>(
