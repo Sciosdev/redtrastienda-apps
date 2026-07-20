@@ -8,6 +8,9 @@ import 'package:flutter_sixvalley_ecommerce/features/category/controllers/catego
 import 'package:flutter_sixvalley_ecommerce/utill/custom_themes.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/dimensions.dart';
 import 'package:flutter_sixvalley_ecommerce/common/basewidget/custom_app_bar_widget.dart';
+import 'package:flutter_sixvalley_ecommerce/common/basewidget/product_card_widget.dart';
+import 'package:flutter_sixvalley_ecommerce/utill/app_constants.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
 
 class CategoryScreen extends StatefulWidget {
@@ -72,22 +75,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   CategoryModel category = categoryProvider.categoryList[index];
                   return InkWell(
                     onTap: () {
-                      // ANPEC: nuestras categorías no tienen subcategorías, así que
-                      // el panel derecho quedaba casi vacío (solo "Ver todos los
-                      // productos"). Si la categoría no tiene subcategorías, vamos
-                      // DIRECTO a sus productos. Si algún día las tiene, se conserva
-                      // el comportamiento de dos paneles.
-                      if (category.subCategories?.isEmpty ?? true) {
-                        RouterHelper.getBrandCategoryRoute(
-                          action: RouteAction.push,
-                          isBrand: false,
-                          id: category.id,
-                          name: category.name,
-                          categoryModel: category,
-                          isAllProduct: true,
-                        );
-                        return;
-                      }
                       categoryProvider.onChangeSelectedIndex(index);
                       Provider.of<ProductController>(context, listen: false).initBrandOrCategoryProductList(
                         isBrand: false,
@@ -105,6 +92,13 @@ class _CategoryScreenState extends State<CategoryScreen> {
               ),
             )),
 
+            // ANPEC (idea de Axel, barrido 2026-07-20): el panel derecho muestra
+            // los PRODUCTOS de la categoría seleccionada + "Ver más" — nuestras
+            // categorías no tienen subcategorías y el panel de la plantilla
+            // quedaba vacío. Flag OFF = panel de subcategorías original.
+            if (AppConstants.anpecInicioFlow)
+              Expanded(flex: 7, child: _productPreviewPanel(context, categoryProvider))
+            else
             Expanded(flex: 7, child: Padding(
               padding: const EdgeInsets.only(bottom: Dimensions.paddingSizeSmall),
               child: Container(
@@ -218,6 +212,73 @@ class _CategoryScreenState extends State<CategoryScreen> {
           ]) : Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor)));
         },
       ),
+    );
+  }
+
+  // ANPEC: mini-explorador — grilla de productos de la categoría seleccionada
+  // con "Ver más" al fondo hacia la pantalla completa de la categoría.
+  Widget _productPreviewPanel(BuildContext context, CategoryController categoryProvider) {
+    final CategoryModel selected = categoryProvider.categoryList[categoryProvider.categorySelectedIndex!];
+    return Consumer<ProductController>(
+      builder: (context, productController, _) {
+        final products = productController.brandOrCategoryProductList?.products;
+        if (productController.brandOrCategoryProductList == null) {
+          return Center(child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor)));
+        }
+        if (products == null || products.isEmpty) {
+          return Center(child: Padding(
+            padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+            child: Text(getTranslated('no_products_found', context) ?? '',
+                textAlign: TextAlign.center,
+                style: textRegular.copyWith(color: Theme.of(context).hintColor)),
+          ));
+        }
+        return Column(children: [
+          Expanded(
+            child: MasonryGridView.count(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeEight),
+              physics: const BouncingScrollPhysics(),
+              crossAxisCount: 2,
+              itemCount: products.length,
+              itemBuilder: (context, index) => Padding(
+                padding: const EdgeInsets.all(Dimensions.paddingSizeExtraExtraSmall),
+                child: ProductCardWidget(product: products[index]),
+              ),
+            ),
+          ),
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(Dimensions.paddingSizeSmall, 0,
+                  Dimensions.paddingSizeSmall, Dimensions.paddingSizeSmall),
+              child: SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusDefault)),
+                    padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
+                  ),
+                  onPressed: () {
+                    RouterHelper.getBrandCategoryRoute(
+                      action: RouteAction.push,
+                      isBrand: false,
+                      id: selected.id,
+                      name: selected.name,
+                      categoryModel: selected,
+                      isAllProduct: true,
+                    );
+                  },
+                  child: Text(getTranslated('see_more', context) ?? 'Ver más', style: textBold),
+                ),
+              ),
+            ),
+          ),
+        ]);
+      },
     );
   }
 
