@@ -109,8 +109,10 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                         hintText: '',
                         isShowBorder: true,
                         controller: _userInputController,
-                        inputType: TextInputType.number,
-                        labelText: getTranslated('phone', context),
+                        // ANPEC: los afiliados entran con correo — teclado y
+                        // etiqueta email-first (el teléfono sigue aceptándose).
+                        inputType: TextInputType.emailAddress,
+                        labelText: getTranslated('email_or_phone', context),
                       );
                     },
                   ),
@@ -125,8 +127,12 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                           showCustomSnackBarWidget(getTranslated('forgot_password_configuration_is_not', context), context, snackBarType: SnackBarType.warning);
                         } else if (_userInputController!.text.isEmpty) {
                           showCustomSnackBarWidget(getTranslated('enter_email_or_phone', context), context, snackBarType: SnackBarType.warning);
-                        } else if(!NumberCheckerHelper.isNumber(_userInputController!.text.trim())) {
-                          showCustomSnackBarWidget(getTranslated('enter_phone_number', context), context, snackBarType: SnackBarType.warning);
+                        } else if(!NumberCheckerHelper.isNumber(_userInputController!.text.trim())
+                            && !_userInputController!.text.contains('@')) {
+                          // ANPEC: el template bloqueaba todo lo que no fuera número —
+                          // dejaba el reset por correo inalcanzable (los afiliados
+                          // entran con correo). Se acepta correo O teléfono.
+                          showCustomSnackBarWidget(getTranslated('enter_email_or_phone', context), context, snackBarType: SnackBarType.warning);
                         } else {
 
                           String userInput = _userInputController!.text.trim();
@@ -140,6 +146,15 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
 
                           if(response != null && response.isSuccess) {
                             if(isNumber && !authProvider.sendToEmail) {
+                              RouterHelper.getVerificationRoute(
+                                userInput: userInput,
+                                fromPage: FromPage.forgetPassword,
+                                action: RouteAction.push,
+                              );
+                            } else if(!isNumber) {
+                              // ANPEC: el backend genera un código OTP también para el
+                              // correo — sin esta navegación el usuario recibía el
+                              // código y no tenía dónde capturarlo (template dead-end).
                               RouterHelper.getVerificationRoute(
                                 userInput: userInput,
                                 fromPage: FromPage.forgetPassword,

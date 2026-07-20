@@ -67,7 +67,7 @@
   "forget_password": "¿Olvidaste tu contraseña?",
   "OR": "O",
   "continue_as": "Continuar como",
-  "first_name": "Nombre de pila",
+  "first_name": "Nombre(s)",
   "last_name": "Apellido",
   "enter_your_email": "Introduce tu correo electrónico",
   "enter_mobile_number": "Introduce el número de móvil",
@@ -282,7 +282,7 @@
   "confirm_password": "confirmar Contraseña",
   "reset_password": "Restablecer contraseña",
   "password_reset": "Restablecer contraseña",
-  "enter_phone_number_for_password_reset": "Ingrese el número de teléfono para restablecer la contraseña",
+  "enter_phone_number_for_password_reset": "Escribe tu correo o teléfono y te enviaremos un código para restablecer tu contraseña",
   "send_otp": "Enviar OTP",
   "password_reset_successfully": "Restablecimiento de contraseña exitoso",
   "input_valid_phone_number": "Ingrese un número de teléfono válido",
@@ -1439,7 +1439,7 @@
   "anpec_whatsapp_prefill": "Hola, soy afiliado de Red Trastienda.",
   "conectate_con_anpec": "Conéctate con ANPEC",
   "optional": "opcional",
-  "quiero_afiliarme": "Déjanos tus datos",
+  "quiero_afiliarme": "Crear mi cuenta",
   "ya_soy_afiliado_activa_tu_cuenta": "Ya soy afiliado ANPEC — activa tu cuenta",
   "aun_no_eres_afiliado": "¿Aún no eres afiliado?",
   "correo_telefono_o_numero_anp": "Correo, teléfono o número ANP",
@@ -1582,5 +1582,6 @@
   "inicia_sesion_para_ver_tu_tarjeta": "Inicia sesión para ver tu Tarjeta Digital",
   "inicia_sesion_para_ver_el_mercado": "Inicia sesión para ver el Mercado",
   "chat_accion": "Chat",
-  "llamar_accion": "Llamar"
+  "llamar_accion": "Llamar",
+  "email_or_phone": "Correo o teléfono"
 }

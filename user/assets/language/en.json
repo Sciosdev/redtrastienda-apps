@@ -272,7 +272,7 @@
   "confirm_password": "Confirm Password",
   "reset_password": "Reset Password",
   "password_reset": "Password Reset",
-  "enter_phone_number_for_password_reset": "Enter phone number for password reset",
+  "enter_phone_number_for_password_reset": "Enter your email or phone number to reset your password",
   "send_otp": "Send Otp",
   "password_reset_successfully": "Password Reset Successfully",
   "input_valid_phone_number": "Input valid phone number",
@@ -1429,7 +1429,7 @@
   "anpec_whatsapp_prefill": "Hello, I'm a Red Trastienda affiliate.",
   "conectate_con_anpec": "Connect with ANPEC",
   "optional": "optional",
-  "quiero_afiliarme": "Leave us your details",
+  "quiero_afiliarme": "Create my account",
   "ya_soy_afiliado_activa_tu_cuenta": "I'm an ANPEC affiliate — activate your account",
   "aun_no_eres_afiliado": "Not an affiliate yet?",
   "correo_telefono_o_numero_anp": "Email, phone or ANP number",
@@ -1572,5 +1572,6 @@
   "inicia_sesion_para_ver_tu_tarjeta": "Log in to see your Digital Card",
   "inicia_sesion_para_ver_el_mercado": "Log in to see the Mercado",
   "chat_accion": "Chat",
-  "llamar_accion": "Call"
+  "llamar_accion": "Call",
+  "email_or_phone": "Email or phone"
 }
