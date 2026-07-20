@@ -16,8 +16,8 @@ propio, recablear app (Android + iOS) y panel admin, y verificar.
 > `club.scios.redtrastienda` a **`com.redtrastiendaanpec.afiliados`** ANTES del primer AAB, para
 > que ANPEC no quede atada al namespace de SCIOS de forma permanente. `build.gradle.kts:40`
 > ya editado en `r-firebase`. **Dos dependencias para el maestro:**
-> 1. Válido **solo si NO se ha subido ningún AAB a Play** con el id viejo (Axel confirma en Play
->    Console). Si ya se subió, ese id quedó bloqueado y hay que replantear.
+> 1. ✅ **CONFIRMADO por Axel 2026-07-20: NO se subió ningún AAB a Play** con el id viejo → el
+>    cambio fue limpio, sin bloqueo de Play.
 > 2. El **bundle id de iOS** también cambia → el enrollment de Apple (SCIOS, en curso) apuntaba a
 >    `club.scios.redtrastienda`; hay que **re-crear el App ID** con el nuevo string. Ver
 >    `docs/IOS_STATUS.md`.
