@@ -72,6 +72,22 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   CategoryModel category = categoryProvider.categoryList[index];
                   return InkWell(
                     onTap: () {
+                      // ANPEC: nuestras categorías no tienen subcategorías, así que
+                      // el panel derecho quedaba casi vacío (solo "Ver todos los
+                      // productos"). Si la categoría no tiene subcategorías, vamos
+                      // DIRECTO a sus productos. Si algún día las tiene, se conserva
+                      // el comportamiento de dos paneles.
+                      if (category.subCategories?.isEmpty ?? true) {
+                        RouterHelper.getBrandCategoryRoute(
+                          action: RouteAction.push,
+                          isBrand: false,
+                          id: category.id,
+                          name: category.name,
+                          categoryModel: category,
+                          isAllProduct: true,
+                        );
+                        return;
+                      }
                       categoryProvider.onChangeSelectedIndex(index);
                       Provider.of<ProductController>(context, listen: false).initBrandOrCategoryProductList(
                         isBrand: false,
