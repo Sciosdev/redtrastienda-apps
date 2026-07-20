@@ -82,6 +82,27 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  // R-Afiliación: el afiliado se registró pero aún no lo aprueban en el panel.
+  // Sin este manejo el login quedaba MUDO (el gate lead_pendiente del backend
+  // no tenía CTA en pantalla) — el tendero veía la pantalla colgada sin saber
+  // por qué. Ahora ve un diálogo claro de "afiliación en proceso".
+  void _mostrarDialogoLeadPendiente() {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.radiusLarge)),
+        title: Text(getTranslated('afiliacion_en_proceso', dialogContext) ?? '', style: textBold),
+        content: Text(getTranslated('tu_afiliacion_esta_en_proceso_de_revision', dialogContext) ?? ''),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(getTranslated('entendido', dialogContext) ?? ''),
+          ),
+        ],
+      ),
+    );
+  }
+
   // R-Afiliación: la cuenta precargada existe pero sigue sin activar → llevar
   // al afiliado directo al wizard de activación.
   void _mostrarDialogoActivacion() {
@@ -375,6 +396,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                           // directo al wizard de activación.
                                           if (!status.isSuccess && authProvider.loginErrorCode == 'cuenta_sin_activar') {
                                             _mostrarDialogoActivacion();
+                                            return;
+                                          }
+                                          if (!status.isSuccess && authProvider.loginErrorCode == 'lead_pendiente') {
+                                            _mostrarDialogoLeadPendiente();
                                             return;
                                           }
                                           if (status.isSuccess) {

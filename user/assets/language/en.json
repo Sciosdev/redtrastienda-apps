@@ -1574,5 +1574,7 @@
   "chat_accion": "Chat",
   "llamar_accion": "Call",
   "email_or_phone": "Email or phone",
-  "reset_por_telefono_no_disponible": "Password reset by phone is not available yet — please use your email"
+  "reset_por_telefono_no_disponible": "Password reset by phone is not available yet — please use your email",
+  "afiliacion_en_proceso": "Affiliation in process",
+  "tu_afiliacion_esta_en_proceso_de_revision": "Your registration is under review by ANPEC. You will be able to sign in once approved. We will contact you soon."
 }

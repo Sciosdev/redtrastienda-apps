@@ -1584,5 +1584,7 @@
   "chat_accion": "Chat",
   "llamar_accion": "Llamar",
   "email_or_phone": "Correo o teléfono",
-  "reset_por_telefono_no_disponible": "El restablecimiento por teléfono no está disponible por ahora — escribe tu correo electrónico"
+  "reset_por_telefono_no_disponible": "El restablecimiento por teléfono no está disponible por ahora — escribe tu correo electrónico",
+  "afiliacion_en_proceso": "Afiliación en proceso",
+  "tu_afiliacion_esta_en_proceso_de_revision": "Tu registro está en revisión por ANPEC. En cuanto se apruebe podrás iniciar sesión. Te contactaremos pronto."
 }
