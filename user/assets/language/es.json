@@ -428,7 +428,7 @@
   "order_amount": "Monto del pedido",
   "remaining_balance": "Saldo restante",
   "temporary_closed": "Cierre Temporal",
-  "close_for_now": "Cerrar ahora",
+  "close_for_now": "Cerrado por ahora",
   "this_shop_is_close_now": "Este proveedor está cerrado ahora",
   "pay_by_wallet": "Pagar con billetera",
   "stripe": "Raya",
@@ -1580,5 +1580,7 @@
   "inicia_sesion_para_ver_tus_pedidos": "Inicia sesión para ver tus pedidos",
   "sin_proveedores_disponibles": "Aún no hay proveedores disponibles",
   "inicia_sesion_para_ver_tu_tarjeta": "Inicia sesión para ver tu Tarjeta Digital",
-  "inicia_sesion_para_ver_el_mercado": "Inicia sesión para ver el Mercado"
+  "inicia_sesion_para_ver_el_mercado": "Inicia sesión para ver el Mercado",
+  "chat_accion": "Chat",
+  "llamar_accion": "Llamar"
 }

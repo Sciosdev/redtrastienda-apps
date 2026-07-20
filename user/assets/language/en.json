@@ -1570,5 +1570,7 @@
   "inicia_sesion_para_ver_tus_pedidos": "Log in to see your orders",
   "sin_proveedores_disponibles": "No suppliers available yet",
   "inicia_sesion_para_ver_tu_tarjeta": "Log in to see your Digital Card",
-  "inicia_sesion_para_ver_el_mercado": "Log in to see the Mercado"
+  "inicia_sesion_para_ver_el_mercado": "Log in to see the Mercado",
+  "chat_accion": "Chat",
+  "llamar_accion": "Call"
 }

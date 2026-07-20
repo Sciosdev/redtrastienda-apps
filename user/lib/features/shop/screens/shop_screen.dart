@@ -5,6 +5,7 @@ import 'package:flutter_sixvalley_ecommerce/features/search_product/controllers/
 import 'package:flutter_sixvalley_ecommerce/features/shop/domain/enums/vacation_duration_type.dart';
 import 'package:flutter_sixvalley_ecommerce/features/shop/domain/models/shop_navigation_model.dart';
 import 'package:flutter_sixvalley_ecommerce/features/splash/controllers/splash_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/helper/responsive_helper.dart';
 import 'package:flutter_sixvalley_ecommerce/helper/route_healper.dart';
 import 'package:flutter_sixvalley_ecommerce/helper/shop_helper.dart';
 import 'package:flutter_sixvalley_ecommerce/localization/controllers/localization_controller.dart';
@@ -23,7 +24,7 @@ import 'package:flutter_sixvalley_ecommerce/common/basewidget/product_filter_dia
 import 'package:flutter_sixvalley_ecommerce/common/basewidget/search_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/home/screens/home_screens.dart';
 import 'package:flutter_sixvalley_ecommerce/features/shop/screens/overview_screen.dart';
-import 'package:flutter_sixvalley_ecommerce/features/shop/widgets/seller_category_chips.dart';
+import 'package:flutter_sixvalley_ecommerce/features/shop/widgets/proveedor_contact_header.dart';
 import 'package:flutter_sixvalley_ecommerce/features/shop/widgets/shop_info_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/shop/widgets/shop_product_view_list.dart';
 import 'package:flutter_sixvalley_ecommerce/features/surtido/controllers/surtido_controller.dart';
@@ -113,6 +114,13 @@ class _TopSellerProductScreenState extends State<TopSellerProductScreen> with Ti
       Provider.of<ShopController>(context, listen: false).setMenuItemIndex(0, notify: false);
     }
 
+    if(AppConstants.anpecProveedorFlow) {
+      // R-Pulido-AAB (smoke B2): los chips no deben heredar las categorías del
+      // proveedor anterior — la franja arranca oculta y aparece cuando llegan
+      // las de ESTE proveedor.
+      Provider.of<CategoryController>(context, listen: false).clearSellerWiseCategoryList();
+    }
+
     searchController.clear();
     _load();
     // R-Surtido: carga única del carrito para pintar cantidades existentes en
@@ -169,7 +177,46 @@ class _TopSellerProductScreenState extends State<TopSellerProductScreen> with Ti
 
             final double topPadding = MediaQuery.of(context).padding.top;
             return CustomScrollView(controller: _scrollController, slivers: [
-              SliverToBoxAdapter(
+              // R-Pulido-AAB (smoke B1): con el flag ON, banner + card de
+              // contacto + buscador + chips viven en UN solo header colapsable
+              // que mide exacto su contenido — se acabó el hueco en reposo del
+              // delegate viejo (topPadding + altura de sobra). La franja de
+              // chips no reserva altura hasta que cargan las categorías DEL
+              // proveedor (smoke B2/B3). Flag OFF: la pantalla de hoy, intacta.
+              if(AppConstants.anpecProveedorFlow)
+                Consumer<CategoryController>(
+                  builder: (context, categoryController, _) {
+                    final bool hasChips = categoryController.sellerWiseCategoryList.isNotEmpty;
+                    final double bannerH = ResponsiveHelper.isTab(context)
+                        ? ProveedorHeaderDelegate.bannerHeightTab
+                        : ProveedorHeaderDelegate.bannerHeight;
+                    return SliverPersistentHeader(pinned: true,
+                      delegate: ProveedorHeaderDelegate(
+                        topPadding: topPadding,
+                        bannerH: bannerH,
+                        hasChips: hasChips,
+                        collapsibleChild: ProveedorBannerCard(
+                          slug: widget.slug ?? '',
+                          sellerId: widget.sellerId ?? sellerProvider.sellerInfoModel?.seller?.shop?.sellerId,
+                          sellerName: widget.name ??
+                            (sellerProvider.sellerInfoModel?.seller != null ?
+                            sellerProvider.sellerInfoModel?.seller?.shop?.name ?? '' :
+                            Provider.of<SplashController>(context, listen: false).configModel?.inHouseShop?.name ?? ''),
+                          banner: widget.banner ?? sellerProvider.sellerInfoModel?.seller?.shop?.bannerFullUrl?.path ?? '',
+                          shopImage: widget.image ?? sellerProvider.sellerInfoModel?.seller?.shop?.imageFullUrl?.path ?? '',
+                          totalProduct: widget.totalProduct ?? sellerProvider.sellerInfoModel?.totalProduct ?? 0,
+                          contact: sellerProvider.sellerInfoModel?.seller?.shop?.contact,
+                          vacationIsOn: vacationIsOn,
+                          temporaryClose: widget.temporaryClose ?? sellerProvider.sellerInfoModel?.seller?.shop?.temporaryClose ?? false,
+                          topPadding: topPadding,
+                          bannerH: bannerH,
+                        ),
+                        pinnedChild: ProveedorPinnedTools(slug: widget.slug ?? '', hasChips: hasChips),
+                      ),
+                    );
+                  },
+                )
+              else SliverToBoxAdapter(
                 child: (widget.sellerId == null  && sellerProvider.sellerInfoModel == null) ?
                 ShopInfoShimmerWidget() :
                 ShopInfoWidget(
@@ -193,51 +240,7 @@ class _TopSellerProductScreenState extends State<TopSellerProductScreen> with Ti
                 ),
               ),
 
-              // R-Proveedor: sin TabBar. El buscador sube y queda fijo; debajo,
-              // el filtro ⚙ (acceso avanzado) + los chips de categoría (acceso
-              // rápido). Flag OFF: la cabecera con pestañas de hoy, intacta.
-              AppConstants.anpecProveedorFlow ?
-              SliverPersistentHeader(pinned: true,
-                delegate: SliverDelegate(
-                  height: 128 + topPadding,
-                  child: Container(color: Theme.of(context).canvasColor,
-                    child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-                      SizedBox(height: topPadding),
-                      SearchWidget(hintText: '${getTranslated('search_hint', context)}', slug: widget.slug!),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeExtraSmall),
-                        child: Row(children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: Dimensions.homePagePadding),
-                            child: Stack(children: [
-                              InkWell(onTap: () => showModalBottomSheet(context: context,
-                                isScrollControlled: true, backgroundColor: Colors.transparent,
-                                builder: (c) => ProductFilterDialog(slug: widget.slug!)),
-                                child: Container(decoration: BoxDecoration(
-                                  color: Theme.of(context).cardColor,
-                                  border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha:.5)),
-                                  borderRadius: BorderRadius.circular(Dimensions.paddingSizeExtraSmall)),
-                                  width: 30, height: 30,
-                                  child: Center(child: CustomAssetImageWidget(Images.filterIcon, width: 15, height: 15,
-                                    color: Provider.of<ThemeController>(context, listen: false).darkTheme?
-                                    Colors.white : Theme.of(context).primaryColor,
-                                  )))),
-                              Consumer<SellerProductController>(
-                                builder: (context, sellerProductController, _) {
-                                  return sellerProductController.isFilterApply ?
-                                    CircleAvatar(radius: 5, backgroundColor: Theme.of(context).primaryColor) :
-                                    const SizedBox();
-                                }
-                              )
-                            ]),
-                          ),
-                          Expanded(child: SellerCategoryChips(slug: widget.slug!)),
-                        ]),
-                      ),
-                    ]),
-                  ),
-                )
-              ) :
+              if(!AppConstants.anpecProveedorFlow)
               SliverPersistentHeader(pinned: true,
                 delegate: SliverDelegate(
                   height: (sellerProvider.shopMenuIndex == 1 ? 140 : 50) + topPadding,

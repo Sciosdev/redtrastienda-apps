@@ -80,6 +80,13 @@ class CategoryController extends ChangeNotifier {
 
   }
 
+  /// R-Pulido-AAB: los chips del proveedor no deben pintar la lista del
+  /// proveedor anterior mientras carga la nueva. Sin notify: se llama en el
+  /// initState de la pantalla del proveedor, antes de su primer build.
+  void clearSellerWiseCategoryList() {
+    _sellerWiseCategoryList.clear();
+  }
+
   final List<int> _selectedCategoryIds = [];
   List<int> get selectedCategoryIds => _selectedCategoryIds;
 
