@@ -74,7 +74,8 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
       _address = Address.shipping;
     }
 
-    Provider.of<AuthController>(context, listen: false).setCountryCode(CountryCode.fromCountryCode(Provider.of<SplashController>(context, listen: false).configModel!.countryCode!).dialCode!, notify: false);
+    // ANPEC: solo Mexico (el countryCode del config traia el del template).
+    Provider.of<AuthController>(context, listen: false).setCountryCode(CountryCode.fromCountryCode('MX').dialCode!, notify: false);
     _countryCodeController.text = CountryCode.fromCountryCode(Provider.of<SplashController>(context, listen: false).configModel!.countryCode!).name??'Bangladesh';
     Provider.of<AddressController>(context, listen: false).getAddressType();
     Provider.of<AddressController>(context, listen: false).getRestrictedDeliveryCountryList();

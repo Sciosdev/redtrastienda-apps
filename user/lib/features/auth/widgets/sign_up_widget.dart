@@ -99,7 +99,9 @@ class SignUpWidgetState extends State<SignUpWidget> {
   void initState() {
     super.initState();
     final authController = Provider.of<AuthController>(context, listen: false);
-    authController.setCountryCode(CountryCode.fromCountryCode(Provider.of<SplashController>(context, listen: false).configModel!.countryCode!).dialCode!, notify: false);
+    // ANPEC: solo Mexico — el countryCode del config traia el del template
+    // (+880) y pisaba el default; la UI mostraba +52 pero el submit mandaba +880.
+    authController.setCountryCode(CountryCode.fromCountryCode('MX').dialCode!, notify: false);
 
     if(widget.referCode != null) {
       _referController.text = widget.referCode ?? '';
