@@ -20,7 +20,10 @@ class MercadoExplorarScreen extends StatefulWidget {
   // del menú). El backend no filtra por es_oferta (solo search/estado/tipo),
   // así que el filtro es client-side; default false = pantalla idéntica a hoy.
   final bool soloOfertas;
-  const MercadoExplorarScreen({super.key, this.soloOfertas = false});
+  // R-Inicio: como pestaña del dashboard no debe pintar flecha de regreso.
+  // Default false = uso pusheado (menú) de siempre.
+  final bool fromDashboard;
+  const MercadoExplorarScreen({super.key, this.soloOfertas = false, this.fromDashboard = false});
 
   @override
   State<MercadoExplorarScreen> createState() => _MercadoExplorarScreenState();
@@ -99,6 +102,7 @@ class _MercadoExplorarScreenState extends State<MercadoExplorarScreen> {
     return Scaffold(
       appBar: CustomAppBar(
         title: getTranslated('mercado', context) ?? 'Mercado',
+        isBackButtonExist: !widget.fromDashboard,
         actions: [
           TextButton.icon(
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MiTienditaScreen())),
