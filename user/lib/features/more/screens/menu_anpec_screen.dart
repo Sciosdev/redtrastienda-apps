@@ -204,11 +204,14 @@ class _MenuAnpecScreenState extends State<MenuAnpecScreen> {
               onTap: () => _conSesion(() => context.push(RouterHelper.profileScreen1)),
             ),
 
-            MenuItem(
-              iconImage: Images.address,
-              label: getTranslated('mis_direcciones', context) ?? 'Mis direcciones',
-              onTap: () => _conSesion(() => context.push(RouterHelper.addressScreen)),
-            ),
+            // Fuera del menú por decisión de producto: la dirección de la tienda
+            // viene de la afiliación; el multi-direcciones es paja de consumo.
+            if (AppConstants.anpecMisDirecciones)
+              MenuItem(
+                iconImage: Images.address,
+                label: getTranslated('mis_direcciones', context) ?? 'Mis direcciones',
+                onTap: () => _conSesion(() => context.push(RouterHelper.addressScreen)),
+              ),
 
             MenuItem(
               iconImage: Images.settings,

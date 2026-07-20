@@ -32,6 +32,13 @@ import 'package:flutter_sixvalley_ecommerce/common/enums/local_caches_type_enum.
   // reales y un botón que truena es rechazo casi seguro en review de tienda.
   static const bool anpecSocialLogin = false;
 
+  // Decisión Axel 2026-07-20 (pre-AAB): "Mis direcciones" (multi-dirección de
+  // consumo de 6valley) NO tiene sentido en la red — una tienda = UNA dirección
+  // y ya viene de la afiliación (CSV: profile_field_business_address). Además la
+  // pantalla montaba un mapa con key placeholder (gris = riesgo de review). El
+  // pedido F6 no usa dirección (addressID: ''). true = volver a mostrarlas.
+  static const bool anpecMisDirecciones = false;
+
   // R-Surtido: "maquinita del preventista". Surtir por cantidades DIRECTO en la
   // lista del proveedor (stepper por card + barra resumen) y "Repetir pedido"
   // (reconstruye un pedido pasado con las APIs de carrito, secuencial, con
