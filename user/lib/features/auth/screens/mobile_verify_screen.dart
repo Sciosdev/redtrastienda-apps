@@ -2,7 +2,6 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sixvalley_ecommerce/localization/language_constrants.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/auth_controller.dart';
-import 'package:flutter_sixvalley_ecommerce/features/splash/controllers/splash_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/dimensions.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/images.dart';
 import 'package:flutter_sixvalley_ecommerce/common/basewidget/custom_button_widget.dart';
@@ -23,13 +22,14 @@ class MobileVerificationScreenState extends State<MobileVerificationScreen> {
 
   TextEditingController? _numberController;
   final FocusNode _numberFocus = FocusNode();
-  String? _countryDialCode = '+880';
+  String? _countryDialCode = '+52';
 
   @override
   void initState() {
     super.initState();
     _numberController = TextEditingController();
-    _countryDialCode = CountryCode.fromCountryCode(Provider.of<SplashController>(context, listen: false).configModel?.countryCode??'BD').dialCode;
+    // ANPEC: solo México — se ignora el countryCode del config (traía el del template).
+    _countryDialCode = CountryCode.fromCountryCode('MX').dialCode;
   }
 
 
@@ -66,7 +66,8 @@ class MobileVerificationScreenState extends State<MobileVerificationScreen> {
                             _countryDialCode = countryCode.dialCode;
                           },
                           initialSelection: _countryDialCode,
-                          favorite: [_countryDialCode??'BD'],
+                          favorite: [_countryDialCode??'MX'],
+                          countryFilter: const ['MX'],
                           showDropDownButton: true,
                           padding: EdgeInsets.zero,
                           showFlagMain: true,

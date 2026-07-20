@@ -410,6 +410,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                               _countryCodeController.text = val.name!;
                                             },
                                             initialSelection: _countryCodeController.text,
+                                            countryFilter: const ['MX'],
                                             showDropDownButton: true,
                                             showCountryOnly: true,
                                             showOnlyCountryWhenClosed: true,
