@@ -1,5 +1,53 @@
 # iOS — Estado Fase 1 (rama `r-ios`)
 
+## Actualización Fase 2 — 2026-07-24
+
+### Completado en la Mac
+
+- `main` (`d7dfbd1`) se integró en `r-ios`: 28 commits, con un único conflicto en este
+  documento y ningún conflicto en `user/ios/` ni en código. Después del merge,
+  `flutter build ios --no-codesign` compila correctamente.
+- Se retiraron dos residuos nativos de Facebook que quedaron huérfanos tras eliminar el SDK
+  en `main`: imports `FBSDKCoreKit`/`FBSDKLoginKit` y el pin SPM obsoleto. El IPA no enlaza
+  ningún FBSDK.
+- Bundle ID definitivo: `com.redtrastiendaanpec.afiliados` en Debug, Release y Profile.
+  Verificado dentro de `Runner.app` y dentro del IPA exportado.
+- Entitlements unificados: Push Notifications y keychain group del bundle definitivo;
+  fuera Sign in with Apple. El IPA de App Store contiene `aps-environment = production`.
+- Firebase iOS migrado a `anpec-b7c3c`; el IPA contiene ese `PROJECT_ID` y el bundle
+  definitivo. El plist ya estaba suministrado en `docs/GoogleService-Info.plist` y está
+  incluido en Copy Bundle Resources.
+- `Info.plist`: fuera `NSAllowsArbitraryLoads`, `UIFileSharingEnabled`, claves/schemes de
+  Facebook y el URL scheme de Google perteneciente al Firebase demo. Se conserva el scheme
+  propio `redtrastienda`.
+- Smoke en simulador iPhone 17 Pro: la app abre el home y carga por HTTPS categorías,
+  proveedores, productos e imágenes reales sin ATS arbitrario. Sin fallos funcionales en el
+  registro del proceso.
+- Firma automática operativa con Team ID `Z7M8489428`. Xcode creó el App ID explícito y los
+  perfiles de desarrollo/App Store. `flutter build ipa --release` generó un IPA de 50.5 MB
+  firmado con Apple Distribution, `get-task-allow = false` y `beta-reports-active = true`.
+- No existe ningún archivo `.p8` dentro del repositorio.
+
+### Verificaciones externas
+
+- Backend `https://adminapp.redtrastiendaanpec.com/api/v1/config`: HTTP 200 y
+  `anpec_mercado_activo = 0`, por lo que Mercado queda oculto para review. Nota: el flag local
+  `anpecMercadoFlow` recibido de `main` está en `true`; el gate efectivo es local **y** remoto.
+- URL válida para App Store Connect:
+  `https://adminapp.redtrastiendaanpec.com/politica-de-privacidad` (HTTP 200, “Aviso de
+  Privacidad — App Red Trastienda”). La variante en `redtrastiendaanpec.com` sin `adminapp`
+  devuelve 404 y no debe declararse.
+
+### Pendiente por acceso web de Apple/Firebase
+
+1. Crear y descargar la APNs Auth Key `.p8`, guardarla fuera del repo y subirla a Firebase
+   con Team ID `Z7M8489428`.
+2. Crear la ficha “ANPEC Red Trastienda” en App Store Connect, aceptar acuerdos y completar
+   App Privacy, screenshots y credenciales de review verificadas.
+3. Subir `user/build/ios/ipa/Red Trastienda.ipa`, activar TestFlight interno y enviar a review.
+
+---
+
 **Fecha:** 2026-07-18 · **Máquina:** MacBook M2 Pro · **Territorio tocado:** solo `user/ios/` + este doc.
 
 ## TL;DR
