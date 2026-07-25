@@ -13,7 +13,6 @@ import 'package:flutter_sixvalley_ecommerce/helper/route_healper.dart';
 import 'package:flutter_sixvalley_ecommerce/localization/language_constrants.dart';
 import 'package:flutter_sixvalley_ecommerce/main.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/auth_controller.dart';
-import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/facebook_login_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/google_login_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/splash/controllers/splash_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/custom_themes.dart';
@@ -41,10 +40,9 @@ class SocialLoginWidgetState extends State<SocialLoginWidget> {
     final socialLoginConfig = configModel?.customerLogin?.socialMediaLoginOptions;
     List<String> socialLoginList = [];
 
-    if(socialLoginConfig?.facebook == 1) {
-      socialLoginList.add("facebook");
-    }
-
+    // R-Pulido-AAB: fuera el SDK de Facebook del binario (placeholders sin
+    // credenciales = observación casi segura en la review de Play). Aunque el
+    // config del server traiga facebook=1, aquí ya no existe ese camino.
     if (socialLoginConfig?.google == 1) {
       socialLoginList.add("google");
     }
@@ -65,16 +63,6 @@ class SocialLoginWidgetState extends State<SocialLoginWidget> {
                     image: Images.google,
                   ),
                 )),
-           if (socialLoginConfig?.facebook == 1)
-            Expanded(
-              child: InkWell(
-                onTap: () => facebookLogin(context, widget.fromPage, widget.onLoginSuccess),
-                child: SocialLoginButtonWidget(
-                  text: getTranslated('continue_with_facebook', context)!,
-                  image: Images.facebook,
-                ),
-              ),),
-
             if(socialLoginConfig?.apple == 1 && defaultTargetPlatform == TargetPlatform.iOS)
               Expanded(
                 child: InkWell(
@@ -103,19 +91,6 @@ class SocialLoginWidgetState extends State<SocialLoginWidget> {
             ],
 
 
-            if(socialLoginConfig?.facebook == 1)...[
-
-              Expanded(child: InkWell(
-                onTap: () => facebookLogin(context, widget.fromPage, widget.onLoginSuccess),
-                child: SocialLoginButtonWidget(
-                  text: getTranslated('facebook', context)!,
-                  image: Images.facebook,
-                ),
-              )),
-              socialLoginConfig?.apple == 1 ? const SizedBox(width: Dimensions.paddingSizeDefault)
-                  : const SizedBox.shrink(),
-            ],
-
             if(socialLoginConfig?.apple == 1 && defaultTargetPlatform == TargetPlatform.iOS)...[
               Expanded(
                 child: InkWell(
@@ -137,16 +112,6 @@ class SocialLoginWidgetState extends State<SocialLoginWidget> {
               onTap: () => googleLogin(context, widget.fromPage, widget.onLoginSuccess),
               child: const SocialLoginButtonWidget(
                 image: Images.google,
-                padding: EdgeInsets.all(Dimensions.paddingSizeSmall),
-              ),
-            ),
-            const SizedBox(width: Dimensions.paddingSizeLarge),
-          ],
-          if (socialLoginConfig?.facebook == 1) ...[
-            InkWell(
-              onTap: () => facebookLogin(context, widget.fromPage, widget.onLoginSuccess),
-              child: const SocialLoginButtonWidget(
-                image: Images.facebook,
                 padding: EdgeInsets.all(Dimensions.paddingSizeSmall),
               ),
             ),
@@ -250,29 +215,6 @@ Future<void> googleLogin(BuildContext context, String? fromPage, VoidCallback? o
       socialLogin.uniqueId = id;
       socialLogin.name = name;
 
-      await Provider.of<AuthController>(Get.context!, listen: false).socialLogin(socialLogin, route, fromPage, onLoginSuccess);
-    }
-  } catch (er) {
-    debugPrint('access token error is : $er');
-  }
-}
-
-Future<void> facebookLogin(BuildContext context, String? fromPage, VoidCallback? onLoginSuccess) async {
-  SocialLoginModel socialLogin = SocialLoginModel();
-
-  try {
-    await Provider.of<FacebookLoginController>(context, listen: false).login();
-    String? id, token, email, medium, name;
-    if (Provider.of<FacebookLoginController>(Get.context!, listen: false).userData != null) {
-      id = Provider.of<FacebookLoginController>(Get.context!, listen: false).userData?['id'];
-      email = Provider.of<FacebookLoginController>(Get.context!, listen: false).userData?['email'];
-      token = Provider.of<FacebookLoginController>(Get.context!, listen: false).result.accessToken?.tokenString;
-      name = Provider.of<FacebookLoginController>(Get.context!, listen: false).userData?['name'] ?? '';
-      medium = 'facebook';
-      socialLogin.email = email;
-      socialLogin.medium = medium;
-      socialLogin.token = token;
-      socialLogin.uniqueId = id;
       await Provider.of<AuthController>(Get.context!, listen: false).socialLogin(socialLogin, route, fromPage, onLoginSuccess);
     }
   } catch (er) {

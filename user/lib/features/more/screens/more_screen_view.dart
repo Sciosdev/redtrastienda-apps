@@ -100,12 +100,13 @@ class _MoreScreenState extends State<MoreScreen> {
                                   },
                                 ),
 
-                              MenuButtonWidget(image: Images.address, title: getTranslated('addresses', context),
-                                onTap: () {
-                                  RouterHelper.getAddressListScreen(action: RouteAction.push);
-                                },
+                              if (AppConstants.anpecMisDirecciones)
+                                MenuButtonWidget(image: Images.address, title: getTranslated('addresses', context),
+                                  onTap: () {
+                                    RouterHelper.getAddressListScreen(action: RouteAction.push);
+                                  },
 
-                              ),
+                                ),
 
                               MenuButtonWidget(image: Images.coupon, title: getTranslated('coupons', context),
                                 onTap: () {

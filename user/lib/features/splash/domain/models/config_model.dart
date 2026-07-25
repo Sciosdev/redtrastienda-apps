@@ -49,6 +49,9 @@ class ConfigModel {
   int? billingInputByCustomer;
   int? minimumOrderLimit;
   int? walletStatus;
+  // R-Inicio: interruptor REMOTO del Mercado (business_settings del panel).
+  // Ausente en backends viejos → false → Mercado oculto: seguro por default.
+  bool? anpecMercadoActivo;
   int? loyaltyPointStatus;
   double? loyaltyPointExchangeRate;
   int? loyaltyPointMinimumPoint;
@@ -295,6 +298,9 @@ class ConfigModel {
     billingInputByCustomer = json['billing_input_by_customer'];
     minimumOrderLimit = json['minimum_order_limit'];
     walletStatus = json['wallet_status'];
+    anpecMercadoActivo = json['anpec_mercado_activo'] == 1 ||
+        json['anpec_mercado_activo'] == '1' ||
+        json['anpec_mercado_activo'] == true;
     loyaltyPointStatus = json['loyalty_point_status'];
     if(json['loyalty_point_exchange_rate'] != null){
       loyaltyPointExchangeRate =  double.parse(json['loyalty_point_exchange_rate'].toString());

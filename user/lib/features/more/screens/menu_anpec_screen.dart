@@ -204,11 +204,14 @@ class _MenuAnpecScreenState extends State<MenuAnpecScreen> {
               onTap: () => _conSesion(() => context.push(RouterHelper.profileScreen1)),
             ),
 
-            MenuItem(
-              iconImage: Images.address,
-              label: getTranslated('mis_direcciones', context) ?? 'Mis direcciones',
-              onTap: () => _conSesion(() => context.push(RouterHelper.addressScreen)),
-            ),
+            // Fuera del menú por decisión de producto: la dirección de la tienda
+            // viene de la afiliación; el multi-direcciones es paja de consumo.
+            if (AppConstants.anpecMisDirecciones)
+              MenuItem(
+                iconImage: Images.address,
+                label: getTranslated('mis_direcciones', context) ?? 'Mis direcciones',
+                onTap: () => _conSesion(() => context.push(RouterHelper.addressScreen)),
+              ),
 
             MenuItem(
               iconImage: Images.settings,
@@ -216,7 +219,7 @@ class _MenuAnpecScreenState extends State<MenuAnpecScreen> {
               onTap: () => context.push(RouterHelper.settingsScreen),
             ),
 
-            if (AppConstants.anpecMercadoFlow) ...[
+            if (splashController.mercadoVisible) ...[
               MenuItem(
                 iconImage: Images.storeIcon,
                 label: getTranslated('mi_tiendita', context) ?? 'Mi tiendita',
@@ -235,9 +238,13 @@ class _MenuAnpecScreenState extends State<MenuAnpecScreen> {
             // ── Proveedores ──────────────────────────────────────────────
             SectionHeader(title: getTranslated('proveedores', context) ?? 'Proveedores'),
 
+            // R-Inicio: Pedidos sale del footer — esta entrada pasa a ser la
+            // canónica y se llama "Mis pedidos". Flag OFF: el label de hoy.
             MenuItem(
               iconImage: Images.navOrderIcon,
-              label: getTranslated('order_history', context) ?? 'Historial de pedidos',
+              label: AppConstants.anpecInicioFlow
+                  ? (getTranslated('mis_pedidos', context) ?? 'Mis pedidos')
+                  : (getTranslated('order_history', context) ?? 'Historial de pedidos'),
               onTap: () => _conSesion(() => RouterHelper.getOrderScreenRoute(action: RouteAction.push)),
             ),
 
@@ -254,7 +261,7 @@ class _MenuAnpecScreenState extends State<MenuAnpecScreen> {
               iconImage: Images.offerSvg,
               label: getTranslated('offers', context) ?? 'Ofertas',
               onTap: () {
-                if (AppConstants.anpecMercadoFlow) {
+                if (splashController.mercadoVisible) {
                   _conSesion(() => Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const MercadoExplorarScreen(soloOfertas: true))));
                 } else {

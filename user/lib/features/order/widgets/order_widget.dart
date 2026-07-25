@@ -3,6 +3,8 @@ import 'package:flutter_sixvalley_ecommerce/common/basewidget/custom_asset_image
 import 'package:flutter_sixvalley_ecommerce/common/basewidget/custom_image_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/order/domain/models/order_model.dart';
 import 'package:flutter_sixvalley_ecommerce/features/splash/controllers/splash_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/features/surtido/widgets/repeat_order_button.dart';
+import 'package:flutter_sixvalley_ecommerce/utill/app_constants.dart';
 import 'package:flutter_sixvalley_ecommerce/helper/date_converter.dart';
 import 'package:flutter_sixvalley_ecommerce/helper/price_converter.dart';
 import 'package:flutter_sixvalley_ecommerce/helper/route_healper.dart';
@@ -242,12 +244,17 @@ class _OrderWidgetState extends State<OrderWidget> {
                           ),
                         ],
                       ),
-
-
-
-
                     ],
                   ),
+
+                  // R-Surtido: "Repetir pedido" (pastilla; tap propio, no abre el detalle).
+                  if (AppConstants.anpecSurtidoFlow) ...[
+                    const SizedBox(height: Dimensions.paddingSizeSmall),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: RepeatOrderButton(orderId: widget.orderModel!.id.toString(), compact: true),
+                    ),
+                  ],
                 ],
               ),
             ),

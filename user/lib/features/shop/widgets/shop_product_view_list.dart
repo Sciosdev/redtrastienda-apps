@@ -3,9 +3,11 @@ import 'package:flutter_sixvalley_ecommerce/common/basewidget/no_internet_screen
 import 'package:flutter_sixvalley_ecommerce/common/basewidget/product_card_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/product/controllers/seller_product_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/shop/domain/models/shop_navigation_model.dart';
+import 'package:flutter_sixvalley_ecommerce/features/surtido/controllers/surtido_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/helper/responsive_helper.dart';
 import 'package:flutter_sixvalley_ecommerce/common/basewidget/paginated_list_view_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/common/basewidget/product_shimmer_widget.dart';
+import 'package:flutter_sixvalley_ecommerce/utill/app_constants.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/dimensions.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +28,12 @@ class _ShopProductViewListState extends State<ShopProductViewList> {
   Widget build(BuildContext context) {
     return Consumer<SellerProductController>(
       builder: (context, productController, _) {
+        // R-Surtido: registra los ids de los productos del proveedor (cada
+        // página) para que la barra resumen cuente solo lo de esta tienda.
+        if (AppConstants.anpecSurtidoFlow && productController.sellerProduct?.products != null) {
+          Provider.of<SurtidoController>(context, listen: false)
+              .registerShopProducts(productController.sellerProduct!.products!.map((p) => p.id));
+        }
         return productController.sellerProduct != null ? (productController.sellerProduct!.products != null &&
           productController.sellerProduct!.products!.isNotEmpty) ?
         PaginatedListView(scrollController: widget.scrollController,
@@ -41,7 +49,7 @@ class _ShopProductViewListState extends State<ShopProductViewList> {
             itemBuilder: (BuildContext context, int index) {
               return Padding(
                 padding: EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
-                child: ProductCardWidget(product: productController.sellerProduct!.products![index], sellerNavigationModel: widget.sellerNavigationModel),
+                child: ProductCardWidget(product: productController.sellerProduct!.products![index], sellerNavigationModel: widget.sellerNavigationModel, showQuantityStepper: AppConstants.anpecSurtidoFlow),
               );
             },
           )) : const NoInternetOrDataScreenWidget(isNoInternet: false):

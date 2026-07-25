@@ -1188,8 +1188,15 @@ class RouterHelper {
         // R-Nav: con la barra nueva los índices cambian (chats=1, orders=2,
         // menu=3); los nombres legacy category/cart ya no tienen pestaña y
         // caen a Inicio (verificado: ningún caller navega con ellos).
+        // R-Inicio (footer v2): tarjeta=2, mercado=3, menu=4, subastas=5;
+        // `orders` pierde su pestaña y cae a Inicio — el hub muestra los
+        // recientes y el Menú tiene "Mis pedidos" (comportamiento documentado:
+        // quien inicia sesión desde la lista de pedidos pusheada aterriza en
+        // el hub).
         return DashBoardScreen(
-          pageIndex: AppConstants.anpecNavFlow
+          pageIndex: AppConstants.anpecInicioFlow
+              ? (page == 'home' ? 0 : page == 'chats' ? 1 : page == 'tarjeta' ? 2 : page == 'mercado' ? 3 : page == 'menu' ? 4 : page == 'auction' ? 5 : page == 'auction_my_bid' ? 6 : 0)
+              : AppConstants.anpecNavFlow
               ? (page == 'home' ? 0 : page == 'chats' ? 1 : page == 'orders' ? 2 : page == 'menu' ? 3 : page == 'auction' ? 4 : page == 'auction_my_bid' ? 6 : 0)
               : (page == 'home' ? 0 : page == 'category' ? 1 : page == 'cart' ? 2 : page == 'orders' ? 3 : page == 'auction'  ? 4 : page == 'auction_my_bid' ? 6 : 0),
         );

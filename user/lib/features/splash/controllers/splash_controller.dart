@@ -31,6 +31,13 @@ class SplashController extends ChangeNotifier {
   bool isConfigCall = false;
 
   ConfigModel? get configModel => _configModel;
+
+  // R-Inicio: gate combinado del Mercado — ÚNICO punto de verdad. El flag de
+  // código es kill-switch; el interruptor real es el remoto del config (toggle
+  // del panel admin). Todo punto de UI del Mercado consulta ESTE getter.
+  bool get mercadoVisible =>
+      AppConstants.anpecMercadoFlow && (_configModel?.anpecMercadoActivo ?? false);
+
   BaseUrls? get baseUrls => _baseUrls;
   CurrencyList? get myCurrency => _myCurrency;
   CurrencyList? get usdCurrency => _usdCurrency;

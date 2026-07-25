@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_sixvalley_ecommerce/common/basewidget/auction/auction_feature_banner_widget.dart';
@@ -21,6 +22,9 @@ import 'package:flutter_sixvalley_ecommerce/features/chat/controllers/chat_contr
 import 'package:flutter_sixvalley_ecommerce/features/chat_tiendas/controllers/chat_tiendas_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/chat_tiendas/domain/models/conversacion_tienda_model.dart';
 import 'package:flutter_sixvalley_ecommerce/features/dashboard/screens/chats_tab_screen.dart';
+import 'package:flutter_sixvalley_ecommerce/features/dashboard/screens/mercado_tab_screen.dart';
+import 'package:flutter_sixvalley_ecommerce/features/dashboard/screens/tarjeta_tab_screen.dart';
+import 'package:flutter_sixvalley_ecommerce/features/home/screens/home_hub_screen.dart';
 import 'package:flutter_sixvalley_ecommerce/features/more/screens/menu_anpec_screen.dart';
 import 'package:flutter_sixvalley_ecommerce/features/notification/controllers/notification_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/deal/controllers/featured_deal_controller.dart';
@@ -72,6 +76,16 @@ class DashBoardScreenState extends State<DashBoardScreen> {
 
   final ValueNotifier<int> _homeResetNotifier = ValueNotifier(0);
   final ValueNotifier<int> _auctionResetNotifier = ValueNotifier(0);
+
+  // R-Inicio: pestaña seleccionada en modo main — alimenta el montaje perezoso
+  // de Tarjeta/Mercado (el IndexedStack construye TODO al arrancar y esas
+  // pantallas fetchean en initState; sin lazy habría requests extra y un 401
+  // del Mercado sin sesión en cada arranque).
+  final ValueNotifier<int> _mainTabNotifier = ValueNotifier(0);
+
+  // R-Inicio: el slot de subastas deja de ser el 4 mágico — con el footer v2
+  // (6 slots fijos) vive en el 5. Flag OFF evalúa 4: byte-idéntico a hoy.
+  int get _auctionSlotIndex => AppConstants.anpecInicioFlow ? 5 : 4;
 
   static const Duration _auctionBannerCooldown = Duration(minutes : 2);
   Timer? _auctionBannerCooldownTimer;
@@ -143,9 +157,38 @@ class DashBoardScreenState extends State<DashBoardScreen> {
       },
     );
 
+    // R-Inicio: 6 slots FIJOS — el stack nunca cambia de tamaño ni de orden;
+    // el gate remoto del Mercado solo decide qué NavItems pinta el footer
+    // (slot 3 sin gate = inalcanzable y su wrapper pinta SizedBox). Subastas
+    // se mueve al slot 5. Tarjeta y Mercado montan perezoso (ver notifier).
+    _mainScreens = AppConstants.anpecInicioFlow ? [
+      HomeHubScreen(loginNotifier: _loginNotifier),
+      ChatsTabScreen(
+        loginNotifier: _loginNotifier,
+        onLoginSuccess: () => _selectMainTab(1),
+      ),
+      LazyTabScreen(
+        tabIndex: 2,
+        selectedTab: _mainTabNotifier,
+        builder: (_) => TarjetaTabScreen(
+          loginNotifier: _loginNotifier,
+          onLoginSuccess: () => _selectMainTab(2),
+        ),
+      ),
+      LazyTabScreen(
+        tabIndex: 3,
+        selectedTab: _mainTabNotifier,
+        builder: (_) => MercadoTabScreen(
+          loginNotifier: _loginNotifier,
+          onLoginSuccess: () => _selectMainTab(3),
+        ),
+      ),
+      const MenuAnpecScreen(),
+      const SizedBox.shrink(),
+    ] :
     // R-Nav: barra Inicio/Chats/Pedidos/Menú (el slot de subastas, índice 4,
     // no cambia). Con flag OFF la lista es la de siempre.
-    _mainScreens = AppConstants.anpecNavFlow ? [
+    AppConstants.anpecNavFlow ? [
       homeScreen,
       ChatsTabScreen(
         loginNotifier: _loginNotifier,
@@ -205,7 +248,7 @@ class DashBoardScreenState extends State<DashBoardScreen> {
       AuctionHomeScreen(resetToExploreListenable: _auctionResetNotifier)
     ];
 
-    if (widget.pageIndex == 4) {
+    if (widget.pageIndex == _auctionSlotIndex) {
       _currentMode = AppMode.auction;
       _selectedIndex = 4;
     } else if (widget.pageIndex == 6) {
@@ -213,6 +256,16 @@ class DashBoardScreenState extends State<DashBoardScreen> {
       _selectedIndex = 2;
     } else if (widget.pageIndex != null && widget.pageIndex! < _mainScreens.length) {
       _selectedIndex = widget.pageIndex!;
+    }
+
+    if (AppConstants.anpecInicioFlow && _currentMode == AppMode.main) {
+      // Deep link al Mercado con el gate remoto apagado → Inicio (no hay
+      // pestaña que resaltar ni contenido que mostrar).
+      if (_selectedIndex == 3 &&
+          !Provider.of<SplashController>(context, listen: false).mercadoVisible) {
+        _selectedIndex = 0;
+      }
+      _mainTabNotifier.value = _selectedIndex;
     }
 
     NetworkInfo.checkConnectivity(context);
@@ -238,7 +291,18 @@ class DashBoardScreenState extends State<DashBoardScreen> {
     _loginNotifier.dispose();
     _homeResetNotifier.dispose();
     _auctionResetNotifier.dispose();
+    _mainTabNotifier.dispose();
     super.dispose();
+  }
+
+  // R-Inicio: selección de pestaña main desde callbacks de login de las
+  // pestañas nuevas — mantiene el notifier del montaje perezoso en sync.
+  void _selectMainTab(int index) {
+    setState(() {
+      _currentMode = AppMode.main;
+      _selectedIndex = index;
+      _mainTabNotifier.value = index;
+    });
   }
 
   void _onItemTapped(int index) {
@@ -251,9 +315,16 @@ class DashBoardScreenState extends State<DashBoardScreen> {
       Provider.of<ChatTiendasController>(context, listen: false).getInbox();
     }
 
+    // R-Inicio: cinturón — el NavItem del Mercado ni se pinta con el gate
+    // apagado, pero un tap fantasma al slot 3 no debe seleccionar nada.
+    if (AppConstants.anpecInicioFlow && _currentMode == AppMode.main && index == 3 &&
+        !Provider.of<SplashController>(context, listen: false).mercadoVisible) {
+      return;
+    }
+
     setState(() {
       if (_currentMode == AppMode.main) {
-        if (index == 4 && isAuctionEnabled) {
+        if (index == _auctionSlotIndex && isAuctionEnabled) {
           _currentMode = AppMode.auction;
           _selectedIndex = 4;
           // Select the tab first; load data after this frame is painted so the
@@ -301,7 +372,7 @@ class DashBoardScreenState extends State<DashBoardScreen> {
               }
             });
           }
-        } else if (index != 4) {
+        } else if (index != _auctionSlotIndex) {
           if (index == 0) _homeResetNotifier.value++;
           _selectedIndex = index;
         }
@@ -313,6 +384,12 @@ class DashBoardScreenState extends State<DashBoardScreen> {
           if (index == 4) _auctionResetNotifier.value++;
           _selectedIndex = index;
         }
+      }
+
+      // R-Inicio: mantiene el montaje perezoso de Tarjeta/Mercado en sync
+      // con la pestaña seleccionada (solo aplica en modo main).
+      if (AppConstants.anpecInicioFlow && _currentMode == AppMode.main) {
+        _mainTabNotifier.value = _selectedIndex;
       }
     });
   }
@@ -444,7 +521,10 @@ class ElevatedNavBar extends StatelessWidget {
                       topRight: dividerOnRight ? const Radius.circular(10) : Radius.zero,
                     ),
                   ),
-                  child: currentMode == AppMode.main ? _plainNavItem(icon: Images.navAuctionIcon, index: 4) : _plainNavItem(icon: Images.navCartIcon, index: 0),
+                  // R-Inicio: con el footer v2 el slot de subastas vive en el 5.
+                  child: currentMode == AppMode.main
+                      ? _plainNavItem(icon: Images.navAuctionIcon, index: AppConstants.anpecInicioFlow ? 5 : 4)
+                      : _plainNavItem(icon: Images.navCartIcon, index: 0),
                 ),
               ),
               AnimatedPositioned(
@@ -551,7 +631,53 @@ class ElevatedCard extends StatelessWidget {
             );
           },
           child: currentMode == AppMode.main
-              ? (AppConstants.anpecNavFlow
+              // R-Inicio: footer v2 Inicio·Chats·Tarjeta·[Mercado]·Menú. Los
+              // índices apuntan a los 6 slots FIJOS del IndexedStack; lo único
+              // que varía con el gate remoto es si el item Mercado se pinta
+              // (Provider con listen: si el config llega después del arranque,
+              // el 5º tab aparece solo — clave para prenderlo el día de la expo).
+              ? (AppConstants.anpecInicioFlow
+                  ? Row(
+                      key: const ValueKey('main_menus'),
+                      children: [
+                        NavItem(
+                            icon: Images.navHomeIcon,
+                            label: getTranslated('inicio', context) ?? 'Inicio',
+                            index: 0,
+                            selectedIndex: selectedIndex,
+                            onTap: onItemTapped),
+                        NavItem(
+                            icon: Images.chats,
+                            iconData: Icons.forum_rounded,
+                            label: getTranslated('chats', context) ?? 'Chats',
+                            index: 1,
+                            selectedIndex: selectedIndex,
+                            badge: const ChatsNavBadge(),
+                            onTap: onItemTapped),
+                        NavItem(
+                            icon: Images.walletIcon,
+                            iconData: Icons.badge_outlined,
+                            label: getTranslated('tarjeta', context) ?? 'Tarjeta',
+                            index: 2,
+                            selectedIndex: selectedIndex,
+                            onTap: onItemTapped),
+                        if (Provider.of<SplashController>(context).mercadoVisible)
+                          NavItem(
+                              icon: Images.storeIcon,
+                              iconData: Icons.storefront_outlined,
+                              label: getTranslated('mercado', context) ?? 'Mercado',
+                              index: 3,
+                              selectedIndex: selectedIndex,
+                              onTap: onItemTapped),
+                        NavItem(
+                            icon: Images.navCategoryIcon,
+                            label: getTranslated('menu', context) ?? 'Menú',
+                            index: 4,
+                            selectedIndex: selectedIndex,
+                            onTap: onItemTapped),
+                      ],
+                    )
+                  : AppConstants.anpecNavFlow
                   ? Row(
                       key: const ValueKey('main_menus'),
                       children: [
@@ -770,5 +896,54 @@ class ChatsNavBadge extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+/// R-Inicio: montaje perezoso de una pestaña del IndexedStack. El stack
+/// construye TODOS sus hijos al arrancar y Tarjeta/Mercado fetchean en su
+/// initState (el del Mercado además es auth:api → 401 sin sesión). Este
+/// wrapper pinta SizedBox hasta la primera vez que su pestaña se selecciona;
+/// después el hijo queda montado (conserva su estado al cambiar de pestaña).
+class LazyTabScreen extends StatefulWidget {
+  final int tabIndex;
+  final ValueListenable<int> selectedTab;
+  final WidgetBuilder builder;
+
+  const LazyTabScreen({
+    super.key,
+    required this.tabIndex,
+    required this.selectedTab,
+    required this.builder,
+  });
+
+  @override
+  State<LazyTabScreen> createState() => _LazyTabScreenState();
+}
+
+class _LazyTabScreenState extends State<LazyTabScreen> {
+  bool _activated = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _activated = widget.selectedTab.value == widget.tabIndex;
+    widget.selectedTab.addListener(_onTabChanged);
+  }
+
+  void _onTabChanged() {
+    if (!_activated && widget.selectedTab.value == widget.tabIndex && mounted) {
+      setState(() => _activated = true);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.selectedTab.removeListener(_onTabChanged);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _activated ? widget.builder(context) : const SizedBox.shrink();
   }
 }

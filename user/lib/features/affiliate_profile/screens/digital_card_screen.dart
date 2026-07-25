@@ -12,7 +12,10 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
 class DigitalCardScreen extends StatefulWidget {
-  const DigitalCardScreen({super.key});
+  // R-Inicio: como pestaña del dashboard no debe pintar flecha de regreso
+  // (no hay a dónde regresar). Default false = uso pusheado de siempre.
+  final bool fromDashboard;
+  const DigitalCardScreen({super.key, this.fromDashboard = false});
 
   @override
   State<DigitalCardScreen> createState() => _DigitalCardScreenState();
@@ -36,6 +39,7 @@ class _DigitalCardScreenState extends State<DigitalCardScreen> {
       appBar: AppBar(
         backgroundColor: _anpecRed,
         foregroundColor: Colors.white,
+        automaticallyImplyLeading: !widget.fromDashboard,
         title: Text(getTranslated('my_digital_card', context) ?? '',
             style: textMedium.copyWith(color: Colors.white, fontSize: Dimensions.fontSizeLarge)),
       ),

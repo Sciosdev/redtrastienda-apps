@@ -242,8 +242,11 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
                       padding: const EdgeInsets.only(left: Dimensions.paddingSizeSmall),
                       flagWidth: Dimensions.paddingSizeExtraLarge,
                       onChanged: widget.onCountryChanged,
-                      initialSelection: widget.countryDialCode,
-                      favorite: [widget.countryDialCode != null ? widget.countryDialCode! : 'BD'],
+                      // ANPEC: solo México (decisión Axel 2026-07-20) — la red es
+                      // de tienditas mexicanas; el picker multi-país era template.
+                      initialSelection: widget.countryDialCode ?? '+52',
+                      favorite: [widget.countryDialCode != null ? widget.countryDialCode! : 'MX'],
+                      countryFilter: const ['MX'],
                       showDropDownButton: true,
                       showCountryOnly: false,
                       showOnlyCountryWhenClosed: false,

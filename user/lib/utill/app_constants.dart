@@ -12,9 +12,13 @@ import 'package:flutter_sixvalley_ecommerce/common/enums/local_caches_type_enum.
   // en carrito/checkout. El pedido a proveedor no tiene pasarelas ni fricción de envío.
   static const bool anpecPedidoFlow = true;
 
-  // R-Mercado (Fase A): vitrina entre tenderos. Gatea TODA la entrada al módulo;
-  // en false la app queda idéntica a hoy (apagar en builds de review de tienda).
-  static const bool anpecMercadoFlow = false;
+  // R-Mercado (Fase A): vitrina entre tenderos. Desde R-Inicio este flag es el
+  // KILL-SWITCH maestro: el interruptor real es el remoto `anpec_mercado_activo`
+  // de /api/v1/config (toggle en el panel admin, OFF para review, se prende en
+  // la expo sin recompilar). Visible = este flag && remoto — un solo punto:
+  // SplashController.mercadoVisible. En false aquí: Mercado muerto pase lo que
+  // pase con el servidor.
+  static const bool anpecMercadoFlow = true;
 
   // R-Nav: rediseño de navegación (barra Inicio/Chats/Pedidos/Menú + menú en
   // 4 secciones). Gatea el rediseño ENTERO; en false la app queda idéntica a
@@ -27,6 +31,40 @@ import 'package:flutter_sixvalley_ecommerce/common/enums/local_caches_type_enum.
   // los traiga prendidos — los SDK (Facebook/Google) no tienen credenciales
   // reales y un botón que truena es rechazo casi seguro en review de tienda.
   static const bool anpecSocialLogin = false;
+
+  // Decisión Axel 2026-07-20 (pre-AAB): "Mis direcciones" (multi-dirección de
+  // consumo de 6valley) NO tiene sentido en la red — una tienda = UNA dirección
+  // y ya viene de la afiliación (CSV: profile_field_business_address). Además la
+  // pantalla montaba un mapa con key placeholder (gris = riesgo de review). El
+  // pedido F6 no usa dirección (addressID: ''). true = volver a mostrarlas.
+  static const bool anpecMisDirecciones = false;
+
+  // R-Surtido: "maquinita del preventista". Surtir por cantidades DIRECTO en la
+  // lista del proveedor (stepper por card + barra resumen) y "Repetir pedido"
+  // (reconstruye un pedido pasado con las APIs de carrito, secuencial, con
+  // reporte honesto de faltantes). Gatea TODO el módulo; en false la app queda
+  // idéntica a main (steppers, barra y botón desaparecen y vuelve el "Order
+  // Again" nativo de 6valley). Sin cambios de backend.
+  static const bool anpecSurtidoFlow = true;
+
+  // R-Proveedor: la pantalla del proveedor deja de ser el aparador de consumo de
+  // 6valley (pestaña "Descripción general" con cupones/oferta del día/destacados/
+  // recomendados) y pasa a ser SOLO la lista de surtido: una vista, sin TabBar,
+  // sin carruseles promocionales, con buscador + chips de categoría arriba y el
+  // header slim (sin ★/reseñas). Gatea el rediseño ENTERO; en false la pantalla
+  // vuelve BYTE-IDÉNTICA a las dos pestañas de hoy. Va de la mano con
+  // anpecSurtidoFlow (los steppers): la config de producción/expo es AMBOS en
+  // true. Las promos NO se borran — se apagan aquí y quedan para el Mercado.
+  static const bool anpecProveedorFlow = true;
+
+  // R-Inicio: la pestaña Inicio deja de ser el home de consumo de 6valley y pasa
+  // a ser el HUB de surtido (Buscar → Pedidos recientes → Categorías → Mis
+  // proveedores) y el footer se replantea a Inicio·Chats·Tarjeta·Mercado·Menú
+  // (Pedidos sale del footer: vive en el hub y en el Menú; el Mercado solo
+  // aparece con el gate remoto prendido). Gatea TODO el módulo; en false la app
+  // queda BYTE-IDÉNTICA a hoy (home de consumo + footer con Pedidos). El
+  // contenido de consumo NO se borra — queda para el Mercado.
+  static const bool anpecInicioFlow = true;
 
   static const int imageQuality = 100;
   static const LocalCachesTypeEnum cachesType = LocalCachesTypeEnum.all;

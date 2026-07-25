@@ -4,7 +4,9 @@ import 'package:flutter_sixvalley_ecommerce/features/order/domain/models/order_m
 import 'package:flutter_sixvalley_ecommerce/features/order_details/widgets/cancel_order_dialog_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/profile/controllers/profile_contrroller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/reorder/controllers/re_order_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/features/surtido/widgets/repeat_order_button.dart';
 import 'package:flutter_sixvalley_ecommerce/helper/route_healper.dart';
+import 'package:flutter_sixvalley_ecommerce/utill/app_constants.dart';
 import 'package:flutter_sixvalley_ecommerce/localization/language_constrants.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/auth_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/utill/custom_themes.dart';
@@ -75,6 +77,15 @@ class CancelAndSupportWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeSmall),
           child: Column(
             children: [
+              // R-Surtido: "Repetir pedido" (reconstruye el pedido con las APIs
+              // de carrito). Visible para el dueño del pedido con el flag on.
+              if (AppConstants.anpecSurtidoFlow && orderModel != null &&
+                  Provider.of<AuthController>(context, listen: false).isLoggedIn() &&
+                  orderModel!.customerId == int.parse(Provider.of<ProfileController>(context, listen: false).userID)) ...[
+                RepeatOrderButton(orderId: orderModel!.id.toString()),
+                const SizedBox(height: Dimensions.paddingSizeSmall),
+              ],
+
               (orderModel != null && (orderModel!.customerId! == int.parse(Provider.of<ProfileController>(context, listen: false).userID)) &&
                   (orderModel!.orderStatus == 'pending') && (orderModel!.orderType != "POS")) ?
               CustomButton(textColor: Theme.of(context).colorScheme.error,
@@ -87,7 +98,7 @@ class CancelAndSupportWidget extends StatelessWidget {
                   ));
                 },
               ) :
-              (orderModel != null && Provider.of<AuthController>(context, listen: false).isLoggedIn() &&
+              (!AppConstants.anpecSurtidoFlow && orderModel != null && Provider.of<AuthController>(context, listen: false).isLoggedIn() &&
                   orderModel!.customerId! == int.parse(Provider.of<ProfileController>(context, listen: false).userID) &&
                   orderModel!.orderStatus == 'delivered' && orderModel!.orderType != "POS") ?
               CustomButton(textColor:  Theme.of(context).colorScheme.secondaryContainer,

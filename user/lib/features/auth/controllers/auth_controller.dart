@@ -82,7 +82,8 @@ class AuthController with ChangeNotifier {
   bool get isForgotPasswordLoading => _isForgotPasswordLoading;
   set setForgetPasswordLoading(bool value) => _isForgotPasswordLoading = value;
 
-  String countryDialCode = '+880';
+  // ANPEC: app mexicana — lada default +52 (el template traía +880 Bangladesh).
+  String countryDialCode = '+52';
   void setCountryCode( String countryCode, {bool notify = true}){
     countryDialCode  = countryCode;
     if(notify){
@@ -1426,11 +1427,24 @@ class AuthController with ChangeNotifier {
           });
         }
       } else if (onLoginSuccess != null) {
-        GoRouter.of(Get.context!).pop();
+        _popOrGoDashboard();
         onLoginSuccess();
       } else {
-        GoRouter.of(Get.context!).pop();
+        _popOrGoDashboard();
       }
+    } else {
+      RouterHelper.getDashboardRoute(action: RouteAction.pushReplacement);
+    }
+  }
+
+  // Cuando el login es la RAÍZ de la pila (p. ej. se llegó desde el reset de
+  // contraseña con pushReplacement), un pop() a secas lanza "GoError: There is
+  // nothing to pop" y la pantalla se congela girando. Si no se puede hacer pop,
+  // vamos al dashboard.
+  void _popOrGoDashboard() {
+    final router = GoRouter.of(Get.context!);
+    if (router.canPop()) {
+      router.pop();
     } else {
       RouterHelper.getDashboardRoute(action: RouteAction.pushReplacement);
     }

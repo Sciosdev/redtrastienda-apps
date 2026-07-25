@@ -4,6 +4,7 @@ import 'package:flutter_sixvalley_ecommerce/common/basewidget/custom_image_widge
 import 'package:flutter_sixvalley_ecommerce/features/product/domain/models/product_model.dart';
 import 'package:flutter_sixvalley_ecommerce/features/product_details/widgets/favourite_button_widget.dart';
 import 'package:flutter_sixvalley_ecommerce/features/shop/domain/models/shop_navigation_model.dart';
+import 'package:flutter_sixvalley_ecommerce/features/surtido/widgets/product_quantity_stepper.dart';
 import 'package:flutter_sixvalley_ecommerce/helper/price_converter.dart';
 import 'package:flutter_sixvalley_ecommerce/helper/route_healper.dart';
 import 'package:flutter_sixvalley_ecommerce/localization/language_constrants.dart';
@@ -18,6 +19,10 @@ class ProductCardWidget extends StatelessWidget {
   final bool isBestSelling;
   final bool isNew;
   final SellerNavigationModel? sellerNavigationModel;
+  // R-Surtido: cuando es true (solo la lista del proveedor, gateada por
+  // anpecSurtidoFlow) y el producto es simple, la card muestra el stepper de
+  // cantidad debajo. Default false => card idéntica a hoy en los ~24 usos.
+  final bool showQuantityStepper;
 
   const ProductCardWidget({
     super.key,
@@ -25,6 +30,7 @@ class ProductCardWidget extends StatelessWidget {
     this.isBestSelling = false,
     this.isNew = false,
     this.sellerNavigationModel,
+    this.showQuantityStepper = false,
   });
 
   @override
@@ -38,7 +44,7 @@ class ProductCardWidget extends StatelessWidget {
     final String? originalPrice = hasDiscount ? PriceConverter.convertPrice(context, product.unitPrice) : null;
     // PriceConverter.convertPrice(context, product.unitPrice)
 
-    return InkWell(
+    final Widget card = InkWell(
           onTap: () => RouterHelper.getProductDetailsRoute(action: RouteAction.push, productId: product.id, slug: product.slug),
           child: DecoratedBox(
             decoration: BoxDecoration(border: Border.all(color: Colors.transparent)),
@@ -226,5 +232,25 @@ class ProductCardWidget extends StatelessWidget {
             ),
           ),
         );
+
+    // Producto simple (físico, sin variantes de color/opción): stepper debajo.
+    // Con variante o flag off => card idéntica a hoy, tap abre la ficha.
+    final bool eligibleForStepper = showQuantityStepper &&
+        product.productType == 'physical' &&
+        (product.variation == null || product.variation!.isEmpty) &&
+        (product.choiceOptions == null || product.choiceOptions!.isEmpty) &&
+        (product.colors == null || product.colors!.isEmpty);
+
+    if (!eligibleForStepper) return card;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        card,
+        const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+        ProductQuantityStepper(product: product),
+      ],
+    );
   }
 }

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:app_links/app_links.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -20,7 +19,6 @@ import 'package:flutter_sixvalley_ecommerce/features/auction_home/controllers/au
 import 'package:flutter_sixvalley_ecommerce/features/auction_list/controllers/auction_product_queue_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auction_search/controllers/auction_search_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auction_transaction/controller/auction_transaction_controller.dart';
-import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/facebook_login_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/auth/controllers/google_login_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/banner/controllers/banner_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/checkout/controllers/checkout_controller.dart';
@@ -43,6 +41,7 @@ import 'package:flutter_sixvalley_ecommerce/features/reorder/controllers/re_orde
 import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/controllers/opportunity_request_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/chat_tiendas/controllers/chat_tiendas_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/mercado/controllers/mercado_controller.dart';
+import 'package:flutter_sixvalley_ecommerce/features/surtido/controllers/surtido_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/affiliate_profile/controllers/affiliate_profile_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/restock/controllers/restock_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/review/controllers/review_controller.dart';
@@ -92,25 +91,11 @@ final database = AppDatabase();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  if(Firebase.apps.isEmpty) {
-    if(Platform.isAndroid) {
-      try{
-        /// todo you need to configure that firebase Option with your own firebase to run your app
-        await Firebase.initializeApp(
-          name: 'your_project_name',
-          options: const FirebaseOptions(
-              apiKey: "current_key here",
-              projectId: "project_id here",
-              messagingSenderId: "project_number here",
-              appId: "mobilesdk_app_id here"
-          )
-        );
-      } finally {
-        await Firebase.initializeApp();
-      }
-    }else{
-      await Firebase.initializeApp();
-    }
+  if (Firebase.apps.isEmpty) {
+    // Firebase propio ANPEC (proyecto anpec-b7c3c) vía google-services.json /
+    // GoogleService-Info.plist. Se eliminó el initializeApp secundario placeholder
+    // ('your_project_name') que traía la plantilla 6valley.
+    await Firebase.initializeApp();
   }
 
 
@@ -159,7 +144,6 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => di.sl<LocalizationController>()),
       ChangeNotifierProvider(create: (context) => di.sl<ThemeController>()),
       ChangeNotifierProvider(create: (context) => di.sl<GoogleSignInController>()),
-      ChangeNotifierProvider(create: (context) => di.sl<FacebookLoginController>()),
       ChangeNotifierProvider(create: (context) => di.sl<AddressController>()),
       ChangeNotifierProvider(create: (context) => di.sl<WalletController>()),
       ChangeNotifierProvider(create: (context) => di.sl<CompareController>()),
@@ -171,6 +155,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => di.sl<OrderDetailsController>()),
       ChangeNotifierProvider(create: (context) => di.sl<RefundController>()),
       ChangeNotifierProvider(create: (context) => di.sl<ReOrderController>()),
+      ChangeNotifierProvider(create: (context) => di.sl<SurtidoController>()),
       ChangeNotifierProvider(create: (context) => di.sl<ReviewController>()),
       ChangeNotifierProvider(create: (context) => di.sl<SellerProductController>()),
       ChangeNotifierProvider(create: (context) => di.sl<RestockController>()),
