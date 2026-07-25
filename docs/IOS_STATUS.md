@@ -26,7 +26,9 @@
 - Firma automática operativa con Team ID `Z7M8489428`. Xcode creó el App ID explícito y los
   perfiles de desarrollo/App Store. `flutter build ipa --release` generó un IPA de 50.5 MB
   firmado con Apple Distribution, `get-task-allow = false` y `beta-reports-active = true`.
-- No existe ningún archivo `.p8` dentro del repositorio.
+- APNs Auth Key `QWB3Z8BH5K` creada como Team Scoped para Sandbox & Production y cargada
+  en Firebase tanto para Desarrollo como para Producción. La copia protegida quedó en
+  `~/.anpec-credentials/` con permisos `600`; no existe ningún `.p8` dentro del repositorio.
 
 ### Verificaciones externas
 
@@ -38,13 +40,11 @@
   Privacidad — App Red Trastienda”). La variante en `redtrastiendaanpec.com` sin `adminapp`
   devuelve 404 y no debe declararse.
 
-### Pendiente por acceso web de Apple/Firebase
+### Pendiente en App Store Connect
 
-1. Crear y descargar la APNs Auth Key `.p8`, guardarla fuera del repo y subirla a Firebase
-   con Team ID `Z7M8489428`.
-2. Crear la ficha “ANPEC Red Trastienda” en App Store Connect, aceptar acuerdos y completar
+1. Crear la ficha “ANPEC Red Trastienda” en App Store Connect, aceptar acuerdos y completar
    App Privacy, screenshots y credenciales de review verificadas.
-3. Subir `user/build/ios/ipa/Red Trastienda.ipa`, activar TestFlight interno y enviar a review.
+2. Subir `user/build/ios/ipa/Red Trastienda.ipa`, activar TestFlight interno y enviar a review.
 
 ---
 
