@@ -4,8 +4,7 @@
 
 **Rama:** `r-ios`
 
-**Estado:** compilación 1 **Pendiente de revisión**; compilación correctiva 2 validada y
-lista para cargar
+**Estado:** compilación `1.0.0 (2)` enviada a Apple, **Pendiente de revisión**
 
 ## Resumen ejecutivo
 
@@ -17,9 +16,10 @@ simuladores de iPhone/iPad, y se generaron las capturas definitivas de App Store
 La compilación `1.0.0 (1)` fue cargada y procesada por App Store Connect, vinculada a la
 versión pública `1.0` y enviada a revisión. Después, App Store Connect mostró la
 advertencia `ITMS-90683` por una descripción de privacidad exigida por una API de
-ubicación incluida en una dependencia. Se añadió la clave requerida y se generó y validó
-la compilación correctiva `1.0.0 (2)`. La publicación permanece configurada como
-**automática después de la aprobación**.
+ubicación incluida en una dependencia. Se añadió la clave requerida, se generó y validó
+la compilación correctiva `1.0.0 (2)`, y se sustituyó el envío anterior. El build 2 quedó
+**Pendiente de revisión** y la publicación permanece configurada como **automática
+después de la aprobación**.
 
 ## Identificación de la versión
 
@@ -29,7 +29,7 @@ la compilación correctiva `1.0.0 (2)`. La publicación permanece configurada co
 | Apple ID | `6794555887` |
 | Bundle ID | `com.redtrastiendaanpec.afiliados` |
 | Versión | `1.0.0` |
-| Compilación correctiva | `2` |
+| Compilación | `2` |
 | Team ID | `Z7M8489428` |
 | SKU | `anpec-red-trastienda-001` |
 | Precio | Gratuita |
@@ -106,7 +106,7 @@ Los recursos originales utilizados para esta sustitución están archivados en
 - `get-task-allow = false` y `beta-reports-active = true`.
 - La compilación correctiva validada contiene versión `1.0.0`, build `2`, Bundle ID
   `com.redtrastiendaanpec.afiliados` y ambos textos de propósito de ubicación.
-- SHA-256 del IPA correctivo preparado:
+- SHA-256 del IPA correctivo enviado:
   `670b2362cdb377bd19a246bf53d1a9365f50e7bb4781802e7ab0afae5a23bc20`.
 
 El IPA se conserva localmente bajo `user/build/ios/ipa/`. Los directorios de build están
@@ -125,9 +125,12 @@ ignorados por Git y no forman parte del repositorio.
 - Se completó la declaración de derechos sobre contenido después de sustituir el material
   sin autorización.
 - Se seleccionó la compilación `1.0.0 (1)` y se envió la versión a revisión.
-- El último estado confirmado para la compilación 1 es **Pendiente de revisión**.
-- La compilación `1.0.0 (2)` está preparada localmente para sustituirla y eliminar la
-  advertencia `ITMS-90683` antes de que Apple comience la evaluación.
+- El envío inicial del build 1 se retiró después de que Apple terminara de procesar el
+  build correctivo.
+- Se seleccionó la compilación `1.0.0 (2)` y se volvió a enviar la versión el 25 de julio
+  de 2026 a las 14:36.
+- ID del envío: `997ea11b-5abe-4c2d-b5c9-088fe37268a0`.
+- El último estado confirmado es **Pendiente de revisión**.
 
 Las capturas finales se conservan en:
 
@@ -146,11 +149,9 @@ Las capturas finales se conservan en:
 
 ## Siguientes pasos operativos
 
-1. Retirar temporalmente el envío actual, cargar `1.0.0 (2)`, seleccionarlo en la versión
-   `1.0` y volver a enviarla a revisión.
-2. Mantener activas y estables las cuentas y datos de revisión mientras Apple evalúa la
+1. Mantener activas y estables las cuentas y datos de revisión mientras Apple evalúa la
    app.
-3. Vigilar App Store Connect y el correo del titular por mensajes de App Review.
-4. Responder en App Store Connect si Apple solicita información o evidencia adicional.
-5. Tras la aprobación, confirmar que la publicación automática inicia correctamente y
+2. Vigilar App Store Connect y el correo del titular por mensajes de App Review.
+3. Responder en App Store Connect si Apple solicita información o evidencia adicional.
+4. Tras la aprobación, confirmar que la publicación automática inicia correctamente y
    verificar la ficha pública desde México.
