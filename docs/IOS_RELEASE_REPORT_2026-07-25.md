@@ -4,7 +4,8 @@
 
 **Rama:** `r-ios`
 
-**Estado:** versión enviada a Apple, **Pendiente de revisión**
+**Estado:** compilación 1 **Pendiente de revisión**; compilación correctiva 2 validada y
+lista para cargar
 
 ## Resumen ejecutivo
 
@@ -14,7 +15,10 @@ material genérico original, se probaron los flujos principales en un iPhone fí
 simuladores de iPhone/iPad, y se generaron las capturas definitivas de App Store.
 
 La compilación `1.0.0 (1)` fue cargada y procesada por App Store Connect, vinculada a la
-versión pública `1.0` y enviada a revisión. La publicación quedó configurada como
+versión pública `1.0` y enviada a revisión. Después, App Store Connect mostró la
+advertencia `ITMS-90683` por una descripción de privacidad exigida por una API de
+ubicación incluida en una dependencia. Se añadió la clave requerida y se generó y validó
+la compilación correctiva `1.0.0 (2)`. La publicación permanece configurada como
 **automática después de la aprobación**.
 
 ## Identificación de la versión
@@ -25,7 +29,7 @@ versión pública `1.0` y enviada a revisión. La publicación quedó configurad
 | Apple ID | `6794555887` |
 | Bundle ID | `com.redtrastiendaanpec.afiliados` |
 | Versión | `1.0.0` |
-| Compilación | `1` |
+| Compilación correctiva | `2` |
 | Team ID | `Z7M8489428` |
 | SKU | `anpec-red-trastienda-001` |
 | Precio | Gratuita |
@@ -46,6 +50,9 @@ versión pública `1.0` y enviada a revisión. La publicación quedó configurad
 - Se retiraron permisos, URL schemes y excepciones ATS heredadas que no eran necesarias.
 - Se declaró `ITSAppUsesNonExemptEncryption = false`.
 - Se configuraron el nombre visible, textos de permisos e iconos de Red Trastienda.
+- Se añadió `NSLocationAlwaysAndWhenInUseUsageDescription` para satisfacer la validación
+  estática de Apple provocada por la API de ubicación incluida en una dependencia. La app
+  continúa solicitando ubicación solo cuando el usuario agrega o actualiza una dirección.
 
 ### Ajustes finales de interfaz
 
@@ -97,8 +104,10 @@ Los recursos originales utilizados para esta sustitución están archivados en
 - Firma verificada con `codesign --verify --deep --strict`.
 - Perfil de distribución de App Store válido hasta el 25 de julio de 2027.
 - `get-task-allow = false` y `beta-reports-active = true`.
-- SHA-256 del IPA enviado:
-  `a19542134e31583a62e8ea2f96054d57ca2bf4a523dadfcca7e9ab7f22e16beb`.
+- La compilación correctiva validada contiene versión `1.0.0`, build `2`, Bundle ID
+  `com.redtrastiendaanpec.afiliados` y ambos textos de propósito de ubicación.
+- SHA-256 del IPA correctivo preparado:
+  `670b2362cdb377bd19a246bf53d1a9365f50e7bb4781802e7ab0afae5a23bc20`.
 
 El IPA se conserva localmente bajo `user/build/ios/ipa/`. Los directorios de build están
 ignorados por Git y no forman parte del repositorio.
@@ -116,7 +125,9 @@ ignorados por Git y no forman parte del repositorio.
 - Se completó la declaración de derechos sobre contenido después de sustituir el material
   sin autorización.
 - Se seleccionó la compilación `1.0.0 (1)` y se envió la versión a revisión.
-- El último estado confirmado es **Pendiente de revisión**.
+- El último estado confirmado para la compilación 1 es **Pendiente de revisión**.
+- La compilación `1.0.0 (2)` está preparada localmente para sustituirla y eliminar la
+  advertencia `ITMS-90683` antes de que Apple comience la evaluación.
 
 Las capturas finales se conservan en:
 
@@ -135,10 +146,11 @@ Las capturas finales se conservan en:
 
 ## Siguientes pasos operativos
 
-1. Mantener activas y estables las cuentas y datos de revisión mientras Apple evalúa la
+1. Retirar temporalmente el envío actual, cargar `1.0.0 (2)`, seleccionarlo en la versión
+   `1.0` y volver a enviarla a revisión.
+2. Mantener activas y estables las cuentas y datos de revisión mientras Apple evalúa la
    app.
-2. Vigilar App Store Connect y el correo del titular por mensajes de App Review.
-3. Responder en App Store Connect si Apple solicita información o evidencia adicional.
-4. Tras la aprobación, confirmar que la publicación automática inicia correctamente y
+3. Vigilar App Store Connect y el correo del titular por mensajes de App Review.
+4. Responder en App Store Connect si Apple solicita información o evidencia adicional.
+5. Tras la aprobación, confirmar que la publicación automática inicia correctamente y
    verificar la ficha pública desde México.
-5. Incrementar el número de compilación antes de cargar cualquier binario posterior.

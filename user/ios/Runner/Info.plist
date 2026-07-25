@@ -45,6 +45,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Red Trastienda usa la cámara para tomar fotos, por ejemplo para tu foto de perfil o para adjuntar imágenes en tus pedidos y mensajes.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Red Trastienda usa tu ubicación para registrar y administrar la dirección de entrega de tu tienda cuando agregas o actualizas una dirección.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Red Trastienda usa tu ubicación para registrar y administrar la dirección de entrega de tu tienda al agregar una nueva dirección.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
