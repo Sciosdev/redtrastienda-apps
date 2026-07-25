@@ -275,7 +275,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                         focusNode: _emailNumberFocus,
                                         nextFocus: _passwordFocus,
                                         controller: _emailPhoneController,
-                                        inputType: TextInputType.name,
+                                        // El campo admite correo, teléfono o número ANP.
+                                        // emailAddress conserva letras y números, y en iOS
+                                        // expone el carácter @ necesario para iniciar sesión.
+                                        inputType: TextInputType.emailAddress,
                                         // R-Afiliación: el login también acepta el número ANP.
                                         labelText: getTranslated('correo_telefono_o_numero_anp', context),
                                         hintText: getTranslated('ejemplo_correo_o_anp', context),
@@ -613,4 +616,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-

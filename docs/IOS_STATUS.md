@@ -1,5 +1,9 @@
 # iOS — Estado Fase 1 (rama `r-ios`)
 
+> **Cierre de Fase 2:** la versión `1.0.0 (1)` fue enviada a App Review el 25 de julio
+> de 2026. El estado final y las verificaciones están documentados en
+> [`IOS_RELEASE_REPORT_2026-07-25.md`](IOS_RELEASE_REPORT_2026-07-25.md).
+
 ## Actualización Fase 2 — 2026-07-24
 
 ### Completado en la Mac

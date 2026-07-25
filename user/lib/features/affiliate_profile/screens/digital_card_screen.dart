@@ -68,9 +68,20 @@ class _DigitalCardScreenState extends State<DigitalCardScreen> {
     final String affiliateName =
         '${profileController.userInfoModel?.fName ?? ''} ${profileController.userInfoModel?.lName ?? ''}'.trim();
     final String anp = profile.numeroAnp ?? '';
+    // El dashboard usa extendBody y su barra inferior (60 px) se dibuja sobre
+    // la pantalla. Sin este espacio el botón Compartir queda debajo de la barra
+    // en iPhone, incluso al llegar al final del scroll.
+    final double dashboardBottomClearance = widget.fromDashboard
+        ? 60 + MediaQuery.viewPaddingOf(context).bottom
+        : 0;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+      padding: EdgeInsets.fromLTRB(
+        Dimensions.paddingSizeDefault,
+        Dimensions.paddingSizeDefault,
+        Dimensions.paddingSizeDefault,
+        Dimensions.paddingSizeDefault + dashboardBottomClearance,
+      ),
       child: Column(children: [
         const SizedBox(height: Dimensions.paddingSizeDefault),
         Container(

@@ -27,3 +27,7 @@
 *.iml
 .DS_Store
 *.log
+
+# App Store screenshot working files; keep only the curated final JPEG sets.
+artifacts/app-store/screenshots/*.png
+artifacts/app-store/screenshots/final/
