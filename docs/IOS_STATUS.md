@@ -19,7 +19,8 @@
   incluido en Copy Bundle Resources.
 - `Info.plist`: fuera `NSAllowsArbitraryLoads`, `UIFileSharingEnabled`, claves/schemes de
   Facebook y el URL scheme de Google perteneciente al Firebase demo. Se conserva el scheme
-  propio `redtrastienda`.
+  propio `redtrastienda`. Se declaró `ITSAppUsesNonExemptEncryption = false`: la app usa la
+  protección HTTPS proporcionada por el sistema y no implementa cifrado no exento.
 - Smoke en simulador iPhone 17 Pro: la app abre el home y carga por HTTPS categorías,
   proveedores, productos e imágenes reales sin ATS arbitrario. Sin fallos funcionales en el
   registro del proceso.
@@ -40,11 +41,39 @@
   Privacidad — App Red Trastienda”). La variante en `redtrastiendaanpec.com` sin `adminapp`
   devuelve 404 y no debe declararse.
 
+### App Store Connect — ficha creada
+
+- App: **ANPEC Red Trastienda**; Apple ID `6794555887`; SKU `anpec-red-trastienda-001`;
+  versión `1.0` en estado “En preparación para el envío”. Idioma principal: Español (México).
+- Categoría principal: Economía y empresa. Metadatos, descripción, palabras clave, URLs de
+  soporte/marketing y copyright 2026 guardados.
+- Precio: gratuita. Disponibilidad limitada a México. Distribución pública; desactivadas las
+  opciones para Mac con Apple silicon y Apple Vision Pro.
+- Privacidad de la app publicada con 12 tipos de datos, vinculados a la identidad y sin
+  seguimiento. URLs declaradas: política de privacidad y eliminación de cuenta en
+  `adminapp.redtrastiendaanpec.com`.
+- Tres screenshots de iPhone en `1284 × 2778` cargados: onboarding, inicio como invitado e
+  inicio con la cuenta de revisión autenticada. La cuenta de prueba se verificó manualmente.
+- Datos de App Review guardados, incluido el teléfono internacional de contacto. Clasificación
+  por edades configurada en `4+`; la única capacidad declarada es mensajería y chat.
+- Publicación configurada como manual después de la aprobación.
+
+### Bloqueo de propiedad intelectual
+
+- ANPEC y SCIOS confirmaron que todavía **no tienen autorización** de Coca-Cola, Bimbo ni de
+  los demás proveedores cuyos nombres, logos y catálogos aparecen como datos de demostración.
+- No se configuró “Derechos sobre el contenido” en App Store Connect: seleccionar que existen
+  derechos sería una declaración falsa. Antes de enviar a revisión se deben reemplazar en el
+  backend los nombres, logos, productos e imágenes por contenido genérico/original, y volver a
+  generar las capturas; la alternativa es obtener autorización documental de cada titular.
+
 ### Pendiente en App Store Connect
 
-1. Crear la ficha “ANPEC Red Trastienda” en App Store Connect, aceptar acuerdos y completar
-   App Privacy, screenshots y credenciales de review verificadas.
-2. Subir `user/build/ios/ipa/Red Trastienda.ipa`, activar TestFlight interno y enviar a review.
+1. Resolver el bloqueo de propiedad intelectual y después completar la declaración de derechos
+   sobre el contenido y sustituir los screenshots que muestran marcas sin autorización.
+2. Regenerar el IPA con la declaración de cifrado actualizada, subirlo, seleccionar la
+   compilación procesada, activar
+   TestFlight interno y enviar a review.
 
 ---
 
