@@ -14,6 +14,7 @@ import 'package:flutter_sixvalley_ecommerce/features/opportunity_request/screens
 import 'package:flutter_sixvalley_ecommerce/features/profile/controllers/profile_contrroller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/splash/controllers/splash_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/features/splash/domain/models/business_pages_model.dart';
+import 'package:flutter_sixvalley_ecommerce/features/surveys/screens/surveys_screen.dart';
 import 'package:flutter_sixvalley_ecommerce/features/wallet/controllers/wallet_controller.dart';
 import 'package:flutter_sixvalley_ecommerce/helper/price_converter.dart';
 import 'package:flutter_sixvalley_ecommerce/helper/route_healper.dart';
@@ -296,6 +297,13 @@ class _MenuAnpecScreenState extends State<MenuAnpecScreen> {
               iconImage: Images.couponsIcon,
               label: getTranslated('coupons', context) ?? 'Cupones',
               onTap: () => _conSesion(() => RouterHelper.getCouponListScreenRoute()),
+            ),
+
+            MenuItem(
+              iconImage: Images.supportTicketSvg,
+              label: 'Encuestas',
+              onTap: () => _conSesion(() => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const SurveysScreen()))),
             ),
 
             // Gateados por config (hoy apagados en el server: ocultos, no borrados).
